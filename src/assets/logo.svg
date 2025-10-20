@@ -1,0 +1,63 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="55" fill="url(#primaryGradient)" opacity="0.1"/>
+  
+  <!-- Main Rocket Body -->
+  <path d="M60 15 L75 45 L60 40 L45 45 Z" fill="url(#primaryGradient)" filter="url(#glow)"/>
+  
+  <!-- Rocket Fins -->
+  <path d="M45 45 L35 55 L45 50 Z" fill="url(#secondaryGradient)"/>
+  <path d="M75 45 L85 55 L75 50 Z" fill="url(#secondaryGradient)"/>
+  
+  <!-- Rocket Window -->
+  <circle cx="60" cy="30" r="6" fill="#ffffff" opacity="0.9"/>
+  <circle cx="60" cy="30" r="4" fill="url(#primaryGradient)"/>
+  
+  <!-- Flame/Exhaust -->
+  <path d="M50 45 L55 60 L60 55 L65 60 L70 45 L60 50 Z" fill="#f59e0b" opacity="0.8"/>
+  <path d="M52 45 L57 55 L60 52 L63 55 L68 45 L60 48 Z" fill="#ef4444" opacity="0.6"/>
+  
+  <!-- AI Circuit Pattern -->
+  <g opacity="0.6">
+    <!-- Circuit lines -->
+    <path d="M25 70 L35 70 L35 80 L45 80" stroke="url(#primaryGradient)" stroke-width="2" fill="none"/>
+    <path d="M75 70 L85 70 L85 80 L95 80" stroke="url(#primaryGradient)" stroke-width="2" fill="none"/>
+    <path d="M30 85 L30 95 L40 95" stroke="url(#secondaryGradient)" stroke-width="2" fill="none"/>
+    <path d="M80 85 L80 95 L90 95" stroke="url(#secondaryGradient)" stroke-width="2" fill="none"/>
+    
+    <!-- Circuit nodes -->
+    <circle cx="35" cy="70" r="3" fill="url(#primaryGradient)"/>
+    <circle cx="85" cy="70" r="3" fill="url(#primaryGradient)"/>
+    <circle cx="30" cy="85" r="3" fill="url(#secondaryGradient)"/>
+    <circle cx="80" cy="85" r="3" fill="url(#secondaryGradient)"/>
+  </g>
+  
+  <!-- Sparkle Effects -->
+  <g opacity="0.8">
+    <path d="M25 25 L27 30 L32 28 L27 33 L25 38 L23 33 L18 28 L23 30 Z" fill="#10b981"/>
+    <path d="M90 35 L92 40 L97 38 L92 43 L90 48 L88 43 L83 38 L88 40 Z" fill="#a855f7"/>
+    <path d="M20 90 L22 95 L27 93 L22 98 L20 103 L18 98 L13 93 L18 95 Z" fill="#0ea5e9"/>
+    <path d="M95 85 L97 90 L102 88 L97 93 L95 98 L93 93 L88 88 L93 90 Z" fill="#f59e0b"/>
+  </g>
+  
+  <!-- Text Integration (Optional - can be used separately) -->
+  <text x="60" y="115" text-anchor="middle" font-family="Poppins, sans-serif" font-size="8" font-weight="600" fill="url(#primaryGradient)">PITCHCRAFT</text>
+</svg>

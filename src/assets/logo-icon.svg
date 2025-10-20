@@ -1,0 +1,32 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="48" height="48" rx="12" fill="url(#iconGradient)"/>
+  
+  <!-- Rocket Body -->
+  <path d="M24 8 L30 20 L24 18 L18 20 Z" fill="white" opacity="0.9"/>
+  
+  <!-- Rocket Fins -->
+  <path d="M18 20 L14 24 L18 22 Z" fill="white" opacity="0.7"/>
+  <path d="M30 20 L34 24 L30 22 Z" fill="white" opacity="0.7"/>
+  
+  <!-- Rocket Window -->
+  <circle cx="24" cy="14" r="2.5" fill="white" opacity="0.3"/>
+  
+  <!-- Flame -->
+  <path d="M20 20 L22 28 L24 26 L26 28 L28 20 L24 22 Z" fill="#f59e0b" opacity="0.8"/>
+  
+  <!-- AI Sparkle -->
+  <circle cx="36" cy="12" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="12" cy="36" r="1.5" fill="white" opacity="0.8"/>
+</svg>
