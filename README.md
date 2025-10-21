@@ -274,7 +274,7 @@ copies or substantial portions of the Software.
 - **📧 Email**: aunmohammad254@gmail.com
 - **🐛 Issues**: [GitHub Issues](https://github.com/AunMohammad254/Pitch-Crafter/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/AunMohammad254/Pitch-Crafter/discussions)
-- **📱 Linkedin**: [@PitchCraftAI](https://twitter.com/pitchcraftai](https://www.linkedin.com/posts/aun-abbas-847234254_startup-ai-branding-activity-7386193440004378624-ANtK?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD6uqrcBa3aXLWINoMpC2Go-R3-0lS4ztC4))
+- **📱 Linkedin**: [@PitchCraftAI](https://www.linkedin.com/posts/aun-abbas-847234254_startup-ai-branding-activity-7386193440004378624-ANtK?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD6uqrcBa3aXLWINoMpC2Go-R3-0lS4ztC4))
 
 ---
 
