@@ -95,7 +95,7 @@ IMPORTANT: Return ONLY the JSON object, no other text.`,
       };
 
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -194,7 +194,7 @@ Requirements:
 Return ONLY complete HTML code:`;
 
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -244,7 +244,7 @@ Return ONLY complete HTML code:`;
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-[${
+                    <div class="w-10 h-10 bg-linear-to-r from-[${
                       colors.primary
                     }] to-[${
       colors.secondary
@@ -378,7 +378,7 @@ Return ONLY complete HTML code:`;
       <div className="space-y-8 animate-fade-in-up">
         {/* Startup Header */}
         <motion.div
-          className="card-glass p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-primary-50 to-secondary-50 border-primary-200"
+          className="card-glass p-4 sm:p-6 lg:p-8 bg-linear-to-br from-primary-50 to-secondary-50 border-primary-200"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -504,7 +504,7 @@ Return ONLY complete HTML code:`;
 
         {/* Target Audience */}
         <motion.div
-          className="card-glass p-4 sm:p-5 lg:p-6 bg-gradient-to-r from-accent-50 to-primary-50 border-accent-200"
+          className="card-glass p-4 sm:p-5 lg:p-6 bg-linear-to-r from-accent-50 to-primary-50 border-accent-200"
           whileHover={{ scale: 1.01 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -534,7 +534,7 @@ Return ONLY complete HTML code:`;
         {/* Landing Page Copy */}
         {data.landing_copy && (
           <motion.div
-            className="card-glass p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-secondary-50 to-accent-50 border-secondary-200"
+            className="card-glass p-4 sm:p-5 lg:p-6 bg-linear-to-br from-secondary-50 to-accent-50 border-secondary-200"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -586,7 +586,7 @@ Return ONLY complete HTML code:`;
                       key={idx}
                       className="flex items-start space-x-2 mb-2 last:mb-0"
                     >
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-secondary-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></span>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-secondary-500 rounded-full mt-1.5 sm:mt-2 shrink-0"></span>
                       <span className="text-neutral-700 font-medium text-xs sm:text-sm leading-relaxed">
                         {feature}
                       </span>
@@ -619,7 +619,7 @@ Return ONLY complete HTML code:`;
                     className="flex items-center space-x-2 sm:space-x-3"
                   >
                     <div
-                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-sm flex-shrink-0"
+                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-sm shrink-0"
                       style={{ backgroundColor: color }}
                     ></div>
                     <div className="min-w-0">
@@ -654,7 +654,7 @@ Return ONLY complete HTML code:`;
                     key={idx}
                     className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-neutral-50 border border-neutral-200"
                   >
-                    <span className="text-base sm:text-lg flex-shrink-0 mt-0.5">
+                    <span className="text-base sm:text-lg shrink-0 mt-0.5">
                       💡
                     </span>
                     <p className="text-xs sm:text-sm font-medium text-neutral-700 leading-relaxed">
@@ -676,12 +676,12 @@ Return ONLY complete HTML code:`;
 
     return (
       <motion.div
-        className="mt-6 card-glass overflow-hidden animate-fade-in-up"
+        className="card-glass overflow-hidden animate-fade-in-up"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Code Header */}
-        <div className="flex mt-50 flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white space-y-3 sm:space-y-0">
+        <div className="rounded-t-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 border-b border-neutral-200 bg-linear-to-r from-neutral-50 to-white space-y-3 sm:space-y-0">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-400 rounded-full"></div>
@@ -731,7 +731,7 @@ Return ONLY complete HTML code:`;
         </div>
 
         {/* Code Footer */}
-        <div className="p-3 sm:p-4 bg-gradient-to-r from-primary-50 to-secondary-50 border-t border-neutral-200">
+        <div className="p-3 sm:p-4 bg-linear-to-r from-primary-50 to-secondary-50 border-t border-neutral-200">
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-neutral-600 mb-2">
             <span className="flex items-center">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
@@ -781,15 +781,24 @@ Return ONLY complete HTML code:`;
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white rounded-t-2xl">
+              <div className="flex items-center justify-between p-6 mt-15 border-b border-neutral-200 bg-linear-to-r from-neutral-50 to-white rounded-t-2xl">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <div
                       className="w-3 h-3 bg-red-400 rounded-full cursor-pointer hover:bg-red-500 transition-colors"
                       onClick={closePreview}
+                      title="Close preview"
                     ></div>
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                    <div
+                      className="w-3 h-3 bg-yellow-400 rounded-full cursor-pointer"
+                      onClick={() => window.open(previewUrl, "_blank")}
+                      title="Open preview in new tab"
+                    ></div>
+                    <div
+                      className="w-3 h-3 bg-green-400 rounded-full cursor-pointer"
+                      onClick={() => window.open(previewUrl, "_blank")}
+                      title="Open preview in new tab"
+                    ></div>
                   </div>
                   <h3 className="font-primary font-bold text-lg text-neutral-800 flex items-center">
                     <span className="mr-3 text-xl">🌐</span>
@@ -896,7 +905,7 @@ Return ONLY complete HTML code:`;
           <div className="text-center">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
-              className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl shadow-2xl mb-6 sm:mb-8"
+              className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl shadow-2xl mb-6 sm:mb-8"
             >
               <img
                 src={LogoIcon}
@@ -904,7 +913,7 @@ Return ONLY complete HTML code:`;
                 className="w-12 h-12 sm:w-16 sm:h-16"
               />
             </motion.div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4">
               Craft the Pitch Using AI
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
@@ -924,7 +933,7 @@ Return ONLY complete HTML code:`;
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">
+                <span className="bg-linear-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">
                   STEP 1
                 </span>
                 <span>Describe Your Startup Vision</span>
@@ -945,8 +954,8 @@ Return ONLY complete HTML code:`;
               disabled={loading}
               className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-white shadow-2xl transition-all duration-300 relative overflow-hidden text-sm sm:text-base ${
                 loading
-                  ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 hover:shadow-blue-500/25"
+                  ? "bg-linear-to-r from-gray-400 to-gray-500 cursor-not-allowed"
+                  : "bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 hover:shadow-blue-500/25"
               }`}
             >
               {loading ? (

@@ -26,6 +26,8 @@ export default function Auth() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          // Ensure Supabase redirects back to current origin (dev/prod)
+          options: { emailRedirectTo: window.location.origin }
         })
         if (error) throw error
         setMessage("Check your email for the confirmation link!")
@@ -151,7 +153,7 @@ export default function Auth() {
                 : "status-success"
             }`}>
               <div className="flex items-start sm:items-center">
-                <span className="mr-2 flex-shrink-0 mt-0.5 sm:mt-0">
+                <span className="mr-2 shrink-0 mt-0.5 sm:mt-0">
                   {message.includes("error") || message.includes("Error") || message.includes("Invalid") 
                     ? "❌" 
                     : "✅"

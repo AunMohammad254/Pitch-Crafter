@@ -32,24 +32,28 @@
 ## 🌟 Key Features
 
 ### 🎯 **Intelligent Pitch Generation**
+
 - **Elevator Pitch Creation**: Concise, compelling summaries of your startup
 - **Problem-Solution Analysis**: Clear articulation of market problems and your unique solution
 - **Target Audience Identification**: Detailed customer segmentation and personas
 - **Competitive Analysis**: Market positioning and differentiation strategies
 
 ### 🎨 **Professional Branding Suite**
+
 - **Logo Concepts**: AI-generated logo ideas and design suggestions
 - **Color Palette**: Carefully curated brand colors with hex codes
 - **Typography Recommendations**: Font pairings that match your brand personality
 - **Visual Identity Guidelines**: Complete brand style guide
 
 ### 💻 **Website Code Generation**
+
 - **Responsive Design**: Mobile-first, fully responsive landing pages
 - **Modern UI/UX**: Beautiful interfaces using Tailwind CSS
 - **SEO Optimized**: Clean, semantic HTML with proper meta tags
 - **Performance Focused**: Lightweight, fast-loading code
 
 ### 📱 **User Experience**
+
 - **Intuitive Interface**: Clean, modern design with smooth animations
 - **Real-time Collaboration**: Save and manage multiple pitch projects
 - **Keyboard Shortcuts**: Power-user features for efficient navigation
@@ -59,15 +63,15 @@
 
 ## 🛠️ Technology Stack
 
-| Category | Technology | Purpose |
-|----------|------------|---------|
-| **Frontend** | React 19.1.1 | Modern UI framework with latest features |
-| **Build Tool** | Vite 7.1.7 | Lightning-fast development and building |
-| **Styling** | Tailwind CSS 4.1.14 | Utility-first CSS framework |
-| **Animations** | Framer Motion 12.23.24 | Smooth, professional animations |
-| **Backend** | Supabase | Authentication, database, and real-time features |
-| **AI Engine** | Google Gemini 2.0 Flash | Advanced language model for content generation |
-| **Deployment** | Vercel/Netlify Ready | Optimized for modern hosting platforms |
+| Category       | Technology              | Purpose                                          |
+| -------------- | ----------------------- | ------------------------------------------------ |
+| **Frontend**   | React 19.1.1            | Modern UI framework with latest features         |
+| **Build Tool** | Vite 7.1.7              | Lightning-fast development and building          |
+| **Styling**    | Tailwind CSS 4.1.14     | Utility-first CSS framework                      |
+| **Animations** | Framer Motion 12.23.24  | Smooth, professional animations                  |
+| **Backend**    | Supabase                | Authentication, database, and real-time features |
+| **AI Engine**  | Google Gemini 2.0 Flash | Advanced language model for content generation   |
+| **Deployment** | Vercel/Netlify Ready    | Optimized for modern hosting platforms           |
 
 ---
 
@@ -83,12 +87,14 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/pitchcraft-ai.git
    cd pitchcraft-ai/frontend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -96,23 +102,33 @@
    ```
 
 3. **Environment Setup**
-   
+
    Copy the example environment file:
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Fill in your credentials in `.env`:
+
    ```env
    # Supabase Configuration
    VITE_SUPABASE_URL=your_supabase_project_url_here
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-   
+
    # Google Gemini AI Configuration
    VITE_GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
+   Supabase Auth Redirect Tips:
+
+   - In Supabase Dashboard → Authentication → URL Configuration:
+     - Set `Site URL` to `http://localhost:5173` (no leading spaces).
+     - Add `http://localhost:5173`, `http://localhost:5174`, and `http://127.0.0.1:5173` to Additional Redirect URLs for local dev.
+   - Avoid malformed values like `http//localhost:5173` (missing colon) or leading spaces that become `%20`.
+
 4. **Start the development server**
+
    ```bash
    npm run dev
    # or
@@ -120,7 +136,7 @@
    ```
 
 5. **Open your browser**
-   
+
    Navigate to `http://localhost:5173` to see the application running.
 
 ---
@@ -139,9 +155,9 @@
 ### Example Input
 
 ```
-I want to build an AI-powered fitness app that creates personalized workout 
-plans with real-time form correction using computer vision, targeting busy 
-professionals who want effective home workouts without expensive equipment 
+I want to build an AI-powered fitness app that creates personalized workout
+plans with real-time form correction using computer vision, targeting busy
+professionals who want effective home workouts without expensive equipment
 or gym memberships.
 ```
 
@@ -172,12 +188,12 @@ or gym memberships.
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build production-ready application |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint for code quality checks |
+| Command           | Description                              |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Start development server with hot reload |
+| `npm run build`   | Build production-ready application       |
+| `npm run preview` | Preview production build locally         |
+| `npm run lint`    | Run ESLint for code quality checks       |
 
 ### Project Structure
 
