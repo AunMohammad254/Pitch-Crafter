@@ -84,10 +84,10 @@ export default function App() {
             {/* Logo Section */}
             <div className="logo-container animate-fade-in-left">
               <div className="logo-icon floating">
-                <img src={LogoIcon} alt="PitchCraft AI" className="w-6 h-6 sm:w-8 sm:h-8" />
+                <img src={LogoIcon} alt="Pitch Crafter" className="w-6 h-6 sm:w-8 sm:h-8" />
               </div>
               <h1 className="logo-text text-lg sm:text-xl">
-                PitchCraft AI
+                Pitch Crafter
               </h1>
             </div>
 
@@ -254,8 +254,8 @@ export default function App() {
         {/* Breadcrumb Navigation */}
         <div className="mb-6 sm:mb-8 animate-fade-in-up">
           <nav className="flex items-center space-x-2 text-sm text-neutral-600">
-            <img src={LogoIcon} alt="PitchCraft AI" className="w-6 h-6 sm:w-8 sm:h-8" />
-            <span className="text-primary-600 font-medium">PitchCraft AI</span>
+            <img src={LogoIcon} alt="PitchCrafter" className="w-6 h-6 sm:w-8 sm:h-8" />
+            <span className="text-primary-600 font-medium">Pitch Crafter</span>
             <span>/</span>
             <span className="font-medium text-neutral-800">
               {currentView === "generate" ? "Generate Pitch" : "My Pitches"}
@@ -309,8 +309,8 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
           <div className="text-center">
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <img src={LogoIcon} alt="PitchCraft AI" className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3" />
-              <span className="font-primary font-bold text-lg sm:text-xl gradient-text">PitchCraft AI</span>
+              <img src={LogoIcon} alt="Pitch Crafter" className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3" />
+              <span className="font-primary font-bold text-lg sm:text-xl gradient-text">Pitch Crafter</span>  
             </div>
             <p className="text-neutral-600 font-medium mb-2 text-sm sm:text-base">
               Built with ❤️ by <span className="font-semibold text-primary-600">Aun Abbas</span> using React + Supabase + Gemini

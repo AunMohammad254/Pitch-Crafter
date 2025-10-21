@@ -1,57 +1,55 @@
-import { useState, useEffect } from "react"
-import { supabase } from "../lib/supabaseClient"
-import { motion, AnimatePresence } from "framer-motion"
-import LogoIcon from "../assets/logo.svg"
-
-
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { motion, AnimatePresence } from "framer-motion";
+import LogoIcon from "../assets/logo.svg";
 
 export default function PitchForm({ user, onNavigate }) {
-  const [prompt, setPrompt] = useState("")
-  const [result, setResult] = useState(null)
-  const [landingCode, setLandingCode] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState("pitch")
-  const [showPreview, setShowPreview] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState("")
+  const [prompt, setPrompt] = useState("");
+  const [result, setResult] = useState(null);
+  const [landingCode, setLandingCode] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("pitch");
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   // Generate preview URL when landing code changes
   useEffect(() => {
     if (landingCode && !previewUrl) {
-      generatePreview()
+      generatePreview();
     }
-  }, [landingCode])
+  }, [landingCode]);
 
   const generatePreview = () => {
-    if (!landingCode) return
-    
+    if (!landingCode) return;
+
     // Create blob from HTML code
-    const blob = new Blob([landingCode], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    setPreviewUrl(url)
-  }
+    const blob = new Blob([landingCode], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    setPreviewUrl(url);
+  };
 
   const openPreview = () => {
     if (!previewUrl) {
-      generatePreview()
+      generatePreview();
     }
-    setShowPreview(true)
-  }
+    setShowPreview(true);
+  };
 
   const closePreview = () => {
-    setShowPreview(false)
-  }
+    setShowPreview(false);
+  };
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    setResult(null)
-    setLandingCode(null)
-    setPreviewUrl("")
-    setShowPreview(false)
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    setLandingCode(null);
+    setPreviewUrl("");
+    setShowPreview(false);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-      if (!apiKey) throw new Error("Gemini API key missing in .env")
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) throw new Error("Gemini API key missing in .env");
 
       // Step 1: Get Pitch Data
       const requestBody = {
@@ -89,53 +87,54 @@ Return ONLY valid JSON with this exact structure:
   "logo_ideas": ["creative idea 1", "creative idea 2", "creative idea 3"]
 }
 
-IMPORTANT: Return ONLY the JSON object, no other text.`
+IMPORTANT: Return ONLY the JSON object, no other text.`,
               },
             ],
           },
         ],
-      }
+      };
 
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         }
-      )
+      );
 
-      const data = await resp.json()
-      console.log("Gemini Raw:", data)
-      
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ""
+      const data = await resp.json();
+      console.log("Gemini Raw:", data);
+
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       // Extract JSON
-      const jsonMatch = text.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) throw new Error("Could not find JSON object in AI response.")
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch)
+        throw new Error("Could not find JSON object in AI response.");
 
-      const cleaned = jsonMatch[0]
-      let parsed
+      const cleaned = jsonMatch[0];
+      let parsed;
       try {
-        parsed = JSON.parse(cleaned)
+        parsed = JSON.parse(cleaned);
       } catch (err) {
         const attempt = cleaned
           .replace(/'\s*:\s*'/g, '": "')
           .replace(/([{\[,])\s*'([^']+?)'\s*(?=[:,\]}])/g, '$1"$2"')
-          .replace(/,(\s*[}\]])/g, "$1")
-        parsed = JSON.parse(attempt)
+          .replace(/,(\s*[}\]])/g, "$1");
+        parsed = JSON.parse(attempt);
       }
 
       // Ensure basic structure
-      parsed.name = parsed.name || "Untitled Startup"
-      parsed.tagline = parsed.tagline || "Transforming ideas into reality"
-      parsed.industry = parsed.industry || "Technology"
+      parsed.name = parsed.name || "Untitled Startup";
+      parsed.tagline = parsed.tagline || "Transforming ideas into reality";
+      parsed.industry = parsed.industry || "Technology";
 
-      setResult(parsed)
+      setResult(parsed);
 
       // Generate landing page code
-      const generatedCode = await generateLandingPageCode(parsed)
-      setLandingCode(generatedCode)
+      const generatedCode = await generateLandingPageCode(parsed);
+      setLandingCode(generatedCode);
 
       // Save to Supabase
       const { error } = await supabase.from("pitches").insert({
@@ -147,25 +146,30 @@ IMPORTANT: Return ONLY the JSON object, no other text.`
         language: "auto",
         generated_data: parsed,
         landing_code: generatedCode,
-      })
+      });
 
-      if (error) throw error
+      if (error) throw error;
 
       // Success notification
-      showNotification("✅ Pitch + Website Code Generated!", "success")
+      showNotification("✅ Pitch + Website Code Generated!", "success");
     } catch (err) {
-      console.error(err)
-      showNotification("❌ " + (err.message || "Something went wrong"), "error")
+      console.error(err);
+      showNotification(
+        "❌ " + (err.message || "Something went wrong"),
+        "error"
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function generateLandingPageCode(pitchData) {
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-      
-      const websitePrompt = `Create a stunning, modern landing page HTML for: ${pitchData.name} - ${pitchData.tagline}
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+      const websitePrompt = `Create a stunning, modern landing page HTML for: ${
+        pitchData.name
+      } - ${pitchData.tagline}
 
 Details:
 - Problem: ${pitchData.problem}
@@ -187,27 +191,36 @@ Requirements:
 - Use placeholder text for testimonials instead of external images
 - Create visual appeal through typography, gradients, and geometric shapes
 
-Return ONLY complete HTML code:`
+Return ONLY complete HTML code:`;
 
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: websitePrompt }] }] }),
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: websitePrompt }] }],
+          }),
         }
-      )
+      );
 
-      const data = await resp.json()
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text || generateFallbackTemplate(pitchData)
+      const data = await resp.json();
+      return (
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        generateFallbackTemplate(pitchData)
+      );
     } catch (error) {
-      return generateFallbackTemplate(pitchData)
+      return generateFallbackTemplate(pitchData);
     }
   }
 
   function generateFallbackTemplate(pitchData) {
-    const colors = pitchData.colors || { primary: "#3B82F6", secondary: "#8B5CF6", accent: "#06B6D4" }
-    
+    const colors = pitchData.colors || {
+      primary: "#3B82F6",
+      secondary: "#8B5CF6",
+      accent: "#06B6D4",
+    };
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -217,8 +230,12 @@ Return ONLY complete HTML code:`
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .gradient-bg { background: linear-gradient(135deg, ${colors.primary}20, ${colors.secondary}20); }
-        .hero-gradient { background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary}); }
+        .gradient-bg { background: linear-gradient(135deg, ${
+          colors.primary
+        }20, ${colors.secondary}20); }
+        .hero-gradient { background: linear-gradient(135deg, ${
+          colors.primary
+        }, ${colors.secondary}); }
     </style>
 </head>
 <body class="bg-white">
@@ -227,12 +244,22 @@ Return ONLY complete HTML code:`
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-[${colors.primary}] to-[${colors.secondary}] rounded-lg flex items-center justify-center">
-                        <img src={LogoIcon} alt="PitchCraft AI" className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <div class="w-10 h-10 bg-gradient-to-r from-[${
+                      colors.primary
+                    }] to-[${
+      colors.secondary
+    }] rounded-lg flex items-center justify-center">
+                        <img src={LogoIcon} alt="Pitch Crafter" className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
-                    <span class="text-xl font-bold text-gray-900">${pitchData.name}</span>
+                    <span class="text-xl font-bold text-gray-900">${
+                      pitchData.name
+                    }</span>
                 </div>
-                <button class="bg-[${colors.primary}] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[${colors.secondary}] transition-colors">
+                <button class="bg-[${
+                  colors.primary
+                }] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[${
+      colors.secondary
+    }] transition-colors">
                     Get Started
                 </button>
             </div>
@@ -242,11 +269,20 @@ Return ONLY complete HTML code:`
     <!-- Hero Section -->
     <section class="hero-gradient text-white py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-5xl font-bold mb-6">${pitchData.landing_copy?.headline || pitchData.name}</h1>
-            <p class="text-xl opacity-90 mb-8 max-w-3xl mx-auto">${pitchData.landing_copy?.subheadline || pitchData.tagline}</p>
+            <h1 class="text-5xl font-bold mb-6">${
+              pitchData.landing_copy?.headline || pitchData.name
+            }</h1>
+            <p class="text-xl opacity-90 mb-8 max-w-3xl mx-auto">${
+              pitchData.landing_copy?.subheadline || pitchData.tagline
+            }</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="bg-white text-[${colors.primary}] px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-colors shadow-lg">
-                    ${pitchData.landing_copy?.call_to_action || "Get Started Free"}
+                <button class="bg-white text-[${
+                  colors.primary
+                }] px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-colors shadow-lg">
+                    ${
+                      pitchData.landing_copy?.call_to_action ||
+                      "Get Started Free"
+                    }
                 </button>
                 <button class="border border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
                     Learn More
@@ -259,7 +295,9 @@ Return ONLY complete HTML code:`
     <section class="py-20 bg-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold text-gray-900 mb-6">The Problem We Solve</h2>
-            <p class="text-lg text-gray-600 leading-relaxed">${pitchData.problem}</p>
+            <p class="text-lg text-gray-600 leading-relaxed">${
+              pitchData.problem
+            }</p>
         </div>
     </section>
 
@@ -267,7 +305,9 @@ Return ONLY complete HTML code:`
     <section class="py-20 gradient-bg">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Innovative Solution</h2>
-            <p class="text-lg text-gray-600 leading-relaxed">${pitchData.solution}</p>
+            <p class="text-lg text-gray-600 leading-relaxed">${
+              pitchData.solution
+            }</p>
         </div>
     </section>
 
@@ -275,8 +315,14 @@ Return ONLY complete HTML code:`
     <section class="py-20 bg-gray-900 text-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold mb-6">Ready to Get Started?</h2>
-            <p class="text-gray-300 mb-8 text-lg">Join the future with ${pitchData.name}</p>
-            <button class="bg-[${colors.accent}] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[${colors.primary}] transition-colors">
+            <p class="text-gray-300 mb-8 text-lg">Join the future with ${
+              pitchData.name
+            }</p>
+            <button class="bg-[${
+              colors.accent
+            }] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[${
+      colors.primary
+    }] transition-colors">
                 Start Your Journey
             </button>
         </div>
@@ -302,38 +348,36 @@ Return ONLY complete HTML code:`
         });
     </script>
 </body>
-</html>`
+</html>`;
   }
 
   function showNotification(message, type) {
-    const el = document.createElement("div")
+    const el = document.createElement("div");
     el.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 font-semibold backdrop-blur-sm border animate-fade-in-right ${
-      type === "success" 
-        ? "status-success" 
-        : "status-error"
-    }`
+      type === "success" ? "status-success" : "status-error"
+    }`;
     el.innerHTML = `
       <div class="flex items-center">
         <span class="mr-3 text-lg">${type === "success" ? "✅" : "❌"}</span>
         <span>${message}</span>
       </div>
-    `
-    document.body.appendChild(el)
+    `;
+    document.body.appendChild(el);
     setTimeout(() => {
-      el.style.opacity = "0"
-      el.style.transform = "translateX(100%)"
-      setTimeout(() => el.remove(), 300)
-    }, 4000)
+      el.style.opacity = "0";
+      el.style.transform = "translateX(100%)";
+      setTimeout(() => el.remove(), 300);
+    }, 4000);
   }
 
   // ✅ COMPLETE PITCH DETAILS COMPONENT
   const RenderPitchDetails = ({ data }) => {
-    if (!data) return null
-    
+    if (!data) return null;
+
     return (
       <div className="space-y-8 animate-fade-in-up">
         {/* Startup Header */}
-        <motion.div 
+        <motion.div
           className="card-glass p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-primary-50 to-secondary-50 border-primary-200"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -341,8 +385,12 @@ Return ONLY complete HTML code:`
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6">
             <div className="mb-4 sm:mb-0">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold gradient-text mb-2 sm:mb-3">{data.name}</h2>
-              <p className="text-lg sm:text-xl text-neutral-600 font-medium mb-3 sm:mb-4">{data.tagline}</p>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold gradient-text mb-2 sm:mb-3">
+                {data.name}
+              </h2>
+              <p className="text-lg sm:text-xl text-neutral-600 font-medium mb-3 sm:mb-4">
+                {data.tagline}
+              </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="status-indicator bg-accent-100 text-accent-700 border-accent-200 text-xs sm:text-sm">
@@ -350,7 +398,7 @@ Return ONLY complete HTML code:`
               </span>
             </div>
           </div>
-          
+
           <div className="flex flex-wrap gap-2 sm:gap-3">
             <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary-100 text-primary-700 font-medium text-xs sm:text-sm">
               <span className="mr-1 sm:mr-2">🏢</span>
@@ -381,9 +429,13 @@ Return ONLY complete HTML code:`
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 🎯
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">Elevator Pitch</h3>
+              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+                Elevator Pitch
+              </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">{data.elevator_pitch}</p>
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+              {data.elevator_pitch}
+            </p>
           </motion.div>
 
           {/* Unique Value Proposition */}
@@ -398,9 +450,13 @@ Return ONLY complete HTML code:`
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 💎
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">Unique Value Proposition</h3>
+              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+                Unique Value Proposition
+              </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">{data.unique_value_proposition}</p>
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+              {data.unique_value_proposition}
+            </p>
           </motion.div>
 
           {/* Problem */}
@@ -415,9 +471,13 @@ Return ONLY complete HTML code:`
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 🧩
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">The Problem</h3>
+              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+                The Problem
+              </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">{data.problem}</p>
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+              {data.problem}
+            </p>
           </motion.div>
 
           {/* Solution */}
@@ -432,9 +492,13 @@ Return ONLY complete HTML code:`
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 💡
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">Our Solution</h3>
+              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+                Our Solution
+              </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">{data.solution}</p>
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+              {data.solution}
+            </p>
           </motion.div>
         </div>
 
@@ -450,7 +514,9 @@ Return ONLY complete HTML code:`
             <span className="mr-2 sm:mr-3 text-xl sm:text-2xl">🎯</span>
             Target Audience
           </h3>
-          <p className="text-sm sm:text-base text-neutral-700 mb-3 sm:mb-4 font-medium">{data.target_audience?.description}</p>
+          <p className="text-sm sm:text-base text-neutral-700 mb-3 sm:mb-4 font-medium">
+            {data.target_audience?.description}
+          </p>
           {data.target_audience?.segments && (
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {data.target_audience.segments.map((segment, idx) => (
@@ -477,7 +543,7 @@ Return ONLY complete HTML code:`
               <span className="mr-2 sm:mr-3 text-xl sm:text-2xl">📝</span>
               Landing Page Copy
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
               <div>
                 <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
@@ -488,7 +554,7 @@ Return ONLY complete HTML code:`
                   {data.landing_copy.headline}
                 </p>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
                   <span className="mr-1.5 sm:mr-2">📢</span>
@@ -498,7 +564,7 @@ Return ONLY complete HTML code:`
                   {data.landing_copy.subheadline}
                 </p>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
                   <span className="mr-1.5 sm:mr-2">🚀</span>
@@ -508,7 +574,7 @@ Return ONLY complete HTML code:`
                   {data.landing_copy.call_to_action}
                 </p>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
                   <span className="mr-1.5 sm:mr-2">✨</span>
@@ -516,9 +582,14 @@ Return ONLY complete HTML code:`
                 </h4>
                 <div className="bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200">
                   {data.landing_copy.key_features?.map((feature, idx) => (
-                    <div key={idx} className="flex items-start space-x-2 mb-2 last:mb-0">
+                    <div
+                      key={idx}
+                      className="flex items-start space-x-2 mb-2 last:mb-0"
+                    >
                       <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-secondary-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></span>
-                      <span className="text-neutral-700 font-medium text-xs sm:text-sm leading-relaxed">{feature}</span>
+                      <span className="text-neutral-700 font-medium text-xs sm:text-sm leading-relaxed">
+                        {feature}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -543,14 +614,21 @@ Return ONLY complete HTML code:`
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {Object.entries(data.colors).map(([name, color]) => (
-                  <div key={name} className="flex items-center space-x-2 sm:space-x-3">
+                  <div
+                    key={name}
+                    className="flex items-center space-x-2 sm:space-x-3"
+                  >
                     <div
                       className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-sm flex-shrink-0"
                       style={{ backgroundColor: color }}
                     ></div>
                     <div className="min-w-0">
-                      <p className="font-medium text-xs sm:text-sm text-neutral-700 capitalize truncate">{name}</p>
-                      <p className="text-xs text-neutral-500 font-mono truncate">{color}</p>
+                      <p className="font-medium text-xs sm:text-sm text-neutral-700 capitalize truncate">
+                        {name}
+                      </p>
+                      <p className="text-xs text-neutral-500 font-mono truncate">
+                        {color}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -572,9 +650,16 @@ Return ONLY complete HTML code:`
               </h3>
               <div className="space-y-2 sm:space-y-3">
                 {data.logo_ideas.map((idea, idx) => (
-                  <div key={idx} className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-neutral-50 border border-neutral-200">
-                    <span className="text-base sm:text-lg flex-shrink-0 mt-0.5">💡</span>
-                    <p className="text-xs sm:text-sm font-medium text-neutral-700 leading-relaxed">{idea}</p>
+                  <div
+                    key={idx}
+                    className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-neutral-50 border border-neutral-200"
+                  >
+                    <span className="text-base sm:text-lg flex-shrink-0 mt-0.5">
+                      💡
+                    </span>
+                    <p className="text-xs sm:text-sm font-medium text-neutral-700 leading-relaxed">
+                      {idea}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -582,34 +667,36 @@ Return ONLY complete HTML code:`
           )}
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   // ✅ RENDER WEBSITE CODE COMPONENT
   const RenderWebsiteCode = ({ code }) => {
-    if (!code) return null
+    if (!code) return null;
 
     return (
-      <motion.div 
-        className="card-glass overflow-hidden animate-fade-in-up"
+      <motion.div
+        className="mt-6 card-glass overflow-hidden animate-fade-in-up"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Code Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white space-y-3 sm:space-y-0">
+        <div className="flex mt-50 flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white space-y-3 sm:space-y-0">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-400 rounded-full"></div>
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 rounded-full"></div>
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full"></div>
             </div>
-            <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800 flex items-center">
+            <h3 className="font-primary font-bold text-sm sm:text-base text-neutral-800 flex items-center">
               <span className="mr-2 sm:mr-3 text-lg sm:text-xl">🌐</span>
-              <span className="hidden sm:inline">Generated Landing Page Code</span>
+              <span className="hidden sm:inline">
+                Generated Landing Page Code
+              </span>
               <span className="sm:hidden">Website Code</span>
             </h3>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+          <div className="flex mt-4 sm:mt-0 flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -624,8 +711,8 @@ Return ONLY complete HTML code:`
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                navigator.clipboard.writeText(code)
-                showNotification("Code copied to clipboard!", "success")
+                navigator.clipboard.writeText(code);
+                showNotification("Code copied to clipboard!", "success");
               }}
               className="btn-primary flex items-center justify-center space-x-2 text-sm sm:text-base"
             >
@@ -660,12 +747,19 @@ Return ONLY complete HTML code:`
             </span>
           </div>
           <p className="text-center text-neutral-600 font-medium text-xs sm:text-sm leading-relaxed">
-            💡 <strong>Pro Tip:</strong> <span className="hidden sm:inline">Click "Preview Website" to see your landing page in action, or copy the code to deploy instantly!</span><span className="sm:hidden">Preview or copy your code to deploy!</span>
+            💡 <strong>Pro Tip:</strong>{" "}
+            <span className="hidden sm:inline">
+              Click "Preview Website" to see your landing page in action, or
+              copy the code to deploy instantly!
+            </span>
+            <span className="sm:hidden">
+              Preview or copy your code to deploy!
+            </span>
           </p>
         </div>
       </motion.div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -690,7 +784,10 @@ Return ONLY complete HTML code:`
               <div className="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white rounded-t-2xl">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-400 rounded-full cursor-pointer hover:bg-red-500 transition-colors" onClick={closePreview}></div>
+                    <div
+                      className="w-3 h-3 bg-red-400 rounded-full cursor-pointer hover:bg-red-500 transition-colors"
+                      onClick={closePreview}
+                    ></div>
                     <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
                     <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                   </div>
@@ -704,8 +801,8 @@ Return ONLY complete HTML code:`
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
-                      navigator.clipboard.writeText(landingCode)
-                      showNotification("Code copied to clipboard!", "success")
+                      navigator.clipboard.writeText(landingCode);
+                      showNotification("Code copied to clipboard!", "success");
                     }}
                     className="btn-secondary text-sm"
                   >
@@ -738,7 +835,7 @@ Return ONLY complete HTML code:`
 
       <div className="relative z-10">
         {/* Header with Navigation */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 sm:mb-12 lg:mb-16"
@@ -746,34 +843,49 @@ Return ONLY complete HTML code:`
           {/* Navigation Bar */}
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <button
-              onClick={() => onNavigate && onNavigate('my-pitches')}
+              onClick={() => onNavigate && onNavigate("my-pitches")}
               className="flex items-center space-x-2 text-neutral-600 hover:text-primary-600 transition-colors"
             >
               <span className="text-lg">←</span>
               <span className="font-medium">Back to My Pitches</span>
             </button>
-            
+
             {/* Step Indicators */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                !result ? 'bg-primary-100 text-primary-700' : 'bg-green-100 text-green-700'
-              }`}>
-                <span className="text-base">{!result ? '✏️' : '✅'}</span>
+              <div
+                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  !result
+                    ? "bg-primary-100 text-primary-700"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                <span className="text-base">{!result ? "✏️" : "✅"}</span>
                 <span className="hidden sm:inline">Describe Idea</span>
                 <span className="sm:hidden">1</span>
               </div>
-              <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                result && !landingCode ? 'bg-primary-100 text-primary-700' : 
-                landingCode ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'
-              }`}>
-                <span className="text-base">{landingCode ? '✅' : result ? '⚡' : '⏳'}</span>
+              <div
+                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  result && !landingCode
+                    ? "bg-primary-100 text-primary-700"
+                    : landingCode
+                    ? "bg-green-100 text-green-700"
+                    : "bg-neutral-100 text-neutral-500"
+                }`}
+              >
+                <span className="text-base">
+                  {landingCode ? "✅" : result ? "⚡" : "⏳"}
+                </span>
                 <span className="hidden sm:inline">Generate</span>
                 <span className="sm:hidden">2</span>
               </div>
-              <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                landingCode ? 'bg-primary-100 text-primary-700' : 'bg-neutral-100 text-neutral-500'
-              }`}>
-                <span className="text-base">{landingCode ? '🎯' : '⏳'}</span>
+              <div
+                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  landingCode
+                    ? "bg-primary-100 text-primary-700"
+                    : "bg-neutral-100 text-neutral-500"
+                }`}
+              >
+                <span className="text-base">{landingCode ? "🎯" : "⏳"}</span>
                 <span className="hidden sm:inline">Review & Save</span>
                 <span className="sm:hidden">3</span>
               </div>
@@ -786,13 +898,18 @@ Return ONLY complete HTML code:`
               whileHover={{ scale: 1.1, rotate: 5 }}
               className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl shadow-2xl mb-6 sm:mb-8"
             >
-              <img src={LogoIcon} alt="PitchCraft AI" className="w-12 h-12 sm:w-16 sm:h-16" />
+              <img
+                src={LogoIcon}
+                alt="Pitch Crafter"
+                className="w-12 h-12 sm:w-16 sm:h-16"
+              />
             </motion.div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4">
-              PitchCraft AI
+              Craft the Pitch Using AI
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
-              Transform your startup idea into a complete business package with AI-powered pitch generation and professional website code.
+              Transform your startup idea into a complete business package with
+              AI-powered pitch generation and professional website code.
             </p>
           </div>
         </motion.div>
@@ -807,7 +924,9 @@ Return ONLY complete HTML code:`
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">STEP 1</span>
+                <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">
+                  STEP 1
+                </span>
                 <span>Describe Your Startup Vision</span>
               </label>
               <motion.textarea
@@ -834,10 +953,16 @@ Return ONLY complete HTML code:`
                 <div className="flex items-center justify-center space-x-2 sm:space-x-3">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full"
                   />
-                  <span className="hidden sm:inline">AI is crafting your startup...</span>
+                  <span className="hidden sm:inline">
+                    AI is crafting your startup...
+                  </span>
                   <span className="sm:hidden">Generating...</span>
                 </div>
               ) : (
@@ -848,7 +973,9 @@ Return ONLY complete HTML code:`
                   >
                     ✨
                   </motion.span>
-                  <span className="hidden sm:inline">Generate Complete Startup Package</span>
+                  <span className="hidden sm:inline">
+                    Generate Complete Startup Package
+                  </span>
                   <span className="sm:hidden">Generate Package</span>
                 </div>
               )}
@@ -866,15 +993,25 @@ Return ONLY complete HTML code:`
               className="mb-12"
             >
               {/* Enhanced Tabs */}
-              <motion.div 
+              <motion.div
                 className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
                 {[
-                  { id: "pitch", label: "📊 Pitch Details", shortLabel: "📊 Pitch", icon: "💼" },
-                  { id: "website", label: "🌐 Website Code", shortLabel: "🌐 Code", icon: "🚀" }
+                  {
+                    id: "pitch",
+                    label: "📊 Pitch Details",
+                    shortLabel: "📊 Pitch",
+                    icon: "💼",
+                  },
+                  {
+                    id: "website",
+                    label: "🌐 Website Code",
+                    shortLabel: "🌐 Code",
+                    icon: "🚀",
+                  },
                 ].map((tab) => (
                   <motion.button
                     key={tab.id}
@@ -923,5 +1060,5 @@ Return ONLY complete HTML code:`
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 }
