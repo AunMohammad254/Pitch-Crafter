@@ -913,7 +913,7 @@ Return ONLY complete HTML code:`;
                 className="w-12 h-12 sm:w-16 sm:h-16"
               />
             </motion.div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4 pb-1">
               Craft the Pitch Using AI
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
