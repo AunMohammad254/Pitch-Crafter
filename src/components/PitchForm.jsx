@@ -4,6 +4,359 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LinkButton, PrimaryButton } from "./Button";
 import SpecialButton from "./GenerateButton";
 import LogoIcon from "../assets/logo.svg";
+import { networkMonitor, APIRequestHelper, checkNetworkStatus, logNetworkDiagnostics } from "../utils/networkUtils";
+
+// API Rate Limiting and Request Queue Management
+class GeminiAPIManager {
+  constructor() {
+    this.requestQueue = [];
+    this.isProcessing = false;
+    this.lastRequestTime = 0;
+    this.minRequestInterval = 1000; // 1 second between requests
+    this.maxRetries = 3;
+    this.baseDelay = 1000; // Base delay for exponential backoff
+    
+    // Rate limiting: 2 requests per minute
+    this.requestTimestamps = [];
+    this.maxRequestsPerMinute = 2;
+    this.rateLimitWindow = 60000; // 1 minute in milliseconds
+  }
+
+  // Check if rate limit is exceeded
+  checkRateLimit() {
+    const now = Date.now();
+    
+    // Remove timestamps older than 1 minute
+    this.requestTimestamps = this.requestTimestamps.filter(
+      timestamp => now - timestamp < this.rateLimitWindow
+    );
+    
+    // Check if we've exceeded the rate limit
+    if (this.requestTimestamps.length >= this.maxRequestsPerMinute) {
+      const oldestRequest = Math.min(...this.requestTimestamps);
+      const timeUntilReset = this.rateLimitWindow - (now - oldestRequest);
+      throw new Error(
+        `Rate limit exceeded. You can only make ${this.maxRequestsPerMinute} requests per minute. ` +
+        `Please wait ${Math.ceil(timeUntilReset / 1000)} seconds before trying again.`
+      );
+    }
+    
+    // Add current timestamp
+    this.requestTimestamps.push(now);
+    return true;
+  }
+
+  // Validate API key format and availability
+  validateApiKey(apiKey) {
+    if (!apiKey) {
+      throw new Error("Gemini API key is missing. Please check your .env file and ensure VITE_GEMINI_API_KEY is set.");
+    }
+    
+    // Handle undefined environment variable (shows as string "undefined")
+    if (apiKey === 'undefined' || apiKey === '${import.meta.env.VITE_GEMINI_API_KEY}') {
+      throw new Error("Environment variable VITE_GEMINI_API_KEY is not set. Please create a .env file with your Gemini API key.");
+    }
+    
+    // Basic format validation for Google API keys
+    if (!apiKey.startsWith('AIza') || apiKey.length < 35) {
+      throw new Error("Invalid Gemini API key format. Google API keys should start with 'AIza' and be at least 35 characters long.");
+    }
+    
+    // Check for common placeholder values
+    const placeholders = ['your_gemini_api_key_here', 'AIzaSyAcFSJm_B0GVn0VpQDijlQxMpLzfPeiqq8'];
+    if (placeholders.includes(apiKey)) {
+      throw new Error("Please replace the placeholder API key with your actual Gemini API key.");
+    }
+    
+    return true;
+  }
+
+  // Check API quota and availability
+  async checkApiQuota(apiKey) {
+    try {
+      console.log('🔍 Checking API quota and availability...');
+      
+      // Make a minimal test request to check quota
+      const testRequest = {
+        contents: [{ parts: [{ text: "Test" }] }],
+      };
+      
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(testRequest),
+        }
+      );
+      
+      if (response.status === 403) {
+        throw new Error("API key is invalid or has insufficient permissions. Please verify your Gemini API key and ensure it has the necessary permissions.");
+      } else if (response.status === 429) {
+        throw new Error("API quota exceeded. Please wait a few minutes before trying again or consider upgrading your API plan.");
+      }
+      
+      console.log('✅ API quota check passed');
+      return true;
+    } catch (error) {
+      console.error('❌ API quota check failed:', error);
+      throw error;
+    }
+  }
+
+  // Enhanced request with retry logic and rate limiting
+  async makeRequest(requestBody, apiKey, retryCount = 0) {
+    // Check network connectivity first
+    if (!checkNetworkStatus()) {
+      logNetworkDiagnostics();
+      throw new Error("No internet connection. Please check your network and try again.");
+    }
+
+    // Log network diagnostics on first attempt
+    if (retryCount === 0) {
+      logNetworkDiagnostics();
+    }
+
+    this.validateApiKey(apiKey);
+    
+    // Check rate limiting (only on first attempt, not on retries)
+    if (retryCount === 0) {
+      this.checkRateLimit();
+    }
+    
+    // Rate limiting: ensure minimum interval between requests
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.minRequestInterval) {
+      await this.sleep(this.minRequestInterval - timeSinceLastRequest);
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const requestOptions = {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "User-Agent": "PitchCraft/1.0"
+      },
+      body: JSON.stringify(requestBody),
+    };
+
+    try {
+      console.log(`🚀 Making Gemini API request (attempt ${retryCount + 1}/${this.maxRetries + 1})`);
+      console.log('📤 Request payload:', JSON.stringify(requestBody, null, 2));
+      
+      this.lastRequestTime = Date.now();
+      
+      // Log request details for debugging
+      APIRequestHelper.logRequestDetails(url, requestOptions);
+      
+      const response = await fetch(url, requestOptions);
+
+      console.log(`📥 Response status: ${response.status} ${response.statusText}`);
+      
+      // Log response details for debugging
+      APIRequestHelper.logRequestDetails(url, requestOptions, response);
+      
+      // Handle different HTTP status codes
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ API Error Response:', errorData);
+        
+        if (response.status === 429) {
+          // Rate limit exceeded - implement exponential backoff
+          if (retryCount < this.maxRetries) {
+            const delay = this.calculateBackoffDelay(retryCount);
+            console.log(`⏳ Rate limited. Retrying in ${delay}ms...`);
+            await this.sleep(delay);
+            return this.makeRequest(requestBody, apiKey, retryCount + 1);
+          } else {
+            throw new Error("Rate limit exceeded. Please try again in a few minutes. Consider upgrading your API quota if this persists.");
+          }
+        } else if (response.status === 403) {
+          throw new Error("API key is invalid or doesn't have sufficient permissions. Please check your Gemini API key.");
+        } else if (response.status === 400) {
+          throw new Error(`Invalid request: ${errorData.error?.message || 'Bad request format'}`);
+        } else if (response.status >= 500) {
+          // Server error - retry with backoff
+          if (retryCount < this.maxRetries) {
+            const delay = this.calculateBackoffDelay(retryCount);
+            console.log(`🔄 Server error. Retrying in ${delay}ms...`);
+            await this.sleep(delay);
+            return this.makeRequest(requestBody, apiKey, retryCount + 1);
+          } else {
+            throw new Error("Gemini API is temporarily unavailable. Please try again later.");
+          }
+        } else {
+          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+      }
+
+      const data = await response.json();
+      console.log('✅ Raw API Response:', JSON.stringify(data, null, 2));
+      
+      return this.validateAndParseResponse(data);
+      
+    } catch (error) {
+      console.error(`❌ Request failed (attempt ${retryCount + 1}):`, error);
+      
+      // Log error details for debugging
+      APIRequestHelper.logRequestDetails(url, requestOptions, null, error);
+      
+      // Network errors or other non-HTTP errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        // Log network diagnostics on network errors
+        logNetworkDiagnostics();
+        
+        if (retryCount < this.maxRetries) {
+          const delay = this.calculateBackoffDelay(retryCount);
+          console.log(`🌐 Network error. Retrying in ${delay}ms...`);
+          await this.sleep(delay);
+          return this.makeRequest(requestBody, apiKey, retryCount + 1);
+        } else {
+          throw new Error("Network connection failed. Please check your internet connection and try again.");
+        }
+      }
+      
+      throw error;
+    }
+  }
+
+  // Validate and parse API response
+  validateAndParseResponse(data) {
+    // Check for API error in response
+    if (data.error) {
+      console.error('🚨 API returned error:', data.error);
+      throw new Error(`Gemini API Error: ${data.error.message || 'Unknown error'}`);
+    }
+
+    // Validate response structure
+    if (!data.candidates || !Array.isArray(data.candidates) || data.candidates.length === 0) {
+      console.error('🚨 Invalid response structure:', data);
+      throw new Error("Invalid response from Gemini API. No candidates found.");
+    }
+
+    const candidate = data.candidates[0];
+    if (!candidate.content || !candidate.content.parts || !Array.isArray(candidate.content.parts)) {
+      console.error('🚨 Invalid candidate structure:', candidate);
+      throw new Error("Invalid response structure from Gemini API.");
+    }
+
+    const text = candidate.content.parts[0]?.text;
+    if (!text || typeof text !== 'string') {
+      console.error('🚨 No text content in response:', candidate);
+      throw new Error("No text content received from Gemini API.");
+    }
+
+    console.log('📝 Extracted text content:', text.substring(0, 200) + '...');
+    return text;
+  }
+
+  // Calculate exponential backoff delay
+  calculateBackoffDelay(retryCount) {
+    return Math.min(this.baseDelay * Math.pow(2, retryCount) + Math.random() * 1000, 30000);
+  }
+
+  // Sleep utility
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Enhanced JSON extraction and parsing
+  extractAndParseJSON(text) {
+    console.log('🔍 Attempting to extract JSON from response...');
+    
+    // Try to find JSON object in the text
+    const jsonPatterns = [
+      /\{[\s\S]*\}/,  // Standard JSON object
+      /```json\s*(\{[\s\S]*?\})\s*```/,  // JSON in code blocks
+      /```\s*(\{[\s\S]*?\})\s*```/,  // JSON in generic code blocks
+    ];
+
+    let jsonText = null;
+    for (const pattern of jsonPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        jsonText = match[1] || match[0];
+        console.log('✅ Found JSON pattern:', jsonText.substring(0, 100) + '...');
+        break;
+      }
+    }
+
+    if (!jsonText) {
+      console.error('❌ No JSON object found in response:', text);
+      throw new Error("Could not find JSON object in AI response. The AI may have returned an unexpected format.");
+    }
+
+    // Clean and parse JSON
+    try {
+      // First attempt: direct parsing
+      const parsed = JSON.parse(jsonText);
+      console.log('✅ Successfully parsed JSON on first attempt');
+      return this.validateParsedData(parsed);
+    } catch (firstError) {
+      console.log('⚠️ First parse attempt failed, trying cleanup...', firstError.message);
+      
+      try {
+        // Second attempt: clean up common issues
+        const cleaned = jsonText
+          .replace(/'\s*:\s*'/g, '": "')  // Replace single quotes around keys/values
+          .replace(/([{\[,])\s*'([^']+?)'\s*(?=[:,\]}])/g, '$1"$2"')  // Replace single quotes with double quotes
+          .replace(/,(\s*[}\]])/g, "$1")  // Remove trailing commas
+          .replace(/\n/g, ' ')  // Remove newlines
+          .replace(/\t/g, ' ')  // Remove tabs
+          .replace(/\s+/g, ' ')  // Normalize whitespace
+          .trim();
+        
+        const parsed = JSON.parse(cleaned);
+        console.log('✅ Successfully parsed JSON after cleanup');
+        return this.validateParsedData(parsed);
+      } catch (secondError) {
+        console.error('❌ JSON parsing failed after cleanup:', secondError.message);
+        console.error('🔍 Problematic JSON text:', jsonText);
+        throw new Error(`Failed to parse AI response as JSON: ${secondError.message}. Please try again.`);
+      }
+    }
+  }
+
+  // Validate parsed data structure
+  validateParsedData(data) {
+    console.log('🔍 Validating parsed data structure...');
+    
+    // Ensure required fields exist with fallbacks
+    const validated = {
+      name: data.name || "Untitled Startup",
+      tagline: data.tagline || "Transforming ideas into reality",
+      elevator_pitch: data.elevator_pitch || data.description || "An innovative startup solution.",
+      problem: data.problem || "A significant market problem that needs solving.",
+      solution: data.solution || "An innovative solution to address the problem.",
+      target_audience: {
+        description: data.target_audience?.description || "General consumers and businesses",
+        segments: Array.isArray(data.target_audience?.segments) 
+          ? data.target_audience.segments 
+          : ["Early adopters", "Tech-savvy users", "Business professionals"]
+      },
+      unique_value_proposition: data.unique_value_proposition || data.uvp || "Unique value in the market",
+      landing_copy: {
+        headline: data.landing_copy?.headline || data.name || "Welcome to the Future",
+        subheadline: data.landing_copy?.subheadline || data.tagline || "Innovation at your fingertips",
+        call_to_action: data.landing_copy?.call_to_action || "Get Started Today"
+      },
+      industry: data.industry || "Technology",
+      colors: {
+        primary: data.colors?.primary || "#3B82F6",
+        secondary: data.colors?.secondary || "#8B5CF6", 
+        accent: data.colors?.accent || "#06B6D4",
+        neutral: data.colors?.neutral || "#6B7280"
+      },
+      logo_ideas: Array.isArray(data.logo_ideas) 
+        ? data.logo_ideas 
+        : ["Modern minimalist design", "Tech-inspired icon", "Professional wordmark"]
+    };
+
+    console.log('✅ Data validation complete');
+    return validated;
+  }
+}
 
 export default function PitchForm({ user, onNavigate }) {
   const [prompt, setPrompt] = useState("");
@@ -13,6 +366,7 @@ export default function PitchForm({ user, onNavigate }) {
   const [activeTab, setActiveTab] = useState("pitch");
   const [showPreview, setShowPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [apiManager] = useState(() => new GeminiAPIManager());
 
   // Generate preview URL when landing code changes
   useEffect(() => {
@@ -50,10 +404,17 @@ export default function PitchForm({ user, onNavigate }) {
     setShowPreview(false);
 
     try {
+      console.log('🚀 Starting pitch generation process...');
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error("Gemini API key missing in .env");
+      
+      // Validate API key before proceeding
+      apiManager.validateApiKey(apiKey);
+      
+      // Check API quota and availability
+      await apiManager.checkApiQuota(apiKey);
 
       // Step 1: Get Pitch Data
+      console.log('📊 Step 1: Generating pitch data...');
       const requestBody = {
         contents: [
           {
@@ -96,49 +457,19 @@ IMPORTANT: Return ONLY the JSON object, no other text.`,
         ],
       };
 
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      const data = await resp.json();
-      console.log("Gemini Raw:", data);
-
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-      // Extract JSON
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch)
-        throw new Error("Could not find JSON object in AI response.");
-
-      const cleaned = jsonMatch[0];
-      let parsed;
-      try {
-        parsed = JSON.parse(cleaned);
-      } catch (err) {
-        const attempt = cleaned
-          .replace(/'\s*:\s*'/g, '": "')
-          .replace(/([{\[,])\s*'([^']+?)'\s*(?=[:,\]}])/g, '$1"$2"')
-          .replace(/,(\s*[}\]])/g, "$1");
-        parsed = JSON.parse(attempt);
-      }
-
-      // Ensure basic structure
-      parsed.name = parsed.name || "Untitled Startup";
-      parsed.tagline = parsed.tagline || "Transforming ideas into reality";
-      parsed.industry = parsed.industry || "Technology";
-
+      const responseText = await apiManager.makeRequest(requestBody, apiKey);
+      const parsed = apiManager.extractAndParseJSON(responseText);
+      
+      console.log('✅ Pitch data generated successfully');
       setResult(parsed);
 
-      // Generate landing page code
+      // Step 2: Generate landing page code
+      console.log('🌐 Step 2: Generating landing page code...');
       const generatedCode = await generateLandingPageCode(parsed);
       setLandingCode(generatedCode);
 
-      // Save to Supabase
+      // Step 3: Save to Supabase
+      console.log('💾 Step 3: Saving to database...');
       const { error } = await supabase.from("pitches").insert({
         user_id: user.id,
         title: parsed.name,
@@ -150,16 +481,18 @@ IMPORTANT: Return ONLY the JSON object, no other text.`,
         landing_code: generatedCode,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Database save error:', error);
+        throw new Error(`Failed to save pitch: ${error.message}`);
+      }
 
-      // Success notification
+      console.log('🎉 Pitch generation completed successfully!');
       showNotification("✅ Pitch + Website Code Generated!", "success");
+      
     } catch (err) {
-      console.error(err);
-      showNotification(
-        "❌ " + (err.message || "Something went wrong"),
-        "error"
-      );
+      console.error('❌ Pitch generation failed:', err);
+      const errorMessage = err.message || "Something went wrong. Please try again.";
+      showNotification(`❌ ${errorMessage}`, "error");
     } finally {
       setLoading(false);
     }
@@ -167,6 +500,7 @@ IMPORTANT: Return ONLY the JSON object, no other text.`,
 
   async function generateLandingPageCode(pitchData) {
     try {
+      console.log('🌐 Generating landing page code...');
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
       const websitePrompt = `Create a stunning, modern landing page HTML for: ${
@@ -195,23 +529,17 @@ Requirements:
 
 Return ONLY complete HTML code:`;
 
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: websitePrompt }] }],
-          }),
-        }
-      );
+      const requestBody = {
+        contents: [{ parts: [{ text: websitePrompt }] }],
+      };
 
-      const data = await resp.json();
-      return (
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        generateFallbackTemplate(pitchData)
-      );
+      const responseText = await apiManager.makeRequest(requestBody, apiKey);
+      console.log('✅ Landing page code generated successfully');
+      return responseText;
+      
     } catch (error) {
+      console.error('⚠️ Landing page generation failed, using fallback:', error);
+      showNotification("⚠️ Using fallback template for landing page", "warning");
       return generateFallbackTemplate(pitchData);
     }
   }
@@ -355,21 +683,46 @@ Return ONLY complete HTML code:`;
 
   function showNotification(message, type) {
     const el = document.createElement("div");
-    el.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 font-semibold backdrop-blur-sm border animate-fade-in-right ${
-      type === "success" ? "status-success" : "status-error"
-    }`;
+    
+    // Enhanced notification styling with support for warning type
+    let statusClass, icon;
+    switch (type) {
+      case "success":
+        statusClass = "status-success";
+        icon = "✅";
+        break;
+      case "warning":
+        statusClass = "bg-yellow-100 text-yellow-800 border-yellow-300";
+        icon = "⚠️";
+        break;
+      case "error":
+      default:
+        statusClass = "status-error";
+        icon = "❌";
+        break;
+    }
+    
+    el.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 font-semibold backdrop-blur-sm border animate-fade-in-right ${statusClass}`;
     el.innerHTML = `
       <div class="flex items-center">
-        <span class="mr-3 text-lg">${type === "success" ? "✅" : "❌"}</span>
+        <span class="mr-3 text-lg">${icon}</span>
         <span>${message}</span>
+        <button class="ml-4 text-lg opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.parentElement.remove()">×</button>
       </div>
     `;
     document.body.appendChild(el);
+    
+    // Auto-remove after delay (longer for errors and warnings)
+    const delay = type === "error" || type === "warning" ? 6000 : 4000;
     setTimeout(() => {
-      el.style.opacity = "0";
-      el.style.transform = "translateX(100%)";
-      setTimeout(() => el.remove(), 300);
-    }, 4000);
+      if (el.parentNode) {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(100%)";
+        setTimeout(() => {
+          if (el.parentNode) el.remove();
+        }, 300);
+      }
+    }, delay);
   }
 
   // ✅ COMPLETE PITCH DETAILS COMPONENT
@@ -951,39 +1304,56 @@ Return ONLY complete HTML code:`;
             </div>
 
             <SpecialButton
+              type="submit"
               disabled={loading}
               className="w-full py-4 sm:py-5 text-sm sm:text-base"
             >
-              {loading ? (
-                <div className="flex items-center justify-center space-x-2 sm:space-x-3">
+              <AnimatePresence mode="wait">
+                {loading ? (
                   <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 1,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full"
-                  />
-                  <span className="hidden sm:inline">
-                    AI is crafting your startup...
-                  </span>
-                  <span className="sm:hidden">Generating...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center space-x-2 sm:space-x-3">
-                  <motion.span
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    key="loading"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    className="flex items-center justify-center space-x-2 sm:space-x-3"
                   >
-                    ✨
-                  </motion.span>
-                  <span className="hidden sm:inline">
-                    Generate Complete Startup Package
-                  </span>
-                  <span className="sm:hidden">Generate Package</span>
-                </div>
-              )}
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                      className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full"
+                    />
+                    <span className="hidden sm:inline">
+                      AI is crafting your startup...
+                    </span>
+                    <span className="sm:hidden">Generating...</span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="idle"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    className="flex items-center justify-center space-x-2 sm:space-x-3"
+                  >
+                    <motion.span
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      ✨
+                    </motion.span>
+                    <span className="hidden sm:inline">
+                      Generate Complete Startup Package
+                    </span>
+                    <span className="sm:hidden">Generate Package</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </SpecialButton>
           </form>
         </motion.div>
@@ -999,7 +1369,7 @@ Return ONLY complete HTML code:`;
             >
               {/* Enhanced Tabs */}
               <motion.div
-                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg"
+                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg"cl
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
