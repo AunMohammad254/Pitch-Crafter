@@ -109,18 +109,29 @@ export default function MyPitches({ user, onNavigate }) {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center py-12 sm:py-16">
-          <div className="loading-spinner mx-auto mb-4 sm:mb-6"></div>
-          <h2 className="text-xl sm:text-2xl font-primary font-bold text-neutral-700 mb-2">Loading Your Pitches</h2>
-          <p className="text-sm sm:text-base text-neutral-600 font-medium">Gathering your startup portfolio...</p>
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100"
+           style={{
+             background: 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e0f2fe 50%, #dbeafe 75%, #e0e7ff 100%)',
+             minHeight: '100vh'
+           }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center py-12 sm:py-16">
+            <div className="loading-spinner mx-auto mb-4 sm:mb-6"></div>
+            <h2 className="text-xl sm:text-2xl font-primary font-bold text-neutral-700 mb-2">Loading Your Pitches</h2>
+            <p className="text-sm sm:text-base text-neutral-600 font-medium">Gathering your startup portfolio...</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100"
+         style={{
+           background: 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e0f2fe 50%, #dbeafe 75%, #e0e7ff 100%)',
+           minHeight: '100vh'
+         }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -130,7 +141,7 @@ export default function MyPitches({ user, onNavigate }) {
         <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6 mb-6 lg:mb-0">
           <motion.div 
             whileHover={{ scale: 1.1, rotate: 5 }}
-            className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center shadow-xl mx-auto sm:mx-0"
+            className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center shadow-xl mx-auto sm:mx-0"
           >
             <span className="text-white text-2xl sm:text-3xl">📋</span>
           </motion.div>
@@ -256,7 +267,7 @@ export default function MyPitches({ user, onNavigate }) {
           animate={{ opacity: 1, scale: 1 }}
           className="card-glass p-8 sm:p-12 lg:p-16 text-center animate-fade-in-up"
         >
-          <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 bg-linear-to-br from-primary-100 to-secondary-100 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8">
             <span className="text-4xl sm:text-6xl">💡</span>
           </div>
           <h3 className="text-2xl sm:text-3xl font-primary font-bold text-neutral-700 mb-3 sm:mb-4">No Pitches Found</h3>
@@ -308,6 +319,7 @@ export default function MyPitches({ user, onNavigate }) {
         )}
         
       </AnimatePresence>
+      </div>
     </div>
   )
 }
@@ -341,7 +353,7 @@ function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
             {data?.tagline || "No tagline available"}
           </p>
         </div>
-        <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-4 flex-shrink-0">
+        <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-4 shrink-0">
           <span className="status-indicator bg-accent-100 text-accent-700 border-accent-200 text-xs px-2 py-1">
             🚀 <span className="hidden sm:inline">Active</span>
           </span>
@@ -405,7 +417,7 @@ function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
               e.stopPropagation()
               onDelete()
             }}
-            className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors flex-shrink-0"
+            className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors shrink-0"
             title="Delete Pitch"
           >
             🗑️
@@ -436,7 +448,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className=" bg-gradient-to-br from-cyan-700 to-blue-800 p-4 sm:p-6 lg:p-8 text-white bg-clip-padding backdrop-filter backdrop-blur-sm mt-10 rounded-t-xl">
+        <div className=" bg-linear-to-br from-cyan-700 to-blue-800 p-4 sm:p-6 lg:p-8 text-white bg-clip-padding backdrop-filter backdrop-blur-sm mt-10 rounded-t-xl">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-2 sm:pr-4">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold mb-2 sm:mb-3 line-clamp-2">{d?.name || "Untitled Pitch"}</h2>
@@ -459,7 +471,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors text-lg sm:text-xl lg:text-2xl border border-white/30 flex-shrink-0"
+              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors text-lg sm:text-xl lg:text-2xl border border-white/30 shrink-0"
             >
               ✕
             </motion.button>
@@ -467,7 +479,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
         </div>
 
         {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10 bg-gradient-to-br from-blue-400 to-blue-200">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10 bg-linear-to-br from-blue-400 to-blue-200">
           {/* Elevator Pitch */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
@@ -475,10 +487,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
             transition={{ delay: 0.1 }}
           >
             <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-              <span className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
+              <span className="w-12 h-12 bg-linear-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
               <span>Elevator Pitch</span>
             </h3>
-            <div className="card-glass p-8 bg-gradient-to-br from-primary-50 to-secondary-50 border-primary-200">
+            <div className="card-glass p-8 bg-linear-to-br from-primary-50 to-secondary-50 border-primary-200">
               <p className="text-neutral-700 text-lg leading-relaxed font-medium">{d?.elevator_pitch || "No elevator pitch available"}</p>
             </div>
           </motion.section>
@@ -491,10 +503,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               transition={{ delay: 0.2 }}
             >
               <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🧩</span>
-                <span>The Problem</span>
-              </h3>
-              <div className="rounded-xl card-glass p-8 bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
+                <span className="w-12 h-12 bg-linear-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🧩</span>
+              <span>Problem</span>
+            </h3>
+            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-red-50 to-pink-50 border-red-200">
                 <p className="text-neutral-700 leading-relaxed font-medium">{d?.problem || "No problem description available"}</p>
               </div>
             </motion.section>
@@ -505,10 +517,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               transition={{ delay: 0.3 }}
             >
               <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">💡</span>
-                <span>Our Solution</span>
-              </h3>
-              <div className="rounded-xl card-glass p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                <span className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">💡</span>
+              <span>Solution</span>
+            </h3>
+            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-green-50 to-emerald-50 border-green-200">
                 <p className="text-neutral-700 leading-relaxed font-medium">{d?.solution || "No solution description available"}</p>
               </div>
             </motion.section>
@@ -522,10 +534,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               transition={{ delay: 0.4 }}
             >
               <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">💎</span>
-                <span>Unique Value Proposition</span>
-              </h3>
-              <div className="rounded-xl card-glass p-8 bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200">
+                <span className="w-12 h-12 bg-linear-to-br from-yellow-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">💎</span>
+              <span>Value Proposition</span>
+            </h3>
+            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-yellow-50 to-amber-50 border-yellow-200">
                 <p className="text-neutral-700 text-xl font-bold leading-relaxed">{d.unique_value_proposition}</p>
               </div>
             </motion.section>
@@ -539,10 +551,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               transition={{ delay: 0.5 }}
             >
               <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
-                <span>Target Audience</span>
-              </h3>
-              <div className="rounded-xl card-glass p-8 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+                <span className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
+              <span>Target Market</span>
+            </h3>
+            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-indigo-50 to-purple-50 border-indigo-200">
                 <p className="text-neutral-700 mb-6 text-lg font-medium leading-relaxed">{d.target_audience.description}</p>
                 {Array.isArray(d.target_audience.segments) && (
                   <div className="flex flex-wrap gap-3">
@@ -573,7 +585,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 transition={{ delay: 0.6 }}
               >
                 <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                  <span className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center text-white text-xl">🎨</span>
+                  <span className="w-12 h-12 bg-linear-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center text-white text-xl">🎨</span>
                   <span>Color Palette</span>
                 </h3>
                 <div className="card-glass p-8">
@@ -607,7 +619,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 transition={{ delay: 0.7 }}
               >
                 <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                  <span className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">🚀</span>
+                  <span className="w-12 h-12 bg-linear-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">🚀</span>
                   <span>Logo Concepts</span>
                 </h3>
                 <div className="card-glass p-8">
@@ -618,9 +630,9 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.8 + i * 0.1 }}
-                        className="flex items-center space-x-4 bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-200 hover:shadow-md transition-shadow"
+                        className="flex items-center space-x-4 bg-linear-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-200 hover:shadow-md transition-shadow"
                       >
-                        <span className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-white text-sm">✦</span>
+                        <span className="w-8 h-8 bg-linear-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-white text-sm">✦</span>
                         <span className="text-neutral-700 font-medium">{idea}</span>
                       </motion.li>
                     ))}
@@ -638,10 +650,10 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               transition={{ delay: 0.8 }}
             >
               <h3 className="text-3xl font-primary font-bold text-neutral-800 mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🌐</span>
+                <span className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🌐</span>
                 <span>Landing Page Copy</span>
               </h3>
-              <div className="rounded-xl card-glass p-8 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 space-y-6">
+              <div className="rounded-xl card-glass p-8 bg-linear-to-r from-purple-50 to-pink-50 border-purple-200 space-y-6">
                 <div>
                   <p className="text-sm font-primary font-bold text-purple-700 mb-3 flex items-center">
                     <span className="mr-2">📢</span>
@@ -676,7 +688,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onPreview}
-                className="btn-primary px-6 py-4 text-lg font-primary font-bold shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 flex items-center space-x-2"
+                className="btn-primary px-6 py-4 text-lg font-primary font-bold shadow-xl hover:shadow-2xl transition-all duration-300 bg-linear-to-r from-green-500 to-emerald-600 flex items-center space-x-2"
               >
                 <span>🌐</span>
                 <span>Preview Landing Page</span>
@@ -695,7 +707,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                     setTimeout(() => el.remove(), 3000)
                   }
                 }}
-                className="btn-secondary px-6 py-3 text-lg font-primary font-bold shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 flex items-center space-x-1"
+                className="btn-secondary px-6 py-3 text-lg font-primary font-bold shadow-xl hover:shadow-2xl transition-all duration-300 bg-linear-to-r from-blue-500 to-purple-600 text-white border-0 flex items-center space-x-1"
               >
                 <span>📋</span>
                 <span>Copy Code</span>
@@ -707,7 +719,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onDelete}
-                className="px-6 py-3 ml-2 text-lg font-primary font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-pink-600 text-white border-0 flex items-center space-x-1"
+                className="px-6 py-3 ml-2 text-lg font-primary font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-linear-to-r from-red-500 to-pink-600 text-white border-0 flex items-center space-x-1"
               >
                 <span>🗑️</span>
                 <span>Delete Pitch</span>
@@ -717,7 +729,7 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onClose}
-                className="px-6 py-4 text-lg font-primary font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-neutral-500 to-neutral-600 text-white border-0"
+                className="px-6 py-4 text-lg font-primary font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-linear-to-r from-neutral-500 to-neutral-600 text-white border-0"
               >
                 Close
               </motion.button>

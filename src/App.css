@@ -30,8 +30,25 @@
 
 .nav-button.active {
   background: var(--gradient-primary);
-  color: white;
+  color: #000000 !important;
   box-shadow: var(--shadow-lg);
+}
+
+/* Ensure black text color persists across all states for active buttons */
+.nav-button.active:hover {
+  color: #000000 !important;
+}
+
+.nav-button.active:focus {
+  color: #000000 !important;
+}
+
+.nav-button.active:active {
+  color: #000000 !important;
+}
+
+.nav-button.active * {
+  color: #000000 !important;
 }
 
 .nav-button.active::before {

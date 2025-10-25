@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
+import { LinkButton, PrimaryButton } from "./Button";
+import SpecialButton from "./GenerateButton";
 import LogoIcon from "../assets/logo.svg";
 
 export default function PitchForm({ user, onNavigate }) {
@@ -851,13 +853,13 @@ Return ONLY complete HTML code:`;
         >
           {/* Navigation Bar */}
           <div className="flex items-center justify-between mb-6 sm:mb-8">
-            <button
+            <LinkButton
               onClick={() => onNavigate && onNavigate("my-pitches")}
-              className="flex items-center space-x-2 text-neutral-600 hover:text-primary-600 transition-colors"
+              className="flex items-center space-x-2"
             >
               <span className="text-lg">←</span>
               <span className="font-medium">Back to My Pitches</span>
-            </button>
+            </LinkButton>
 
             {/* Step Indicators */}
             <div className="flex items-center space-x-2 sm:space-x-4">
@@ -948,15 +950,9 @@ Return ONLY complete HTML code:`;
               />
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <SpecialButton
               disabled={loading}
-              className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-white shadow-2xl transition-all duration-300 relative overflow-hidden text-sm sm:text-base ${
-                loading
-                  ? "bg-linear-to-r from-gray-400 to-gray-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 hover:shadow-blue-500/25"
-              }`}
+              className="w-full py-4 sm:py-5 text-sm sm:text-base"
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2 sm:space-x-3">
@@ -988,7 +984,7 @@ Return ONLY complete HTML code:`;
                   <span className="sm:hidden">Generate Package</span>
                 </div>
               )}
-            </motion.button>
+            </SpecialButton>
           </form>
         </motion.div>
 
@@ -1022,21 +1018,16 @@ Return ONLY complete HTML code:`;
                     icon: "🚀",
                   },
                 ].map((tab) => (
-                  <motion.button
+                  <PrimaryButton
                     key={tab.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 text-sm sm:text-base ${
-                      activeTab === tab.id
-                        ? "bg-white text-blue-600 shadow-lg"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
-                    }`}
+                    variant={activeTab === tab.id ? "primary" : "secondary"}
+                    className="px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-center space-x-2 text-sm sm:text-base"
                   >
                     <span>{tab.icon}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
                     <span className="sm:hidden">{tab.shortLabel}</span>
-                  </motion.button>
+                  </PrimaryButton>
                 ))}
               </motion.div>
 
