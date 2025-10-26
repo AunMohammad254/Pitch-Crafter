@@ -340,19 +340,7 @@ body {
   transform: translateY(-2px);
 }
 
-.card {
-  background: white;
-  border-radius: var(--radius-2xl);
-  padding: var(--space-6);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-neutral-200);
-  transition: all var(--transition-normal);
-}
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-2xl);
-}
 
 .input-field {
   width: 100%;
@@ -376,9 +364,5 @@ body {
     --text-4xl: 2rem;
     --text-5xl: 2.5rem;
     --text-6xl: 3rem;
-  }
-  
-  .card {
-    padding: var(--space-4);
   }
 }

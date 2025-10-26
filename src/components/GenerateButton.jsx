@@ -1,10 +1,22 @@
-import React from 'react';
 import styled from 'styled-components';
 
-const Button = () => {
+const Button = ({ 
+  type = "button", 
+  disabled = false, 
+  onClick, 
+  className = "", 
+  children,
+  ...props 
+}) => {
   return (
-    <StyledWrapper>
-      <button className="uiverse">
+    <StyledWrapper className={className}>
+      <button 
+        type={type}
+        disabled={disabled}
+        onClick={onClick}
+        className="uiverse"
+        {...props}
+      >
         <div className="wrapper">
           <span>Generate Pitch</span>
           <div className="circle circle-12" />
@@ -99,6 +111,26 @@ const StyledWrapper = styled.div`
       position: relative;
     display: inline-block;
     z-index: 1;
+  }
+
+  .uiverse .wrapper .button-content {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .uiverse:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(0.3);
+  }
+
+  .uiverse:disabled:hover {
+    transform: none;
+    box-shadow: 0 0 14px var(--c-shadow);
+    filter: grayscale(0.3);
   }
 
   .uiverse:hover {

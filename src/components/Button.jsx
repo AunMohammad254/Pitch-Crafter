@@ -1,5 +1,3 @@
-import React from "react";
-
 // NavButton - Based on fuzzy-bullfrog-72 design pattern
 export const NavButton = ({
   children,
@@ -71,7 +69,7 @@ export const NavButton = ({
       tabIndex={disabled ? -1 : 0}
       {...props}
     >
-      <span className={`relative z-10 flex items-center justify-center gap-1 sm:gap-2 ${active ? 'text-black' : ''}`} style={active ? { color: '#000000 !important' } : {}}>
+      <span className={`relative z-10 flex items-center justify-center gap-1 sm:gap-2 ${active ? 'text-black' : ''}`}style={active ? { color: '#000000 !important' } : {}}>
         {children}
       </span>
 
@@ -195,99 +193,7 @@ export const PrimaryButton = ({
   );
 };
 
-// SpecialButton - Based on young-newt-20 design pattern (for special focus button)
-export const SpecialButton = ({
-  children,
-  onClick,
-  onKeyDown,
-  className = "",
-  disabled = false,
-  loading = false,
-  type = "button",
-  "aria-label": ariaLabel,
-  ...props
-}) => {
-  const baseClasses = `
-    relative px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-bold rounded-2xl
-    transition-all duration-300 ease-in-out transform min-h-[48px] sm:min-h-[52px]
-    focus:outline-none focus:ring-4 focus:ring-primary-300 focus:ring-offset-2
-    focus-visible:ring-4 focus-visible:ring-primary-300 focus-visible:ring-offset-2
-    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:pointer-events-none
-    overflow-hidden group cursor-pointer select-none
-    bg-gradient-to-r from-primary-500 via-secondary-500 to-primary-600
-    text-white shadow-2xl border border-primary-400/30
-    hover:shadow-3xl hover:scale-110 
-    active:scale-95 active:text-black active:border-blue-500 active:border-2
-    active:bg-gradient-to-r active:from-primary-400 active:via-secondary-400 active:to-primary-500
-    active:shadow-xl active:transition-all active:duration-150
-    flex items-center justify-center
-    before:absolute before:inset-0 before:bg-gradient-to-r 
-    before:from-primary-400 before:via-secondary-400 before:to-primary-500
-    before:opacity-0 hover:before:opacity-100 before:transition-all before:duration-500
-    after:absolute after:inset-0 after:bg-white/10 after:opacity-0 
-    hover:after:opacity-100 after:transition-opacity after:duration-300
-  `;
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onClick?.(e);
-    }
-    onKeyDown?.(e);
-  };
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      className={`${baseClasses} ${className}`}
-      disabled={disabled || loading}
-      aria-label={ariaLabel}
-      aria-busy={loading}
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      {...props}
-    >
-      {/* Animated background layers */}
-      <div
-        className="absolute inset-0 bg-linear-to-r from-primary-600 to-secondary-600 
-                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-      ></div>
-
-      {/* Glow effect */}
-      <div
-        className="absolute -inset-1 bg-linear-to-r from-primary-400 to-secondary-400 
-                      opacity-0 group-hover:opacity-75 blur-lg transition-all duration-500 
-                      group-hover:scale-110 pointer-events-none"
-      ></div>
-
-      <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3 group-active:text-black transition-colors duration-150">
-        {loading && (
-          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
-        )}
-        {children}
-      </span>
-
-      {/* Multiple shimmer effects */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-        <div
-          className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent 
-                        transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
-                        transition-transform duration-1200 ease-out"
-        ></div>
-      </div>
-
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200 pointer-events-none">
-        <div
-          className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent 
-                        transform skew-x-12 translate-x-full group-hover:-translate-x-full 
-                        transition-transform duration-1000 ease-out"
-        ></div>
-      </div>
-    </button>
-  );
-};
 
 // LinkButton - For text-based buttons
 export const LinkButton = ({
@@ -390,7 +296,7 @@ export const MobileMenuButton = ({
       tabIndex={disabled ? -1 : 0}
       {...props}
     >
-      <span className={`relative z-10 flex items-center w-full gap-2 sm:gap-3 ${active ? 'text-black' : ''}`} style={active ? { color: '#000000 !important' } : {}}>{children}</span>
+      <span className={`relative z-10 flex items-center w-full gap-2 sm:gap-3 ${active ? 'text-black' : ''}`}style={active ? { color: '#000000 !important' } : {}}>{children}</span>
 
       {/* Subtle glow for active state */}
       {active && (
@@ -418,7 +324,6 @@ export const MobileMenuButton = ({
 export default {
   NavButton,
   PrimaryButton,
-  SpecialButton,
   LinkButton,
   MobileMenuButton,
 };

@@ -54,7 +54,7 @@ export default defineConfig({
   },
   // Define environment variables for better API handling
   define: {
-    __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
+    __DEV__: JSON.stringify(true), // Default to development mode
     __API_TIMEOUT__: JSON.stringify(30000), // 30 seconds
     __MAX_RETRIES__: JSON.stringify(3)
   },

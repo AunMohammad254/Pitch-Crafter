@@ -47,99 +47,19 @@ export class NetworkMonitor {
     return this.isOnline;
   }
 
-  // Get network quality assessment
-  getNetworkQuality() {
-    const { effectiveType, rtt, downlink } = this.connectionType;
-    
-    if (effectiveType === '4g' && rtt < 100 && downlink > 10) {
-      return 'excellent';
-    } else if (effectiveType === '4g' || (rtt < 200 && downlink > 5)) {
-      return 'good';
-    } else if (effectiveType === '3g' || (rtt < 500 && downlink > 1)) {
-      return 'fair';
-    } else {
-      return 'poor';
-    }
-  }
-
   // Log network diagnostics
   logNetworkDiagnostics() {
     console.group('🔍 Network Diagnostics');
     console.log('Online Status:', this.isOnline);
     console.log('Connection Type:', this.connectionType);
-    console.log('Network Quality:', this.getNetworkQuality());
     console.log('User Agent:', navigator.userAgent);
     console.log('Timestamp:', new Date().toISOString());
     console.groupEnd();
   }
 }
 
-// CORS and API request utilities
+// API request utilities
 export class APIRequestHelper {
-  static async testCORS(url) {
-    try {
-      console.log(`🔍 Testing CORS for: ${url}`);
-      
-      const response = await fetch(url, {
-        method: 'OPTIONS',
-        headers: {
-          'Origin': window.location.origin,
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type'
-        }
-      });
-
-      console.log('✅ CORS test response:', {
-        status: response.status,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-
-      return response.ok;
-    } catch (error) {
-      console.error('❌ CORS test failed:', error);
-      return false;
-    }
-  }
-
-  static async testAPIEndpoint(url, apiKey) {
-    try {
-      console.log(`🔍 Testing API endpoint: ${url}`);
-      
-      const testPayload = {
-        contents: [{ parts: [{ text: "test" }] }]
-      };
-
-      const response = await fetch(`${url}?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testPayload)
-      });
-
-      const responseData = await response.text();
-      
-      console.log('🔍 API endpoint test result:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        responsePreview: responseData.substring(0, 200) + '...'
-      });
-
-      return {
-        success: response.ok,
-        status: response.status,
-        statusText: response.statusText,
-        response: responseData
-      };
-    } catch (error) {
-      console.error('❌ API endpoint test failed:', error);
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
 
   static logRequestDetails(url, options, response = null, error = null) {
     console.group('📡 API Request Details');
@@ -153,7 +73,7 @@ export class APIRequestHelper {
           ? options.body.substring(0, 200) + '...'
           : JSON.stringify(options.body).substring(0, 200) + '...';
         console.log('Body Preview:', bodyPreview);
-      } catch (e) {
+      } catch {
         console.log('Body:', '[Unable to preview]');
       }
     }
@@ -177,5 +97,4 @@ export const networkMonitor = new NetworkMonitor();
 
 // Export utility functions
 export const checkNetworkStatus = () => networkMonitor.isNetworkAvailable();
-export const getNetworkQuality = () => networkMonitor.getNetworkQuality();
 export const logNetworkDiagnostics = () => networkMonitor.logNetworkDiagnostics();

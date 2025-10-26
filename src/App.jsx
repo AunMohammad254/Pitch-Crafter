@@ -94,7 +94,7 @@ export default function App() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-2 animate-fade-in-right shrink-0">
-              <div className="flex items-center bg-white/60 backdrop-blur-sm rounded-2xl p-1 border border-white/80">
+              <div className="flex items-center bg-white/60 backdrop-blur-sm rounded-2xl p-1 border border-white/80 gap-4">
                 <NavButton
                   onClick={() => setCurrentView("generate")}
                   onKeyDown={(e) => e.key === 'Enter' && setCurrentView("generate")}
@@ -165,7 +165,7 @@ export default function App() {
                     <span className="mr-3 text-lg">✨</span>
                     <div className="flex-1 text-left">
                       <div className="font-semibold">Generate Pitch</div>
-                      <div className={`text-xs ${currentView === "generate" ? "text-white/80" : "text-neutral-500"}`}>
+                      <div className={`text-xs ${currentView === "generate" ? "text-black/80" : "text-neutral-500"}`}>
                         Create a new startup pitch
                       </div>
                     </div>
@@ -189,7 +189,7 @@ export default function App() {
                     <span className="mr-3 text-lg">📚</span>
                     <div className="flex-1 text-left">
                       <div className="font-semibold">My Pitches</div>
-                      <div className={`text-xs ${currentView === "my-pitches" ? "text-white/80" : "text-neutral-500"}`}>
+                      <div className={`text-xs ${currentView === "my-pitches" ? "text-black/80" : "text-neutral-500"}`}>
                         View and manage your pitches
                       </div>
                     </div>

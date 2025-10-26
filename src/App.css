@@ -10,6 +10,15 @@
   animation: spin 1s linear infinite;
 }
 
+.loading-spinner-sm {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--color-primary-200);
+  border-top: 2px solid var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
 /* Navigation enhancements */
 .nav-glass {
   background: rgba(255, 255, 255, 0.85);

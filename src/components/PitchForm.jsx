@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { LinkButton, PrimaryButton } from "./Button";
 import SpecialButton from "./GenerateButton";
 import LogoIcon from "../assets/logo.svg";
-import { networkMonitor, APIRequestHelper, checkNetworkStatus, logNetworkDiagnostics } from "../utils/networkUtils";
+import { APIRequestHelper, checkNetworkStatus, logNetworkDiagnostics } from "../utils/networkUtils";
 
 // API Rate Limiting and Request Queue Management
 class GeminiAPIManager {
@@ -300,7 +300,7 @@ class GeminiAPIManager {
         // Second attempt: clean up common issues
         const cleaned = jsonText
           .replace(/'\s*:\s*'/g, '": "')  // Replace single quotes around keys/values
-          .replace(/([{\[,])\s*'([^']+?)'\s*(?=[:,\]}])/g, '$1"$2"')  // Replace single quotes with double quotes
+          .replace(/([{[,])\s*'([^']+?)'\s*(?=[:,\]}])/g, '$1"$2"')  // Replace single quotes with double quotes
           .replace(/,(\s*[}\]])/g, "$1")  // Remove trailing commas
           .replace(/\n/g, ' ')  // Remove newlines
           .replace(/\t/g, ' ')  // Remove tabs
@@ -368,21 +368,21 @@ export default function PitchForm({ user, onNavigate }) {
   const [previewUrl, setPreviewUrl] = useState("");
   const [apiManager] = useState(() => new GeminiAPIManager());
 
-  // Generate preview URL when landing code changes
-  useEffect(() => {
-    if (landingCode && !previewUrl) {
-      generatePreview();
-    }
-  }, [landingCode]);
-
-  const generatePreview = () => {
+  const generatePreview = useCallback(() => {
     if (!landingCode) return;
 
     // Create blob from HTML code
     const blob = new Blob([landingCode], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     setPreviewUrl(url);
-  };
+  }, [landingCode]);
+
+  // Generate preview URL when landing code changes
+  useEffect(() => {
+    if (landingCode && !previewUrl) {
+      generatePreview();
+    }
+  }, [landingCode, previewUrl, generatePreview]);
 
   const openPreview = () => {
     if (!previewUrl) {
@@ -1341,7 +1341,7 @@ Return ONLY complete HTML code:`;
                     transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="flex items-center justify-center space-x-2 sm:space-x-3"
                   >
-                    <motion.span
+                    {/* <motion.span
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
@@ -1350,7 +1350,7 @@ Return ONLY complete HTML code:`;
                     <span className="hidden sm:inline">
                       Generate Complete Startup Package
                     </span>
-                    <span className="sm:hidden">Generate Package</span>
+                    <span className="sm:hidden">Generate Package</span> */}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1369,7 +1369,7 @@ Return ONLY complete HTML code:`;
             >
               {/* Enhanced Tabs */}
               <motion.div
-                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg"cl
+                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg text-black"clcl
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -1392,7 +1392,7 @@ Return ONLY complete HTML code:`;
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     variant={activeTab === tab.id ? "primary" : "secondary"}
-                    className="px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-center space-x-2 text-sm sm:text-base"
+                    className={`px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-center space-x-2 text-sm sm:text-base`}
                   >
                     <span>{tab.icon}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
