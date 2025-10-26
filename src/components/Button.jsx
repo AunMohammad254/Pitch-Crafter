@@ -217,8 +217,7 @@ export const LinkButton = ({
     focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-current focus:rounded-sm
     focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-current
     disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
-    hover:scale-105 active:scale-95 cursor-pointer select-none
-    hover:underline focus:underline min-h-[24px] py-1 px-1
+    hover:scale-105 active:scale-95 cursor-pointer select-none min-h-[24px] py-1 px-1
     relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 
     after:bg-current after:transition-all after:duration-300
     hover:after:w-full focus:after:w-full
