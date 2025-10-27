@@ -142,7 +142,7 @@ class GeminiAPIManager {
     };
 
     try {
-      console.log(`🚀 Making Gemini API request (attempt ${retryCount + 1}/${this.maxRetries + 1})`);
+      console.log(`���0 Making Gemini API request (attempt ${retryCount + 1}/${this.maxRetries + 1})`);
       console.log('📤 Request payload:', JSON.stringify(requestBody, null, 2));
       
       this.lastRequestTime = Date.now();
@@ -743,7 +743,7 @@ Return ONLY complete HTML code:`;
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold gradient-text mb-2 sm:mb-3">
                 {data.name}
               </h2>
-              <p className="text-lg sm:text-xl text-neutral-600 font-medium mb-3 sm:mb-4">
+              <p className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 text-white">
                 {data.tagline}
               </p>
             </div>
@@ -784,11 +784,11 @@ Return ONLY complete HTML code:`;
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 🎯
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
                 Elevator Pitch
               </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+            <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
               {data.elevator_pitch}
             </p>
           </motion.div>
@@ -805,11 +805,11 @@ Return ONLY complete HTML code:`;
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 💎
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
+              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
                 Unique Value Proposition
               </h3>
             </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+            <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
               {data.unique_value_proposition}
             </p>
           </motion.div>
@@ -826,13 +826,13 @@ Return ONLY complete HTML code:`;
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 🧩
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
-                The Problem
-              </h3>
-            </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
-              {data.problem}
-            </p>
+              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
+                  The Problem
+                </h3>
+              </div>
+              <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
+                {data.problem}
+              </p>
           </motion.div>
 
           {/* Solution */}
@@ -847,11 +847,11 @@ Return ONLY complete HTML code:`;
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
                 💡
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-neutral-800">
-                Our Solution
-              </h3>
-            </div>
-            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
+              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
+                  Our Solution
+                </h3>
+              </div>
+              <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
               {data.solution}
             </p>
           </motion.div>
@@ -869,7 +869,7 @@ Return ONLY complete HTML code:`;
             <span className="mr-2 sm:mr-3 text-xl sm:text-2xl">🎯</span>
             Target Audience
           </h3>
-          <p className="text-sm sm:text-base text-neutral-700 mb-3 sm:mb-4 font-medium">
+          <p className="text-sm sm:text-base mb-3 sm:mb-4 font-medium text-white">
             {data.target_audience?.description}
           </p>
           {data.target_audience?.segments && (
@@ -905,7 +905,7 @@ Return ONLY complete HTML code:`;
                   <span className="mr-1.5 sm:mr-2">🎯</span>
                   Headline
                 </h4>
-                <p className="text-sm sm:text-base text-neutral-700 font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed">
+                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
                   {data.landing_copy.headline}
                 </p>
               </div>
@@ -915,7 +915,7 @@ Return ONLY complete HTML code:`;
                   <span className="mr-1.5 sm:mr-2">📢</span>
                   Subheadline
                 </h4>
-                <p className="text-sm sm:text-base text-neutral-700 font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed">
+                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
                   {data.landing_copy.subheadline}
                 </p>
               </div>
@@ -925,7 +925,7 @@ Return ONLY complete HTML code:`;
                   <span className="mr-1.5 sm:mr-2">🚀</span>
                   Call to Action
                 </h4>
-                <p className="text-sm sm:text-base text-neutral-700 font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed">
+                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
                   {data.landing_copy.call_to_action}
                 </p>
               </div>
@@ -942,7 +942,7 @@ Return ONLY complete HTML code:`;
                       className="flex items-start space-x-2 mb-2 last:mb-0"
                     >
                       <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-secondary-500 rounded-full mt-1.5 sm:mt-2 shrink-0"></span>
-                      <span className="text-neutral-700 font-medium text-xs sm:text-sm leading-relaxed">
+                      <span className="font-medium text-xs sm:text-sm leading-relaxed text-gray-800">
                         {feature}
                       </span>
                     </div>
@@ -963,7 +963,7 @@ Return ONLY complete HTML code:`;
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <h3 className="text-base sm:text-lg font-primary font-bold text-neutral-800 mb-3 sm:mb-4 flex items-center">
+              <h3 className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center text-white">
                 <span className="mr-2">🎨</span>
                 Brand Colors
               </h3>
@@ -978,10 +978,10 @@ Return ONLY complete HTML code:`;
                       style={{ backgroundColor: color }}
                     ></div>
                     <div className="min-w-0">
-                      <p className="font-medium text-xs sm:text-sm text-neutral-700 capitalize truncate">
+                      <p className="font-medium text-xs sm:text-sm capitalize truncate text-white">
                         {name}
                       </p>
-                      <p className="text-xs text-neutral-500 font-mono truncate">
+                      <p className="text-xs font-mono truncate text-gray-300">
                         {color}
                       </p>
                     </div>
@@ -999,7 +999,7 @@ Return ONLY complete HTML code:`;
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <h3 className="text-base sm:text-lg font-primary font-bold text-neutral-800 mb-3 sm:mb-4 flex items-center">
+              <h3 className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center text-white">
                 <span className="mr-2">🎭</span>
                 Logo Ideas
               </h3>
@@ -1012,7 +1012,7 @@ Return ONLY complete HTML code:`;
                     <span className="text-base sm:text-lg shrink-0 mt-0.5">
                       💡
                     </span>
-                    <p className="text-xs sm:text-sm font-medium text-neutral-700 leading-relaxed">
+                    <p className="text-xs sm:text-sm font-medium leading-relaxed text-white">
                       {idea}
                     </p>
                   </div>
@@ -1043,7 +1043,7 @@ Return ONLY complete HTML code:`;
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 rounded-full"></div>
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full"></div>
             </div>
-            <h3 className="font-primary font-bold text-sm sm:text-base text-neutral-800 flex items-center">
+            <h3 className="font-primary font-bold text-sm sm:text-base flex items-center text-white">
               <span className="mr-2 sm:mr-3 text-lg sm:text-xl">🌐</span>
               <span className="hidden sm:inline">
                 Generated Landing Page Code
@@ -1117,7 +1117,22 @@ Return ONLY complete HTML code:`;
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    /* 
+     * DARK THEME STYLING IMPLEMENTATION
+     * - Overall background set to black (#000000)
+     * - Text colors changed from black/gray to white (#FFFFFF) 
+     * - Gradient text preserved (bg-clip-text, bg-linear-to-r classes)
+     * - Responsive design maintained across all screen sizes
+     */
+    <div 
+      className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+      style={{
+        /* Main container background - black theme */
+        backgroundColor: '#000000',
+        minHeight: '100vh',
+        color: '#FFFFFF' /* Default text color for all children */
+      }}
+    >
       {/* Preview Modal */}
       <AnimatePresence>
         {showPreview && landingCode && (
@@ -1136,7 +1151,9 @@ Return ONLY complete HTML code:`;
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 mt-15 border-b border-neutral-200 bg-linear-to-r from-neutral-50 to-white rounded-t-2xl">
+              <div 
+                className="flex items-center justify-between p-6 mt-15 border-b border-neutral-600 rounded-t-2xl bg-gray-800"
+              >
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <div
@@ -1155,7 +1172,9 @@ Return ONLY complete HTML code:`;
                       title="Open preview in new tab"
                     ></div>
                   </div>
-                  <h3 className="font-primary font-bold text-lg text-neutral-800 flex items-center">
+                  <h3 
+                    className="font-primary font-bold text-lg flex items-center text-white"
+                  >
                     <span className="mr-3 text-xl">🌐</span>
                     Website Preview - {result?.name}
                   </h3>
@@ -1184,7 +1203,9 @@ Return ONLY complete HTML code:`;
               </div>
 
               {/* Preview Content */}
-              <div className="flex-1 bg-neutral-100 rounded-b-2xl overflow-hidden">
+              <div 
+                className="flex-1 rounded-b-2xl overflow-hidden bg-gray-900"
+              >
                 <iframe
                   src={previewUrl}
                   className="w-full h-full border-0"
@@ -1271,7 +1292,10 @@ Return ONLY complete HTML code:`;
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 sm:mb-6 px-4 pb-1">
               Craft the Pitch Using AI
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
+            {/* Regular text changed to white */}
+            <p 
+              className="text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed px-4 text-white"
+            >
               Transform your startup idea into a complete business package with
               AI-powered pitch generation and professional website code.
             </p>
@@ -1283,11 +1307,13 @@ Return ONLY complete HTML code:`;
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/40 p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12"
+          className="card backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12"
         >
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
+              <label 
+                className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold mb-3 sm:mb-4 text-white"
+              >
                 <span className="bg-linear-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">
                   STEP 1
                 </span>
@@ -1298,7 +1324,7 @@ Return ONLY complete HTML code:`;
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="💡 Example: I want to build an AI-powered fitness app that creates personalized workout plans with real-time form correction using computer vision, targeting busy professionals who want effective home workouts..."
-                className="w-full min-h-[150px] sm:min-h-[200px] p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none resize-none shadow-inner bg-white/50 backdrop-blur-sm text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm sm:text-base"
+                className="input-field w-full min-h-[150px] sm:min-h-[200px] p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 outline-none resize-none shadow-inner backdrop-blur-sm text-sm sm:text-base"
                 required
               />
             </div>
@@ -1341,16 +1367,6 @@ Return ONLY complete HTML code:`;
                     transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="flex items-center justify-center space-x-2 sm:space-x-3"
                   >
-                    {/* <motion.span
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      ✨
-                    </motion.span>
-                    <span className="hidden sm:inline">
-                      Generate Complete Startup Package
-                    </span>
-                    <span className="sm:hidden">Generate Package</span> */}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1369,7 +1385,7 @@ Return ONLY complete HTML code:`;
             >
               {/* Enhanced Tabs */}
               <motion.div
-                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 bg-white/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border border-white/30 shadow-lg text-black"clcl
+                className="card flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border shadow-lg text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}

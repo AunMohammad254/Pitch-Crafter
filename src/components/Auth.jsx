@@ -48,19 +48,15 @@ export default function Auth() {
 
   return (
     <main 
-      className="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)',
-        minHeight: '100vh'
-      }}
+      className="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-600"
       role="main"
       aria-label="Authentication page"
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-40 h-40 sm:w-80 sm:h-80 bg-linear-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-linear-to-tr from-purple-400/20 to-pink-600/20 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-96 sm:h-96 bg-linear-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-linear-to-tr from-purple-400/20 to-pink-600/20 rounded-full blur-2xl sm:blur-3xl animate-pulse animate-delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-96 sm:h-96 bg-linear-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-2xl sm:blur-3xl animate-pulse animate-delay-2000"></div>
       </div>
 
       <div className={`w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl relative z-10 transition-all duration-1000 ease-out ${
@@ -76,26 +72,25 @@ export default function Auth() {
               <img src={LogoIcon} alt="PitchCraft AI" className="w-full h-full filter drop-shadow-lg" />
             </div>
           </div>
-          <h1 className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-primary font-bold mb-2 sm:mb-3 transition-all duration-700 ease-out tracking-tight ${
+          <h1 className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-primary font-bold mb-2 sm:mb-3 transition-all duration-700 ease-out tracking-tight animate-delay-200 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`} style={{ animationDelay: '0.2s' }}>
+          }`}>
             <span className="bg-linear-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               PitchCraft AI
             </span>
           </h1>
-          <p className={`text-gray-300 text-base sm:text-lg lg:text-xl font-medium max-w-md mx-auto leading-relaxed transition-all duration-700 ease-out ${
+          <p className={`text-gray-300 text-base sm:text-lg lg:text-xl font-medium max-w-md mx-auto leading-relaxed transition-all duration-700 ease-out animate-delay-400 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`} style={{ animationDelay: '0.4s' }}>
+          }`}>
             Transform your innovative ideas into compelling pitches
           </p>
         </div>
 
         {/* Auth Card */}
         <section
-          className={`relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/20 shadow-2xl transition-all duration-700 ease-out ${
+          className={`relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/20 shadow-2xl transition-all duration-700 ease-out animate-delay-600 ${
             isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
           }`}
-          style={{ animationDelay: "0.6s" }}
           role="region"
           aria-labelledby="auth-heading"
           aria-describedby="auth-description"
@@ -333,10 +328,9 @@ export default function Auth() {
 
         {/* Features Preview */}
         <section
-          className={`mt-12 sm:mt-16 transition-all duration-1000 ease-out ${
+          className={`mt-12 sm:mt-16 transition-all duration-1000 ease-out animate-delay-800 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
-          style={{ animationDelay: "0.8s" }}
           aria-label="Platform features"
         >
           <div className="grid grid-cols-3 gap-4 sm:gap-6">

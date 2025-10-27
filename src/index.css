@@ -358,11 +358,90 @@ body {
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
+/* ===== DARK MODE GLOBAL STYLES ===== */
+
+/* 
+ * Dark Mode Input Fields
+ * - Updates input styling for dark theme compatibility
+ * - Maintains accessibility and proper contrast ratios
+ * - Preserves focus states and interactive feedback
+ */
+.dark-mode-root .input-field {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.dark-mode-root .input-field:focus {
+  border-color: var(--color-primary-400) !important;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2) !important;
+}
+
+.dark-mode-root .input-field::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 
+ * Dark Mode Button Styling
+ * - Ensures buttons maintain proper contrast in dark theme
+ * - Preserves gradient styling for primary buttons
+ * - Updates secondary button styling for dark background
+ */
+.dark-mode-root .btn-secondary {
+  color: var(--color-primary-400) !important;
+  border: 2px solid var(--color-primary-400) !important;
+}
+
+.dark-mode-root .btn-secondary:hover {
+  background: var(--color-primary-400) !important;
+  color: #000000 !important;
+}
+
+/* 
+ * Dark Mode Scrollbar
+ * - Updates scrollbar styling for dark theme
+ * - Maintains visibility while fitting dark aesthetic
+ */
+.dark-mode-root ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-mode-root ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark-mode-root ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 
+ * Dark Mode Glass Effects Global
+ * - Updates global glass effect classes for dark theme
+ * - Maintains visual hierarchy and depth perception
+ */
+.dark-mode-root .glass-effect {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   :root {
     --text-4xl: 2rem;
     --text-5xl: 2.5rem;
     --text-6xl: 3rem;
+  }
+  
+  /* 
+   * Dark Mode Mobile Responsive Adjustments
+   * - Ensures dark mode styling works properly on mobile devices
+   * - Maintains readability and accessibility across screen sizes
+   */
+  .dark-mode-root .nav-glass {
+    background: rgba(0, 0, 0, 0.9) !important;
+  }
+  
+  .dark-mode-root .footer-glass {
+    background: rgba(0, 0, 0, 0.8) !important;
   }
 }

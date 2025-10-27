@@ -1,4 +1,276 @@
 /* ===== APP-SPECIFIC STYLES ===== */
+/* ===== DARK THEME IMPLEMENTATION ===== */
+
+/* 
+ * Dark Theme CSS Variables
+ * - Comprehensive color system for dark mode
+ * - WCAG AA compliant contrast ratios (4.5:1 for normal text, 3:1 for large text)
+ * - Enables easy theme switching and maintenance
+ */
+:root {
+  /* Dark Theme Color Variables */
+  --dark-bg-primary: #000000;
+  --dark-bg-secondary: #0f0f0f;
+  --dark-bg-tertiary: #1a1a1a;
+  --dark-bg-elevated: #262626;
+  
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #e5e5e5;
+  --dark-text-tertiary: #a3a3a3;
+  --dark-text-muted: #737373;
+  
+  --dark-border-primary: rgba(255, 255, 255, 0.1);
+  --dark-border-secondary: rgba(255, 255, 255, 0.2);
+  --dark-border-focus: rgba(59, 130, 246, 0.5);
+  
+  --dark-glass-bg: rgba(0, 0, 0, 0.8);
+  --dark-glass-border: rgba(255, 255, 255, 0.1);
+  --dark-glass-backdrop: blur(20px);
+  
+  --dark-input-bg: rgba(255, 255, 255, 0.05);
+  --dark-input-border: rgba(255, 255, 255, 0.15);
+  --dark-input-focus-bg: rgba(255, 255, 255, 0.08);
+  --dark-input-placeholder: rgba(255, 255, 255, 0.5);
+  
+  --dark-card-bg: rgba(255, 255, 255, 0.03);
+  --dark-card-border: rgba(255, 255, 255, 0.08);
+  --dark-card-hover-bg: rgba(255, 255, 255, 0.05);
+  
+  /* Theme transition duration */
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 
+ * Dark Mode Root Container Styling
+ * - Sets comprehensive dark background system
+ * - Ensures full viewport coverage with minimum height
+ * - Maintains existing layout structure and responsive behavior
+ * - Implements smooth theme transitions
+ */
+.dark-mode-root {
+  background-color: var(--dark-bg-primary) !important;
+  min-height: 100vh;
+  color: var(--dark-text-primary);
+  transition: var(--theme-transition);
+}
+
+/* 
+ * Dark Mode Text Color System
+ * - Uses CSS variables for consistent text hierarchy
+ * - Maintains proper contrast ratios for accessibility
+ * - Provides flexible text color system
+ */
+.dark-mode-root * {
+  color: var(--dark-text-primary) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .text-secondary {
+  color: var(--dark-text-secondary) !important;
+}
+
+.dark-mode-root .text-tertiary {
+  color: var(--dark-text-tertiary) !important;
+}
+
+.dark-mode-root .text-muted {
+  color: var(--dark-text-muted) !important;
+}
+
+/* 
+ * Dark Mode Gradient Text Preservation
+ * - Enhanced gradient for better visibility in dark mode
+ * - Maintains visual hierarchy and brand consistency
+ * - Ensures gradient elements remain visible and attractive
+ */
+.dark-mode-root .gradient-text,
+.dark-mode-root .logo-text {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 
+ * Dark Mode Glass Effects
+ * - Updates navigation and footer glass effects for dark theme
+ * - Maintains backdrop blur while adjusting opacity and colors
+ * - Preserves visual hierarchy and depth perception
+ */
+.dark-mode-root .nav-glass {
+  background: var(--dark-glass-bg) !important;
+  backdrop-filter: var(--dark-glass-backdrop);
+  border-bottom: 1px solid var(--dark-glass-border) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .footer-glass {
+  background: var(--dark-glass-bg) !important;
+  backdrop-filter: var(--dark-glass-backdrop);
+  border-top: 1px solid var(--dark-glass-border) !important;
+  transition: var(--theme-transition);
+}
+
+/* 
+ * Dark Mode Main Content Background
+ * - Sets dark background for main content areas
+ * - Ensures proper contrast with text content
+ * - Maintains visual hierarchy in dark theme
+ */
+.dark-mode-root .main-content {
+  background: linear-gradient(135deg, var(--dark-bg-primary) 0%, var(--dark-bg-tertiary) 100%) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .main-content::before {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(16, 185, 129, 0.03) 0%, transparent 50%) !important;
+}
+
+/* 
+ * Dark Mode Interactive Elements
+ * - Styles buttons, links, and interactive components for dark theme
+ * - Ensures proper hover and focus states with WCAG AA compliance
+ * - Maintains accessibility standards
+ */
+.dark-mode-root .interactive-element {
+  background: var(--dark-input-bg) !important;
+  border: 1px solid var(--dark-input-border) !important;
+  color: var(--dark-text-primary) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .interactive-element:hover {
+  background: var(--dark-input-focus-bg) !important;
+  border-color: var(--dark-border-secondary) !important;
+  transform: translateY(-1px);
+}
+
+.dark-mode-root .interactive-element:focus {
+  outline: 2px solid var(--dark-border-focus);
+  outline-offset: 2px;
+  border-color: var(--dark-border-focus) !important;
+}
+
+/* 
+ * Dark Mode Interactive Elements
+ * - Ensures proper styling for buttons, inputs, and interactive components
+ * - Maintains accessibility and visual hierarchy in dark theme
+ * - Preserves hover and focus states with appropriate contrast
+ */
+.dark-mode-root .nav-button:not(.active) {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: transparent;
+}
+
+.dark-mode-root .nav-button:not(.active):hover {
+  color: var(--color-primary-400) !important;
+  background: rgba(14, 165, 233, 0.1) !important;
+}
+
+/* 
+ * Dark Mode Form Elements
+ * - Comprehensive styling for all form inputs and controls
+ * - WCAG AA compliant contrast ratios
+ * - Enhanced focus states for accessibility
+ */
+.dark-mode-root input,
+.dark-mode-root textarea,
+.dark-mode-root select {
+  background: var(--dark-input-bg) !important;
+  border: 1px solid var(--dark-input-border) !important;
+  color: var(--dark-text-primary) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root input::placeholder,
+.dark-mode-root textarea::placeholder {
+  color: var(--dark-input-placeholder) !important;
+}
+
+.dark-mode-root input:focus,
+.dark-mode-root textarea:focus,
+.dark-mode-root select:focus {
+  background: var(--dark-input-focus-bg) !important;
+  border-color: var(--dark-border-focus) !important;
+  outline: 2px solid var(--dark-border-focus);
+  outline-offset: 2px;
+}
+
+/* 
+ * Dark Mode Card Components
+ * - Styling for card-based layouts and components
+ * - Subtle backgrounds with proper contrast
+ * - Enhanced hover states for interactivity
+ */
+.dark-mode-root .card,
+.dark-mode-root .pitch-card {
+  background: var(--dark-card-bg) !important;
+  border: 1px solid var(--dark-card-border) !important;
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .card:hover,
+.dark-mode-root .pitch-card:hover {
+  background: var(--dark-card-hover-bg) !important;
+  border-color: var(--dark-border-secondary) !important;
+  transform: translateY(-2px);
+}
+
+/* 
+ * Dark Mode Mobile Menu Styling
+ * - Updates mobile navigation menu for dark theme
+ * - Maintains readability and visual separation
+ */
+.dark-mode-root .md\:hidden .bg-white\/95 {
+  background: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* 
+ * Dark Mode Keyboard Shortcuts Hint
+ * - Updates the keyboard shortcuts panel for dark theme
+ * - Ensures proper contrast and readability
+ */
+.dark-mode-root .bg-white\/80 {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark-mode-root .bg-neutral-100 {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* 
+ * Dark Mode Status Indicators
+ * - Updates status indicator colors for dark theme compatibility
+ * - Maintains semantic color meaning while ensuring visibility
+ */
+.dark-mode-root .status-success {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: var(--color-accent-400) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.dark-mode-root .status-error {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #ff6b6b !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.dark-mode-root .status-warning {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #ffd43b !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.dark-mode-root .status-info {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #74c0fc !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
 
 /* Loading spinner enhancement */
 .loading-spinner {
@@ -217,4 +489,29 @@
   background: rgba(59, 130, 246, 0.1);
   color: var(--color-info);
   border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Animation delay utilities */
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animate-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animate-delay-800 {
+  animation-delay: 0.8s;
+}
+
+.animate-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animate-delay-2000 {
+  animation-delay: 2s;
 }

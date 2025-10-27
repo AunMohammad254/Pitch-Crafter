@@ -69,7 +69,7 @@ export const NavButton = ({
       tabIndex={disabled ? -1 : 0}
       {...props}
     >
-      <span className={`relative z-10 flex items-center justify-center gap-1 sm:gap-2 ${active ? 'text-black' : ''}`}style={active ? { color: '#000000 !important' } : {}}>
+      <span className={`relative z-10 flex items-center justify-center gap-1 sm:gap-2 ${active ? 'text-black !important' : ''}`}>
         {children}
       </span>
 
@@ -295,7 +295,7 @@ export const MobileMenuButton = ({
       tabIndex={disabled ? -1 : 0}
       {...props}
     >
-      <span className={`relative z-10 flex items-center w-full gap-2 sm:gap-3 ${active ? 'text-black' : ''}`}style={active ? { color: '#000000 !important' } : {}}>{children}</span>
+      <span className={`relative z-10 flex items-center w-full gap-2 sm:gap-3 ${active ? 'text-black !important' : ''}`}>{children}</span>
 
       {/* Subtle glow for active state */}
       {active && (

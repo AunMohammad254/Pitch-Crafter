@@ -77,9 +77,9 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen main-content w-full">
+    <div className="min-h-screen main-content w-full dark-mode-root">
       {/* Navigation */}
-      <nav className="nav-glass sticky top-0 z-50 w-full">
+      <nav className="nav-glass glass-nav sticky top-0 z-50 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex justify-between items-center h-16 sm:h-20 w-full">
             {/* Logo Section */}
@@ -139,7 +139,7 @@ export default function App() {
 
           {/* Mobile Navigation Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-neutral-200 bg-white/95 backdrop-blur-sm animate-fade-in-down w-full">
+            <div className="md:hidden mobile-menu border-t border-neutral-200 bg-white/95 backdrop-blur-sm animate-fade-in-down w-full">
               <div className="px-3 pt-3 pb-4 space-y-2 w-full">
                 {/* Navigation Section */}
                 <div className="space-y-1 w-full">
@@ -260,7 +260,7 @@ export default function App() {
 
       {/* Keyboard Shortcuts Hint */}
       <div className="fixed bottom-4 left-4 z-50 hidden lg:block">
-        <div className="bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-xl p-3 shadow-lg max-w-xs">
+        <div className="card bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-xl p-3 shadow-lg max-w-xs">
           <div className="text-xs text-neutral-600 space-y-1">
             <div className="font-semibold mb-2">Keyboard Shortcuts:</div>
             <div className="flex items-center space-x-2 flex-wrap">
@@ -286,7 +286,7 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="footer-glass mt-12 sm:mt-16 lg:mt-20 w-full">
+      <footer className="footer-glass glass-footer mt-12 sm:mt-16 lg:mt-20 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 w-full">
           <div className="text-center w-full">
             <div className="flex justify-center items-center mb-4 sm:mb-6">
