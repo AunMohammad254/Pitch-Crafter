@@ -733,37 +733,77 @@ Return ONLY complete HTML code:`;
       <div className="space-y-8 animate-fade-in-up">
         {/* Startup Header */}
         <motion.div
-          className="card-glass p-4 sm:p-6 lg:p-8 bg-linear-to-br from-primary-50 to-secondary-50 border-primary-200"
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-primary)',
+            boxShadow: 'var(--shadow-card)',
+            backdropFilter: 'var(--glass-backdrop)',
+          }}
+          className="p-4 sm:p-6 lg:p-8 rounded-xl"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6">
             <div className="mb-4 sm:mb-0">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold gradient-text mb-2 sm:mb-3">
+              <h2 
+                style={{ background: 'var(--gradient-primary-bold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold mb-2 sm:mb-3"
+              >
                 {data.name}
               </h2>
-              <p className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 text-white">
+              <p 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-lg sm:text-xl font-medium mb-3 sm:mb-4"
+              >
                 {data.tagline}
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="status-indicator bg-accent-100 text-accent-700 border-accent-200 text-xs sm:text-sm">
+              <span 
+                style={{
+                  background: 'var(--gradient-success-subtle)',
+                  color: 'var(--text-success)',
+                  border: '1px solid var(--border-success)',
+                }}
+                className="px-3 py-1.5 rounded-full font-medium text-xs sm:text-sm"
+              >
                 🚀 Active
               </span>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2 sm:gap-3">
-            <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary-100 text-primary-700 font-medium text-xs sm:text-sm">
+            <span 
+              style={{
+                background: 'var(--gradient-primary-subtle)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-primary)',
+              }}
+              className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm"
+            >
               <span className="mr-1 sm:mr-2">🏢</span>
               {data.industry}
             </span>
-            <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-secondary-100 text-secondary-700 font-medium text-xs sm:text-sm">
+            <span 
+              style={{
+                background: 'var(--gradient-secondary-subtle)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-secondary)',
+              }}
+              className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm"
+            >
               <span className="mr-1 sm:mr-2">🎯</span>
               {data.target_audience?.segments?.length || 0} Target Segments
             </span>
-            <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-accent-100 text-accent-700 font-medium text-xs sm:text-sm">
+            <span 
+              style={{
+                background: 'var(--gradient-accent-subtle)',
+                color: 'var(--text-accent)',
+                border: '1px solid var(--border-accent)',
+              }}
+              className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm"
+            >
               <span className="mr-1 sm:mr-2">💡</span>
               AI Generated
             </span>
@@ -775,20 +815,35 @@ Return ONLY complete HTML code:`;
           {/* Elevator Pitch */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="card-glass p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-primary)',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'var(--glass-backdrop)',
+            }}
+            className="p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group rounded-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
+              <div 
+                style={{ background: 'var(--gradient-primary-subtle)' }}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform"
+              >
                 🎯
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="font-primary font-bold text-base sm:text-lg"
+              >
                 Elevator Pitch
               </h3>
             </div>
-            <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
+            <p 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-sm sm:text-base leading-relaxed font-medium"
+            >
               {data.elevator_pitch}
             </p>
           </motion.div>
@@ -796,20 +851,35 @@ Return ONLY complete HTML code:`;
           {/* Unique Value Proposition */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="card-glass p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-secondary)',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'var(--glass-backdrop)',
+            }}
+            className="p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group rounded-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
+              <div 
+                style={{ background: 'var(--gradient-secondary-subtle)' }}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform"
+              >
                 💎
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="font-primary font-bold text-base sm:text-lg"
+              >
                 Unique Value Proposition
               </h3>
             </div>
-            <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
+            <p 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-sm sm:text-base leading-relaxed font-medium"
+            >
               {data.unique_value_proposition}
             </p>
           </motion.div>
@@ -817,41 +887,71 @@ Return ONLY complete HTML code:`;
           {/* Problem */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="card-glass p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-error)',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'var(--glass-backdrop)',
+            }}
+            className="p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group rounded-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
+              <div 
+                style={{ background: 'var(--gradient-error-subtle)' }}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform"
+              >
                 🧩
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
-                  The Problem
-                </h3>
-              </div>
-              <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
-                {data.problem}
-              </p>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="font-primary font-bold text-base sm:text-lg"
+              >
+                The Problem
+              </h3>
+            </div>
+            <p 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-sm sm:text-base leading-relaxed font-medium"
+            >
+              {data.problem}
+            </p>
           </motion.div>
 
           {/* Solution */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="card-glass p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-success)',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'var(--glass-backdrop)',
+            }}
+            className="p-4 sm:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 group rounded-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform">
+              <div 
+                style={{ background: 'var(--gradient-success-subtle)' }}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform"
+              >
                 💡
               </div>
-              <h3 className="font-primary font-bold text-base sm:text-lg text-white">
-                  Our Solution
-                </h3>
-              </div>
-              <p className="text-sm sm:text-base leading-relaxed font-medium text-white">
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="font-primary font-bold text-base sm:text-lg"
+              >
+                Our Solution
+              </h3>
+            </div>
+            <p 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-sm sm:text-base leading-relaxed font-medium"
+            >
               {data.solution}
             </p>
           </motion.div>
@@ -859,17 +959,29 @@ Return ONLY complete HTML code:`;
 
         {/* Target Audience */}
         <motion.div
-          className="card-glass p-4 sm:p-5 lg:p-6 bg-linear-to-r from-accent-50 to-primary-50 border-accent-200"
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-accent)',
+            boxShadow: 'var(--shadow-card)',
+            backdropFilter: 'var(--glass-backdrop)',
+          }}
+          className="p-4 sm:p-5 lg:p-6 rounded-xl"
           whileHover={{ scale: 1.01 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <h3 className="text-lg sm:text-xl font-primary font-bold text-accent-800 mb-3 sm:mb-4 flex items-center">
+          <h3 
+            style={{ color: 'var(--text-primary)' }}
+            className="text-lg sm:text-xl font-primary font-bold mb-3 sm:mb-4 flex items-center"
+          >
             <span className="mr-2 sm:mr-3 text-xl sm:text-2xl">🎯</span>
             Target Audience
           </h3>
-          <p className="text-sm sm:text-base mb-3 sm:mb-4 font-medium text-white">
+          <p 
+            style={{ color: 'var(--text-primary)' }}
+            className="text-sm sm:text-base mb-3 sm:mb-4 font-medium"
+          >
             {data.target_audience?.description}
           </p>
           {data.target_audience?.segments && (
@@ -877,7 +989,12 @@ Return ONLY complete HTML code:`;
               {data.target_audience.segments.map((segment, idx) => (
                 <span
                   key={idx}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/60 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium text-accent-700 border border-accent-200"
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-accent)',
+                    border: '1px solid var(--border-accent)',
+                  }}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium"
                 >
                   {segment}
                 </span>
@@ -889,60 +1006,114 @@ Return ONLY complete HTML code:`;
         {/* Landing Page Copy */}
         {data.landing_copy && (
           <motion.div
-            className="card-glass p-4 sm:p-5 lg:p-6 bg-linear-to-br from-secondary-50 to-accent-50 border-secondary-200"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-secondary)',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'var(--glass-backdrop)',
+            }}
+            className="p-4 sm:p-5 lg:p-6 rounded-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <h3 className="text-lg sm:text-xl font-primary font-bold text-secondary-800 mb-4 sm:mb-6 flex items-center">
+            <h3 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-lg sm:text-xl font-primary font-bold mb-4 sm:mb-6 flex items-center"
+            >
               <span className="mr-2 sm:mr-3 text-xl sm:text-2xl">📝</span>
               Landing Page Copy
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
               <div>
-                <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
+                <h4 
+                  style={{ color: 'var(--text-secondary)' }}
+                  className="font-bold mb-2 flex items-center text-sm sm:text-base"
+                >
                   <span className="mr-1.5 sm:mr-2">🎯</span>
                   Headline
                 </h4>
-                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
+                <p 
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-secondary)',
+                    color: 'var(--text-primary)',
+                  }}
+                  className="text-sm sm:text-base font-medium p-3 sm:p-4 rounded-lg sm:rounded-xl leading-relaxed"
+                >
                   {data.landing_copy.headline}
                 </p>
               </div>
 
               <div>
-                <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
+                <h4 
+                  style={{ color: 'var(--text-secondary)' }}
+                  className="font-bold mb-2 flex items-center text-sm sm:text-base"
+                >
                   <span className="mr-1.5 sm:mr-2">📢</span>
                   Subheadline
                 </h4>
-                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
+                <p 
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-secondary)',
+                    color: 'var(--text-primary)',
+                  }}
+                  className="text-sm sm:text-base font-medium p-3 sm:p-4 rounded-lg sm:rounded-xl leading-relaxed"
+                >
                   {data.landing_copy.subheadline}
                 </p>
               </div>
 
               <div>
-                <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
+                <h4 
+                  style={{ color: 'var(--text-secondary)' }}
+                  className="font-bold mb-2 flex items-center text-sm sm:text-base"
+                >
                   <span className="mr-1.5 sm:mr-2">🚀</span>
                   Call to Action
                 </h4>
-                <p className="text-sm sm:text-base font-medium bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200 leading-relaxed text-gray-800">
+                <p 
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-secondary)',
+                    color: 'var(--text-primary)',
+                  }}
+                  className="text-sm sm:text-base font-medium p-3 sm:p-4 rounded-lg sm:rounded-xl leading-relaxed"
+                >
                   {data.landing_copy.call_to_action}
                 </p>
               </div>
 
               <div>
-                <h4 className="font-bold text-secondary-700 mb-2 flex items-center text-sm sm:text-base">
+                <h4 
+                  style={{ color: 'var(--text-secondary)' }}
+                  className="font-bold mb-2 flex items-center text-sm sm:text-base"
+                >
                   <span className="mr-1.5 sm:mr-2">✨</span>
                   Key Features
                 </h4>
-                <div className="bg-white/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-secondary-200">
+                <div 
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-secondary)',
+                  }}
+                  className="p-3 sm:p-4 rounded-lg sm:rounded-xl"
+                >
                   {data.landing_copy.key_features?.map((feature, idx) => (
                     <div
                       key={idx}
                       className="flex items-start space-x-2 mb-2 last:mb-0"
                     >
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-secondary-500 rounded-full mt-1.5 sm:mt-2 shrink-0"></span>
-                      <span className="font-medium text-xs sm:text-sm leading-relaxed text-gray-800">
+                      <span 
+                        style={{ background: 'var(--color-secondary)' }}
+                        className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1.5 sm:mt-2 shrink-0"
+                      ></span>
+                      <span 
+                        style={{ color: 'var(--text-primary)' }}
+                        className="font-medium text-xs sm:text-sm leading-relaxed"
+                      >
                         {feature}
                       </span>
                     </div>
@@ -958,12 +1129,21 @@ Return ONLY complete HTML code:`;
           {/* Brand Colors */}
           {data.colors && (
             <motion.div
-              className="card-glass p-4 sm:p-5 lg:p-6"
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-primary)',
+                boxShadow: 'var(--shadow-card)',
+                backdropFilter: 'var(--glass-backdrop)',
+              }}
+              className="p-4 sm:p-5 lg:p-6 rounded-xl"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <h3 className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center text-white">
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center"
+              >
                 <span className="mr-2">🎨</span>
                 Brand Colors
               </h3>
@@ -974,14 +1154,24 @@ Return ONLY complete HTML code:`;
                     className="flex items-center space-x-2 sm:space-x-3"
                   >
                     <div
-                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border-2 border-white shadow-sm shrink-0"
-                      style={{ backgroundColor: color }}
+                      style={{ 
+                        backgroundColor: color,
+                        border: '2px solid var(--border-primary)',
+                        boxShadow: 'var(--shadow-sm)',
+                      }}
+                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg shrink-0"
                     ></div>
                     <div className="min-w-0">
-                      <p className="font-medium text-xs sm:text-sm capitalize truncate text-white">
+                      <p 
+                        style={{ color: 'var(--text-primary)' }}
+                        className="font-medium text-xs sm:text-sm capitalize truncate"
+                      >
                         {name}
                       </p>
-                      <p className="text-xs font-mono truncate text-gray-300">
+                      <p 
+                        style={{ color: 'var(--text-secondary)' }}
+                        className="text-xs font-mono truncate"
+                      >
                         {color}
                       </p>
                     </div>
@@ -994,12 +1184,21 @@ Return ONLY complete HTML code:`;
           {/* Logo Ideas */}
           {data.logo_ideas && (
             <motion.div
-              className="card-glass p-4 sm:p-5 lg:p-6"
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-primary)',
+                boxShadow: 'var(--shadow-card)',
+                backdropFilter: 'var(--glass-backdrop)',
+              }}
+              className="p-4 sm:p-5 lg:p-6 rounded-xl"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <h3 className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center text-white">
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-base sm:text-lg font-primary font-bold mb-3 sm:mb-4 flex items-center"
+              >
                 <span className="mr-2">🎭</span>
                 Logo Ideas
               </h3>
@@ -1007,12 +1206,19 @@ Return ONLY complete HTML code:`;
                 {data.logo_ideas.map((idea, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-neutral-50 border border-neutral-200"
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-secondary)',
+                    }}
+                    className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg"
                   >
                     <span className="text-base sm:text-lg shrink-0 mt-0.5">
                       💡
                     </span>
-                    <p className="text-xs sm:text-sm font-medium leading-relaxed text-white">
+                    <p 
+                      style={{ color: 'var(--text-primary)' }}
+                      className="text-xs sm:text-sm font-medium leading-relaxed"
+                    >
                       {idea}
                     </p>
                   </div>
@@ -1036,14 +1242,23 @@ Return ONLY complete HTML code:`;
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Code Header */}
-        <div className="rounded-t-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 border-b border-neutral-200 bg-linear-to-r from-neutral-50 to-white space-y-3 sm:space-y-0">
+        <div 
+          style={{
+            background: 'var(--bg-elevated)',
+            borderBottom: '1px solid var(--border-primary)',
+          }}
+          className="rounded-t-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-0"
+        >
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-400 rounded-full"></div>
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 rounded-full"></div>
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full"></div>
             </div>
-            <h3 className="font-primary font-bold text-sm sm:text-base flex items-center text-white">
+            <h3 
+              style={{ color: 'var(--text-primary)' }}
+              className="font-primary font-bold text-sm sm:text-base flex items-center"
+            >
               <span className="mr-2 sm:mr-3 text-lg sm:text-xl">🌐</span>
               <span className="hidden sm:inline">
                 Generated Landing Page Code
@@ -1086,22 +1301,40 @@ Return ONLY complete HTML code:`;
         </div>
 
         {/* Code Footer */}
-        <div className="p-3 sm:p-4 bg-linear-to-r from-primary-50 to-secondary-50 border-t border-neutral-200">
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-neutral-600 mb-2">
-            <span className="flex items-center">
+        <div 
+          style={{
+            background: 'var(--bg-elevated)',
+            borderTop: '1px solid var(--border-primary)',
+          }}
+          className="p-3 sm:p-4"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm mb-2">
+            <span 
+              style={{ color: 'var(--text-secondary)' }}
+              className="flex items-center"
+            >
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
               Ready to Deploy
             </span>
-            <span className="flex items-center">
+            <span 
+              style={{ color: 'var(--text-secondary)' }}
+              className="flex items-center"
+            >
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
               Responsive Design
             </span>
-            <span className="flex items-center">
+            <span 
+              style={{ color: 'var(--text-secondary)' }}
+              className="flex items-center"
+            >
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
               Modern Styling
             </span>
           </div>
-          <p className="text-center text-neutral-600 font-medium text-xs sm:text-sm leading-relaxed">
+          <p 
+            style={{ color: 'var(--text-secondary)' }}
+            className="text-center font-medium text-xs sm:text-sm leading-relaxed"
+          >
             💡 <strong>Pro Tip:</strong>{" "}
             <span className="hidden sm:inline">
               Click "Preview Website" to see your landing page in action, or
@@ -1238,24 +1471,34 @@ Return ONLY complete HTML code:`;
             {/* Step Indicators */}
             <div className="flex items-center space-x-2 sm:space-x-4">
               <div
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  !result
-                    ? "bg-primary-100 text-primary-700"
-                    : "bg-green-100 text-green-700"
-                }`}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                style={{
+                  background: !result ? 'var(--dark-gradient-primary)' : 'var(--dark-gradient-success)',
+                  color: 'var(--dark-text-primary)',
+                  border: `1px solid ${!result ? 'var(--dark-border-primary)' : 'var(--dark-border-success)'}`
+                }}
               >
                 <span className="text-base">{!result ? "✏️" : "✅"}</span>
                 <span className="hidden sm:inline">Describe Idea</span>
                 <span className="sm:hidden">1</span>
               </div>
               <div
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  result && !landingCode
-                    ? "bg-primary-100 text-primary-700"
-                    : landingCode
-                    ? "bg-green-100 text-green-700"
-                    : "bg-neutral-100 text-neutral-500"
-                }`}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                style={{
+                  background: result && !landingCode 
+                    ? 'var(--dark-gradient-primary)' 
+                    : landingCode 
+                    ? 'var(--dark-gradient-success)' 
+                    : 'var(--dark-gradient-secondary)',
+                  color: result || landingCode ? 'var(--dark-text-primary)' : 'var(--dark-text-disabled)',
+                  border: `1px solid ${
+                    result && !landingCode 
+                      ? 'var(--dark-border-primary)' 
+                      : landingCode 
+                      ? 'var(--dark-border-success)' 
+                      : 'var(--dark-border-tertiary)'
+                  }`
+                }}
               >
                 <span className="text-base">
                   {landingCode ? "✅" : result ? "⚡" : "⏳"}
@@ -1264,11 +1507,12 @@ Return ONLY complete HTML code:`;
                 <span className="sm:hidden">2</span>
               </div>
               <div
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  landingCode
-                    ? "bg-primary-100 text-primary-700"
-                    : "bg-neutral-100 text-neutral-500"
-                }`}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                style={{
+                  background: landingCode ? 'var(--dark-gradient-primary)' : 'var(--dark-gradient-secondary)',
+                  color: landingCode ? 'var(--dark-text-primary)' : 'var(--dark-text-disabled)',
+                  border: `1px solid ${landingCode ? 'var(--dark-border-primary)' : 'var(--dark-border-tertiary)'}`
+                }}
               >
                 <span className="text-base">{landingCode ? "🎯" : "⏳"}</span>
                 <span className="hidden sm:inline">Review & Save</span>
@@ -1307,14 +1551,27 @@ Return ONLY complete HTML code:`;
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="card backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12"
+          className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12"
+          style={{
+            background: 'var(--dark-card-bg)',
+            border: '1px solid var(--dark-border-primary)',
+            boxShadow: 'var(--dark-shadow-xl)',
+            backdropFilter: 'blur(20px)'
+          }}
         >
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label 
-                className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold mb-3 sm:mb-4 text-white"
+                className="flex flex-col sm:flex-row sm:items-center text-sm font-semibold mb-3 sm:mb-4"
+                style={{ color: 'var(--dark-text-primary)' }}
               >
-                <span className="bg-linear-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit">
+                <span 
+                  className="px-3 py-1 rounded-full text-xs mb-2 sm:mb-0 sm:mr-2 w-fit"
+                  style={{
+                    background: 'var(--dark-gradient-primary)',
+                    color: 'var(--dark-text-primary)'
+                  }}
+                >
                   STEP 1
                 </span>
                 <span>Describe Your Startup Vision</span>
@@ -1324,7 +1581,24 @@ Return ONLY complete HTML code:`;
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="💡 Example: I want to build an AI-powered fitness app that creates personalized workout plans with real-time form correction using computer vision, targeting busy professionals who want effective home workouts..."
-                className="input-field w-full min-h-[150px] sm:min-h-[200px] p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 outline-none resize-none shadow-inner backdrop-blur-sm text-sm sm:text-base"
+                className="w-full min-h-[150px] sm:min-h-[200px] p-4 sm:p-6 rounded-xl sm:rounded-2xl outline-none resize-none text-sm sm:text-base transition-all duration-300"
+                style={{
+                  background: 'var(--dark-input-bg)',
+                  border: '2px solid var(--dark-border-secondary)',
+                  color: 'var(--dark-text-primary)',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: 'var(--dark-shadow-inner)'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'var(--dark-border-focus)';
+                  e.target.style.background = 'var(--dark-input-focus-bg)';
+                  e.target.style.boxShadow = 'var(--dark-shadow-focus)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'var(--dark-border-secondary)';
+                  e.target.style.background = 'var(--dark-input-bg)';
+                  e.target.style.boxShadow = 'var(--dark-shadow-inner)';
+                }}
                 required
               />
             </div>
@@ -1385,7 +1659,14 @@ Return ONLY complete HTML code:`;
             >
               {/* Enhanced Tabs */}
               <motion.div
-                className="card flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto border shadow-lg text-white"
+                className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-6 sm:mb-8 rounded-xl sm:rounded-2xl p-2 w-full sm:w-fit mx-auto"
+                style={{
+                  background: 'var(--dark-card-bg)',
+                  border: '1px solid var(--dark-border-primary)',
+                  boxShadow: 'var(--dark-shadow-lg)',
+                  backdropFilter: 'blur(10px)',
+                  color: 'var(--dark-text-primary)'
+                }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}

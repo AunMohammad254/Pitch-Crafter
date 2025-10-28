@@ -1,40 +1,87 @@
 /* ===== APP-SPECIFIC STYLES ===== */
-/* ===== DARK THEME IMPLEMENTATION ===== */
+/* ===== COMPREHENSIVE DARK THEME IMPLEMENTATION ===== */
 
 /* 
  * Dark Theme CSS Variables
  * - Comprehensive color system for dark mode
  * - WCAG AA compliant contrast ratios (4.5:1 for normal text, 3:1 for large text)
  * - Enables easy theme switching and maintenance
+ * - Gradient system for enhanced visual appeal
  */
 :root {
-  /* Dark Theme Color Variables */
-  --dark-bg-primary: #000000;
-  --dark-bg-secondary: #0f0f0f;
-  --dark-bg-tertiary: #1a1a1a;
-  --dark-bg-elevated: #262626;
+  /* Primary Dark Theme Colors - Based on specifications */
+  --dark-primary: #121212;
+  --dark-secondary: #1E1E1E;
+  --dark-tertiary: #2D2D2D;
+  --dark-elevated: #3A3A3A;
+  --dark-surface: #252525;
   
-  --dark-text-primary: #ffffff;
-  --dark-text-secondary: #e5e5e5;
-  --dark-text-tertiary: #a3a3a3;
-  --dark-text-muted: #737373;
+  /* Dark Theme Background System */
+  --dark-bg-primary: #121212;
+  --dark-bg-secondary: #1E1E1E;
+  --dark-bg-tertiary: #2D2D2D;
+  --dark-bg-elevated: #3A3A3A;
+  --dark-bg-surface: #252525;
+  --dark-bg-overlay: rgba(18, 18, 18, 0.95);
   
-  --dark-border-primary: rgba(255, 255, 255, 0.1);
-  --dark-border-secondary: rgba(255, 255, 255, 0.2);
-  --dark-border-focus: rgba(59, 130, 246, 0.5);
+  /* WCAG AA Compliant Text Colors (4.5:1 contrast ratio) */
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #E5E5E5;
+  --dark-text-tertiary: #B3B3B3;
+  --dark-text-muted: #8A8A8A;
+  --dark-text-disabled: #666666;
   
-  --dark-glass-bg: rgba(0, 0, 0, 0.8);
+  /* Dark Theme Gradient System */
+  --dark-gradient-primary: linear-gradient(135deg, #121212 0%, #2D2D2D 100%);
+  --dark-gradient-secondary: linear-gradient(135deg, #1E1E1E 0%, #3A3A3A 100%);
+  --dark-gradient-surface: linear-gradient(135deg, #252525 0%, #2D2D2D 100%);
+  --dark-gradient-elevated: linear-gradient(135deg, #2D2D2D 0%, #3A3A3A 100%);
+  --dark-gradient-accent: linear-gradient(135deg, #3A3A3A 0%, #4A4A4A 100%);
+  
+  /* Interactive Gradients */
+  --dark-gradient-hover: linear-gradient(135deg, #2D2D2D 0%, #4A4A4A 100%);
+  --dark-gradient-active: linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%);
+  --dark-gradient-focus: linear-gradient(135deg, #3A3A3A 0%, #5A5A5A 100%);
+  
+  /* Border System */
+  --dark-border-primary: rgba(255, 255, 255, 0.12);
+  --dark-border-secondary: rgba(255, 255, 255, 0.08);
+  --dark-border-tertiary: rgba(255, 255, 255, 0.05);
+  --dark-border-focus: rgba(99, 179, 237, 0.6);
+  --dark-border-hover: rgba(255, 255, 255, 0.16);
+  
+  /* Glass Effect System */
+  --dark-glass-bg: rgba(18, 18, 18, 0.85);
   --dark-glass-border: rgba(255, 255, 255, 0.1);
   --dark-glass-backdrop: blur(20px);
+  --dark-glass-elevated: rgba(30, 30, 30, 0.9);
   
+  /* Input System */
   --dark-input-bg: rgba(255, 255, 255, 0.05);
   --dark-input-border: rgba(255, 255, 255, 0.15);
   --dark-input-focus-bg: rgba(255, 255, 255, 0.08);
   --dark-input-placeholder: rgba(255, 255, 255, 0.5);
+  --dark-input-hover-bg: rgba(255, 255, 255, 0.07);
   
+  /* Card System */
   --dark-card-bg: rgba(255, 255, 255, 0.03);
   --dark-card-border: rgba(255, 255, 255, 0.08);
   --dark-card-hover-bg: rgba(255, 255, 255, 0.05);
+  --dark-card-elevated-bg: rgba(255, 255, 255, 0.06);
+  
+  /* Button System */
+  --dark-button-primary-bg: var(--dark-gradient-elevated);
+  --dark-button-primary-hover: var(--dark-gradient-hover);
+  --dark-button-primary-active: var(--dark-gradient-active);
+  --dark-button-secondary-bg: var(--dark-gradient-surface);
+  --dark-button-ghost-bg: transparent;
+  --dark-button-ghost-hover: rgba(255, 255, 255, 0.05);
+  
+  /* Shadow System */
+  --dark-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --dark-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --dark-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --dark-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
   
   /* Theme transition duration */
   --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,7 +95,7 @@
  * - Implements smooth theme transitions
  */
 .dark-mode-root {
-  background-color: var(--dark-bg-primary) !important;
+  background: var(--dark-gradient-primary) !important;
   min-height: 100vh;
   color: var(--dark-text-primary);
   transition: var(--theme-transition);
@@ -65,6 +112,10 @@
   transition: var(--theme-transition);
 }
 
+.dark-mode-root .text-primary {
+  color: var(--dark-text-primary) !important;
+}
+
 .dark-mode-root .text-secondary {
   color: var(--dark-text-secondary) !important;
 }
@@ -75,6 +126,41 @@
 
 .dark-mode-root .text-muted {
   color: var(--dark-text-muted) !important;
+}
+
+.dark-mode-root .text-disabled {
+  color: var(--dark-text-disabled) !important;
+}
+
+/* Dark Mode Container Styles */
+.dark-mode-root .container-primary {
+  background: var(--dark-gradient-primary) !important;
+  border: 1px solid var(--dark-border-secondary) !important;
+}
+
+.dark-mode-root .container-secondary {
+  background: var(--dark-gradient-secondary) !important;
+  border: 1px solid var(--dark-border-tertiary) !important;
+}
+
+.dark-mode-root .container-surface {
+  background: var(--dark-gradient-surface) !important;
+  border: 1px solid var(--dark-border-secondary) !important;
+}
+
+/* Dark Mode Glass Effects Enhancement */
+.dark-mode-root .glass-effect {
+  background: var(--dark-glass-bg) !important;
+  border: 1px solid var(--dark-glass-border) !important;
+  backdrop-filter: var(--dark-glass-backdrop);
+  -webkit-backdrop-filter: var(--dark-glass-backdrop);
+}
+
+.dark-mode-root .glass-elevated {
+  background: var(--dark-glass-elevated) !important;
+  border: 1px solid var(--dark-border-primary) !important;
+  backdrop-filter: var(--dark-glass-backdrop);
+  -webkit-backdrop-filter: var(--dark-glass-backdrop);
 }
 
 /* 

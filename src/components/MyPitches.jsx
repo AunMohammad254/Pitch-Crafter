@@ -266,15 +266,30 @@ export default function MyPitches({ user, onNavigate }) {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="card-glass p-8 sm:p-12 lg:p-16 text-center animate-fade-in-up"
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-primary)',
+            boxShadow: 'var(--shadow-card)',
+            backdropFilter: 'var(--glass-backdrop)',
+          }}
+          className="p-8 sm:p-12 lg:p-16 text-center animate-fade-in-up rounded-2xl"
         >
-          <div className="w-24 h-24 sm:w-32 sm:h-32 bg-linear-to-br from-primary-100 to-secondary-100 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8">
+          <div 
+            style={{ background: 'var(--gradient-primary-subtle)' }}
+            className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8"
+          >
             <span className="text-4xl sm:text-6xl">💡</span>
           </div>
-          {/* DARK THEME: Changed heading text from neutral-700 to white for better contrast */}
-          <h3 className="text-2xl sm:text-3xl font-primary font-bold text-white mb-3 sm:mb-4">No Pitches Found</h3>
-          {/* DARK THEME: Changed paragraph text from neutral-600 to white for better contrast */}
-          <p className="text-base sm:text-lg text-white max-w-md mx-auto mb-6 sm:mb-8 font-medium leading-relaxed">
+          <h3 
+            style={{ color: 'var(--text-primary)' }}
+            className="text-2xl sm:text-3xl font-primary font-bold mb-3 sm:mb-4"
+          >
+            No Pitches Found
+          </h3>
+          <p 
+            style={{ color: 'var(--text-secondary)' }}
+            className="text-base sm:text-lg max-w-md mx-auto mb-6 sm:mb-8 font-medium leading-relaxed"
+          >
             {pitches.length === 0 
               ? "You haven't generated any startup pitches yet. Create your first pitch to see it here!"
               : "No pitches match your search criteria. Try adjusting your filters."
@@ -343,21 +358,40 @@ function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ y: -8 }}
-      className="bg-gray-900 rounded-2xl card-glass p-4 sm:p-6 hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-700"
+      style={{
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-primary)',
+        boxShadow: 'var(--shadow-card)',
+        backdropFilter: 'var(--glass-backdrop)',
+      }}
+      className="rounded-2xl p-4 sm:p-6 hover:shadow-2xl transition-all duration-300 group cursor-pointer"
       onClick={onView}
     >
       {/* Card Header */}
       <div className="flex items-start justify-between mb-4 sm:mb-6">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg sm:text-xl font-primary font-bold text-white mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+          <h3 
+            style={{ color: 'var(--text-primary)' }}
+            className="text-lg sm:text-xl font-primary font-bold mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors line-clamp-2"
+          >
             {data?.name || "Untitled Pitch"}
           </h3>
-          <p className="text-sm sm:text-base text-gray-300 font-medium line-clamp-2 leading-relaxed">
+          <p 
+            style={{ color: 'var(--text-secondary)' }}
+            className="text-sm sm:text-base font-medium line-clamp-2 leading-relaxed"
+          >
             {data?.tagline || "No tagline available"}
           </p>
         </div>
         <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-4 shrink-0">
-          <span className="status-indicator bg-accent-100 text-accent-700 border-accent-200 text-xs px-2 py-1">
+          <span 
+            style={{
+              background: 'var(--gradient-accent-subtle)',
+              color: 'var(--text-accent)',
+              border: '1px solid var(--border-accent)',
+            }}
+            className="text-xs px-2 py-1 rounded-full font-medium"
+          >
             🚀 <span className="hidden sm:inline">Active</span>
           </span>
         </div>
@@ -365,20 +399,31 @@ function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
 
       {/* Industry & Date */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
-        <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-medium text-xs sm:text-sm w-fit">
+        <span 
+          style={{
+            background: 'var(--gradient-primary-subtle)',
+            color: 'var(--text-primary-accent)',
+            border: '1px solid var(--border-primary)',
+          }}
+          className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full font-medium text-xs sm:text-sm w-fit"
+        >
           <span className="mr-1 sm:mr-2">🏢</span>
           {pitch.industry || "General"}
         </span>
-        {/* DARK THEME: Changed text from neutral-500 to light gray for better contrast */}
-        <span className="text-xs sm:text-sm text-gray-400 font-medium">
+        <span 
+          style={{ color: 'var(--text-tertiary)' }}
+          className="text-xs sm:text-sm font-medium"
+        >
           {createdDate}
         </span>
       </div>
 
       {/* Pitch Preview */}
       <div className="mb-4 sm:mb-6">
-        {/* DARK THEME: Changed text from neutral-600 to light gray for better contrast */}
-        <p className="text-gray-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
+        <p 
+          style={{ color: 'var(--text-secondary)' }}
+          className="text-xs sm:text-sm line-clamp-3 leading-relaxed"
+        >
           {data?.elevator_pitch || data?.problem || "No preview available"}
         </p>
       </div>
@@ -422,7 +467,12 @@ function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
               e.stopPropagation()
               onDelete()
             }}
-            className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors shrink-0"
+            style={{
+              background: 'var(--gradient-danger-subtle)',
+              color: 'var(--text-danger)',
+              border: '1px solid var(--border-danger)',
+            }}
+            className="p-2 rounded-lg transition-all duration-200 shrink-0 hover:shadow-md"
             title="Delete Pitch"
           >
             🗑️
@@ -449,11 +499,23 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
-        className="rounded-xl shadow-2xl card-glass w-full max-w-6xl max-h-[80vh] sm:max-h-[92vh] lg:max-h-[95vh] overflow-hidden flex flex-col my-4 sm:my-6 lg:my-8"
+        style={{
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-primary)',
+          boxShadow: 'var(--shadow-modal)',
+          backdropFilter: 'var(--glass-backdrop)',
+        }}
+        className="rounded-xl w-full max-w-6xl max-h-[80vh] sm:max-h-[92vh] lg:max-h-[95vh] overflow-hidden flex flex-col my-4 sm:my-6 lg:my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className=" bg-linear-to-br from-cyan-700 to-blue-800 p-4 sm:p-6 lg:p-8 text-white bg-clip-padding backdrop-filter backdrop-blur-sm mt-10 rounded-t-xl">
+        <div 
+          style={{ 
+            background: 'var(--gradient-primary-bold)',
+            color: 'var(--text-on-primary)',
+          }}
+          className="p-4 sm:p-6 lg:p-8 bg-clip-padding backdrop-filter backdrop-blur-sm mt-10 rounded-t-xl"
+        >
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-2 sm:pr-4">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-primary font-bold mb-2 sm:mb-3 line-clamp-2">{d?.name || "Untitled Pitch"}</h2>
@@ -484,21 +546,43 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
         </div>
 
         {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10 bg-linear-to-br from-blue-400 to-blue-200">
+        <div 
+          style={{ background: 'var(--bg-secondary)' }}
+          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10"
+        >
           {/* Elevator Pitch */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-            <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-              <span className="w-12 h-12 bg-linear-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
+            <h3 
+              style={{ color: 'var(--text-primary)' }}
+              className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+            >
+              <span 
+                style={{ background: 'var(--gradient-primary-bold)' }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+              >
+                🎯
+              </span>
               <span>Elevator Pitch</span>
             </h3>
-            <div className="card-glass p-8 bg-linear-to-br from-primary-50 to-secondary-50 border-primary-200">
-              {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-              <p className="text-gray-800 text-lg leading-relaxed font-medium">{d?.elevator_pitch || "No elevator pitch available"}</p>
+            <div 
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-primary)',
+                boxShadow: 'var(--shadow-card)',
+                backdropFilter: 'var(--glass-backdrop)',
+              }}
+              className="p-8 rounded-xl"
+            >
+              <p 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-lg leading-relaxed font-medium"
+              >
+                {d?.elevator_pitch || "No elevator pitch available"}
+              </p>
             </div>
           </motion.section>
 
@@ -509,14 +593,33 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-              <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-linear-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🧩</span>
-              <span>Problem</span>
-            </h3>
-            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-red-50 to-pink-50 border-red-200">
-                {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                <p className="text-gray-800 leading-relaxed font-medium">{d?.problem || "No problem description available"}</p>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+              >
+                <span 
+                  style={{ background: 'var(--gradient-danger-bold)' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                >
+                  🧩
+                </span>
+                <span>Problem</span>
+              </h3>
+              <div 
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-danger)',
+                  boxShadow: 'var(--shadow-card)',
+                  backdropFilter: 'var(--glass-backdrop)',
+                }}
+                className="rounded-xl p-8"
+              >
+                <p 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="leading-relaxed font-medium"
+                >
+                  {d?.problem || "No problem description available"}
+                </p>
               </div>
             </motion.section>
 
@@ -525,14 +628,33 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-              <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">💡</span>
-              <span>Solution</span>
-            </h3>
-            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-green-50 to-emerald-50 border-green-200">
-                {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                <p className="text-gray-800 leading-relaxed font-medium">{d?.solution || "No solution description available"}</p>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+              >
+                <span 
+                  style={{ background: 'var(--gradient-success-bold)' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                >
+                  💡
+                </span>
+                <span>Solution</span>
+              </h3>
+              <div 
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-success)',
+                  boxShadow: 'var(--shadow-card)',
+                  backdropFilter: 'var(--glass-backdrop)',
+                }}
+                className="rounded-xl p-8"
+              >
+                <p 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="leading-relaxed font-medium"
+                >
+                  {d?.solution || "No solution description available"}
+                </p>
               </div>
             </motion.section>
           </div>
@@ -544,14 +666,33 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-              <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-linear-to-br from-yellow-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">💎</span>
-              <span>Value Proposition</span>
-            </h3>
-            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-yellow-50 to-amber-50 border-yellow-200">
-                {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                <p className="text-gray-800 text-xl font-bold leading-relaxed">{d.unique_value_proposition}</p>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+              >
+                <span 
+                  style={{ background: 'var(--gradient-warning-bold)' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                >
+                  💎
+                </span>
+                <span>Value Proposition</span>
+              </h3>
+              <div 
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-warning)',
+                  boxShadow: 'var(--shadow-card)',
+                  backdropFilter: 'var(--glass-backdrop)',
+                }}
+                className="rounded-xl p-8"
+              >
+                <p 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="text-xl font-bold leading-relaxed"
+                >
+                  {d.unique_value_proposition}
+                </p>
               </div>
             </motion.section>
           )}
@@ -563,14 +704,33 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-              <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">🎯</span>
-              <span>Target Market</span>
-            </h3>
-            <div className="rounded-xl card-glass p-8 bg-linear-to-r from-indigo-50 to-purple-50 border-indigo-200">
-                {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                <p className="text-gray-800 mb-6 text-lg font-medium leading-relaxed">{d.target_audience.description}</p>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+              >
+                <span 
+                  style={{ background: 'var(--gradient-accent-bold)' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                >
+                  🎯
+                </span>
+                <span>Target Market</span>
+              </h3>
+              <div 
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-accent)',
+                  boxShadow: 'var(--shadow-card)',
+                  backdropFilter: 'var(--glass-backdrop)',
+                }}
+                className="rounded-xl p-8"
+              >
+                <p 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="mb-6 text-lg font-medium leading-relaxed"
+                >
+                  {d.target_audience.description}
+                </p>
                 {Array.isArray(d.target_audience.segments) && (
                   <div className="flex flex-wrap gap-3">
                     {d.target_audience.segments.map((seg, i) => (
@@ -579,7 +739,12 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.6 + i * 0.1 }}
-                        className="status-indicator bg-indigo-100 text-indigo-700 border-indigo-200 px-4 py-2 font-medium"
+                        style={{
+                          background: 'var(--gradient-accent-subtle)',
+                          color: 'var(--text-accent)',
+                          border: '1px solid var(--border-accent)',
+                        }}
+                        className="px-4 py-2 font-medium rounded-full"
                       >
                         {seg}
                       </motion.span>
@@ -599,12 +764,27 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-                <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                  <span className="w-12 h-12 bg-linear-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center text-white text-xl">🎨</span>
+                <h3 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+                >
+                  <span 
+                    style={{ background: 'var(--gradient-error-bold)' }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                  >
+                    🎨
+                  </span>
                   <span>Color Palette</span>
                 </h3>
-                <div className="card-glass p-8">
+                <div 
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-error)',
+                    boxShadow: 'var(--shadow-card)',
+                    backdropFilter: 'var(--glass-backdrop)',
+                  }}
+                  className="p-8 rounded-xl"
+                >
                   <div className="grid grid-cols-2 gap-6">
                     {Object.entries(d.colors).map(([name, color], i) => (
                       <motion.div 
@@ -615,13 +795,27 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                         className="text-center"
                       >
                         <div
-                          className="w-24 h-24 rounded-2xl shadow-xl border-4 border-white mx-auto mb-3 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
+                          className="w-24 h-24 rounded-2xl shadow-xl mx-auto mb-3 hover:scale-110 transition-transform"
+                          style={{ 
+                            backgroundColor: color,
+                            border: '4px solid var(--bg-primary)'
+                          }}
                         />
-                        {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                        <p className="text-sm font-primary font-bold text-gray-800 capitalize mb-1">{name}</p>
-                        {/* DARK THEME: Changed text from neutral-500 to gray-600 for readability on light background */}
-                        <p className="text-xs text-gray-600 font-mono bg-neutral-100 px-2 py-1 rounded">{color}</p>
+                        <p 
+                          style={{ color: 'var(--text-primary)' }}
+                          className="text-sm font-primary font-bold capitalize mb-1"
+                        >
+                          {name}
+                        </p>
+                        <p 
+                          style={{ 
+                            color: 'var(--text-secondary)',
+                            background: 'var(--bg-secondary)'
+                          }}
+                          className="text-xs font-mono px-2 py-1 rounded"
+                        >
+                          {color}
+                        </p>
                       </motion.div>
                     ))}
                   </div>
@@ -636,12 +830,27 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 }}
               >
-                {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-                <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                  <span className="w-12 h-12 bg-linear-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-xl">🚀</span>
+                <h3 
+                  style={{ color: 'var(--text-primary)' }}
+                  className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+                >
+                  <span 
+                    style={{ background: 'var(--gradient-info-bold)' }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                  >
+                    🚀
+                  </span>
                   <span>Logo Concepts</span>
                 </h3>
-                <div className="card-glass p-8">
+                <div 
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-info)',
+                    boxShadow: 'var(--shadow-card)',
+                    backdropFilter: 'var(--glass-backdrop)',
+                  }}
+                  className="p-8 rounded-xl"
+                >
                   <ul className="space-y-4">
                     {d.logo_ideas.map((idea, i) => (
                       <motion.li
@@ -649,11 +858,24 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.8 + i * 0.1 }}
-                        className="flex items-center space-x-4 bg-linear-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-200 hover:shadow-md transition-shadow"
+                        style={{
+                          background: 'var(--gradient-info-subtle)',
+                          border: '1px solid var(--border-info)',
+                        }}
+                        className="flex items-center space-x-4 p-4 rounded-xl hover:shadow-md transition-shadow"
                       >
-                        <span className="w-8 h-8 bg-linear-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-white text-sm">✦</span>
-                        {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                        <span className="text-gray-800 font-medium">{idea}</span>
+                        <span 
+                          style={{ background: 'var(--gradient-info-bold)' }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm"
+                        >
+                          ✦
+                        </span>
+                        <span 
+                          style={{ color: 'var(--text-primary)' }}
+                          className="font-medium"
+                        >
+                          {idea}
+                        </span>
                       </motion.li>
                     ))}
                   </ul>
@@ -669,34 +891,75 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              {/* DARK THEME: Changed text from neutral-800 to white for better contrast */}
-              <h3 className="text-3xl font-primary font-bold text-white mb-6 flex items-center space-x-4">
-                <span className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🌐</span>
+              <h3 
+                style={{ color: 'var(--text-primary)' }}
+                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
+              >
+                <span 
+                  style={{ background: 'var(--gradient-secondary-bold)' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                >
+                  🌐
+                </span>
                 <span>Landing Page Copy</span>
               </h3>
-              <div className="rounded-xl card-glass p-8 bg-linear-to-r from-purple-50 to-pink-50 border-purple-200 space-y-6">
+              <div 
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-secondary)',
+                  boxShadow: 'var(--shadow-card)',
+                  backdropFilter: 'var(--glass-backdrop)',
+                }}
+                className="rounded-xl p-8 space-y-6"
+              >
                 <div>
-                  <p className="text-sm font-primary font-bold text-purple-700 mb-3 flex items-center">
+                  <p 
+                    style={{ color: 'var(--text-secondary)' }}
+                    className="text-sm font-primary font-bold mb-3 flex items-center"
+                  >
                     <span className="mr-2">📢</span>
                     Headline
                   </p>
-                  {/* DARK THEME: Changed text from neutral-800 to gray-800 for readability on light background */}
-                  <p className="text-2xl font-primary font-bold text-gray-800 leading-tight">{d.landing_copy.headline}</p>
+                  <p 
+                    style={{ color: 'var(--text-primary)' }}
+                    className="text-2xl font-primary font-bold leading-tight"
+                  >
+                    {d.landing_copy.headline}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm font-primary font-bold text-purple-700 mb-3 flex items-center">
+                  <p 
+                    style={{ color: 'var(--text-secondary)' }}
+                    className="text-sm font-primary font-bold mb-3 flex items-center"
+                  >
                     <span className="mr-2">📝</span>
                     Subheadline
                   </p>
-                  {/* DARK THEME: Changed text from neutral-700 to gray-800 for readability on light background */}
-                  <p className="text-lg text-gray-800 font-medium leading-relaxed">{d.landing_copy.subheadline}</p>
+                  <p 
+                    style={{ color: 'var(--text-primary)' }}
+                    className="text-lg font-medium leading-relaxed"
+                  >
+                    {d.landing_copy.subheadline}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm font-primary font-bold text-purple-700 mb-3 flex items-center">
+                  <p 
+                    style={{ color: 'var(--text-secondary)' }}
+                    className="text-sm font-primary font-bold mb-3 flex items-center"
+                  >
                     <span className="mr-2">🎯</span>
                     Call to Action
                   </p>
-                  <p className="text-xl text-primary-600 font-bold bg-primary-100 px-4 py-2 rounded-lg inline-block">{d.landing_copy.call_to_action}</p>
+                  <p 
+                    style={{ 
+                      color: 'var(--text-primary)',
+                      background: 'var(--gradient-primary-subtle)',
+                      border: '1px solid var(--border-primary)'
+                    }}
+                    className="text-xl font-bold px-4 py-2 rounded-lg inline-block"
+                  >
+                    {d.landing_copy.call_to_action}
+                  </p>
                 </div>
               </div>
             </motion.section>
@@ -704,8 +967,13 @@ function PitchModal({ pitch, onClose, onDelete, onPreview }) {
         </div>
 
         {/* Modal Footer */}
-        {/* DARK THEME: Changed footer background from neutral-50 to gray-900 for dark theme consistency */}
-        <div className="border-t border-gray-700 p-1.5 bg-gray-900">
+        <div 
+          style={{
+            background: 'var(--bg-elevated)',
+            borderTop: '1px solid var(--border-primary)',
+          }}
+          className="p-1.5"
+        >
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex space-x-1">
               <motion.button

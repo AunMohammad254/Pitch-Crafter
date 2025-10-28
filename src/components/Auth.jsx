@@ -48,9 +48,12 @@ export default function Auth() {
 
   return (
     <main 
-      className="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-600"
+      className="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12 relative overflow-hidden"
       role="main"
       aria-label="Authentication page"
+      style={{
+        background: 'var(--dark-gradient-primary)'
+      }}
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -88,21 +91,27 @@ export default function Auth() {
 
         {/* Auth Card */}
         <section
-          className={`relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/20 shadow-2xl transition-all duration-700 ease-out animate-delay-600 ${
+          className={`relative backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border shadow-2xl transition-all duration-700 ease-out animate-delay-600 ${
             isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
           }`}
           role="region"
           aria-labelledby="auth-heading"
           aria-describedby="auth-description"
+          style={{
+            background: 'var(--dark-glass-bg)',
+            borderColor: 'var(--dark-border-primary)',
+            boxShadow: 'var(--dark-shadow-xl)'
+          }}
         >
           {/* Card glow effect */}
           <div className="absolute inset-0 bg-linear-to-r from-blue-500/20 to-purple-500/20 rounded-2xl sm:rounded-3xl blur-xl opacity-50" aria-hidden="true"></div>
           
           <div className="relative z-10">
             <header className="text-center mb-6 sm:mb-8 lg:mb-10">
-              <h1 id="auth-heading" className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-primary font-bold text-white mb-2 sm:mb-3 lg:mb-4 transition-all duration-500 ease-out ${
+              <h1 id="auth-heading" className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-primary font-bold mb-2 sm:mb-3 lg:mb-4 transition-all duration-500 ease-out ${
                 isLogin ? 'translate-x-0' : 'translate-x-0'
-              }`}>
+              }`}
+              style={{ color: 'var(--dark-text-primary)' }}>
                 {isLogin ? (
                   <span className="flex items-center justify-center gap-3">
                     <span className="text-3xl">👋</span>
@@ -115,7 +124,8 @@ export default function Auth() {
                   </span>
                 )}
               </h1>
-              <p id="auth-description" className="text-gray-300 font-medium text-sm sm:text-base lg:text-lg leading-relaxed max-w-sm mx-auto">
+              <p id="auth-description" className="font-medium text-sm sm:text-base lg:text-lg leading-relaxed max-w-sm mx-auto"
+              style={{ color: 'var(--dark-text-secondary)' }}>
                 {isLogin
                   ? "Sign in to continue creating amazing pitches"
                   : "Create your account to start building pitches"}
@@ -131,7 +141,8 @@ export default function Auth() {
               <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="block text-sm sm:text-base font-medium text-gray-200 mb-2"
+                  className="block text-sm sm:text-base font-medium mb-2"
+                  style={{ color: 'var(--dark-text-secondary)' }}
                 >
                   Email Address <span className="text-red-400" aria-label="required">*</span>
                 </label>
@@ -142,11 +153,24 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 sm:px-5 sm:py-4 lg:py-5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 ease-out hover:bg-white/15 text-base sm:text-lg"
+                  className="w-full px-4 py-3 sm:px-5 sm:py-4 lg:py-5 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 ease-out text-base sm:text-lg"
                   placeholder="Enter your email address"
                   aria-required="true"
                   aria-describedby="email-help"
                   autoComplete="email"
+                  style={{
+                    background: 'var(--dark-input-bg)',
+                    borderColor: 'var(--dark-border-secondary)',
+                    color: 'var(--dark-text-primary)'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'var(--dark-border-focus)';
+                    e.target.style.background = 'var(--dark-input-focus-bg)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--dark-border-secondary)';
+                    e.target.style.background = 'var(--dark-input-bg)';
+                  }}
                 />
                 <div id="email-help" className="sr-only">
                   Enter a valid email address to {isLogin ? 'sign in' : 'create your account'}
@@ -156,7 +180,8 @@ export default function Auth() {
               <div className="space-y-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm sm:text-base font-medium text-gray-200 mb-2"
+                  className="block text-sm sm:text-base font-medium mb-2"
+                  style={{ color: 'var(--dark-text-secondary)' }}
                 >
                   Password <span className="text-red-400" aria-label="required">*</span>
                 </label>
@@ -168,17 +193,36 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 sm:px-5 sm:py-4 lg:py-5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 ease-out hover:bg-white/15 pr-12 sm:pr-14 text-base sm:text-lg"
+                    className="w-full px-4 py-3 sm:px-5 sm:py-4 lg:py-5 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 ease-out pr-12 sm:pr-14 text-base sm:text-lg"
                     placeholder="Enter your password"
                     minLength={6}
                     aria-required="true"
                     aria-describedby="password-help"
                     autoComplete={isLogin ? "current-password" : "new-password"}
+                    style={{
+                      background: 'var(--dark-input-bg)',
+                      borderColor: 'var(--dark-border-secondary)',
+                      color: 'var(--dark-text-primary)'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'var(--dark-border-focus)';
+                      e.target.style.background = 'var(--dark-input-focus-bg)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'var(--dark-border-secondary)';
+                      e.target.style.background = 'var(--dark-input-bg)';
+                    }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 p-1 sm:p-2 touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
+                    className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 transition-colors duration-200 p-1 sm:p-2 touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
+                    style={{
+                      color: 'var(--dark-text-muted)',
+                      '--hover-color': 'var(--dark-text-primary)'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = 'var(--dark-text-primary)'}
+                    onMouseLeave={(e) => e.target.style.color = 'var(--dark-text-muted)'}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     aria-pressed={showPassword}
                     tabIndex={0}
@@ -231,24 +275,52 @@ export default function Auth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 sm:py-5 lg:py-6 px-6 bg-linear-to-r from-blue-500 to-purple-600 
-                         hover:from-blue-600 hover:to-purple-700 disabled:from-gray-500 disabled:to-gray-600
-                         text-white font-semibold text-base sm:text-lg lg:text-xl rounded-2xl
+                className="w-full py-4 sm:py-5 lg:py-6 px-6 font-semibold text-base sm:text-lg lg:text-xl rounded-2xl
                          transition-all duration-300 ease-out transform
                          hover:scale-105 hover:shadow-2xl active:scale-95
                          disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent
                          relative overflow-hidden group touch-manipulation"
+                style={{
+                  background: loading 
+                    ? 'var(--dark-gradient-secondary)' 
+                    : 'var(--dark-button-primary-bg)',
+                  color: loading 
+                    ? 'var(--dark-text-disabled)' 
+                    : 'var(--dark-text-primary)',
+                  border: `1px solid ${loading ? 'var(--dark-border-tertiary)' : 'var(--dark-border-primary)'}`,
+                  boxShadow: loading ? 'none' : 'var(--dark-shadow-md)'
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.target.style.background = 'var(--dark-button-primary-hover)';
+                    e.target.style.borderColor = 'var(--dark-border-hover)';
+                    e.target.style.boxShadow = 'var(--dark-shadow-lg)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading) {
+                    e.target.style.background = 'var(--dark-button-primary-bg)';
+                    e.target.style.borderColor = 'var(--dark-border-primary)';
+                    e.target.style.boxShadow = 'var(--dark-shadow-md)';
+                  }
+                }}
                 aria-describedby="submit-help"
                 aria-live="polite"
               >
                 {/* Button glow effect */}
-                <div className="absolute inset-0 bg-linear-to-r from-blue-400 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-2xl" aria-hidden="true"></div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-2xl" 
+                     style={{ background: 'var(--dark-gradient-primary)' }}
+                     aria-hidden="true"></div>
                 
                 <span className="relative z-10 flex items-center justify-center gap-3">
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
+                      <div 
+                        className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-t-transparent rounded-full animate-spin" 
+                        style={{ borderColor: 'var(--dark-text-disabled)', borderTopColor: 'transparent' }}
+                        aria-hidden="true"
+                      ></div>
                       <span>
                         {isLogin ? "Signing In..." : "Creating Account..."}
                       </span>
@@ -272,9 +344,9 @@ export default function Auth() {
                 
                 {/* Ripple effect */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true">
-                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent 
-                                transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
-                                transition-transform duration-700 ease-out rounded-2xl"></div>
+                  <div className="absolute inset-0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
+                                transition-transform duration-700 ease-out rounded-2xl"
+                       style={{ background: 'linear-gradient(to right, transparent, var(--dark-text-primary-10), transparent)' }}></div>
                 </div>
               </button>
               <div id="submit-help" className="sr-only">
@@ -286,16 +358,26 @@ export default function Auth() {
           </form>
 
             <div className="mt-6 sm:mt-8 lg:mt-10 text-center">
-              <p className="text-gray-300 text-sm sm:text-base lg:text-lg mb-3 sm:mb-4">
+              <p className="text-sm sm:text-base lg:text-lg mb-3 sm:mb-4"
+              style={{ color: 'var(--dark-text-secondary)' }}>
                 {isLogin ? "Don't have an account?" : "Already have an account?"}
               </p>
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-blue-400 hover:text-blue-300 font-semibold text-base sm:text-lg underline decoration-2 underline-offset-4 hover:decoration-blue-300 transition-all duration-300 ease-out transform hover:scale-105 touch-manipulation py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent rounded"
-                aria-label={isLogin ? "Switch to create account form" : "Switch to sign in form"}
+                className="underline transition-colors duration-200 text-sm sm:text-base lg:text-lg font-medium"
+                style={{
+                  color: 'var(--dark-text-secondary)',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = 'var(--dark-text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = 'var(--dark-text-secondary)';
+                }}
+                aria-label={isLogin ? "Switch to create account" : "Switch to sign in"}
               >
-                {isLogin ? "Create Account" : "Sign In"}
+                {isLogin ? "Don't have an account? Create one" : "Already have an account? Sign in"}
               </button>
             </div>
 
@@ -334,27 +416,42 @@ export default function Auth() {
           aria-label="Platform features"
         >
           <div className="grid grid-cols-3 gap-4 sm:gap-6">
-            <article className="group text-center p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
+            <article className="group text-center p-4 sm:p-6 rounded-2xl backdrop-blur-sm border transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
                      role="article"
-                     aria-labelledby="feature-ai">
+                     aria-labelledby="feature-ai"
+                     style={{
+                       background: 'var(--dark-card-bg)',
+                       borderColor: 'var(--dark-border-secondary)'
+                     }}>
               <div className="text-2xl sm:text-3xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">🤖</div>
-              <p id="feature-ai" className="text-sm sm:text-base font-medium text-gray-300 group-hover:text-white transition-colors duration-300">
+              <p id="feature-ai" className="text-sm sm:text-base font-medium transition-colors duration-300"
+              style={{ color: 'var(--dark-text-secondary)' }}>
                 AI-Powered
               </p>
             </article>
-            <article className="group text-center p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
+            <article className="group text-center p-4 sm:p-6 rounded-2xl backdrop-blur-sm border transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
                      role="article"
-                     aria-labelledby="feature-speed">
+                     aria-labelledby="feature-speed"
+                     style={{
+                       background: 'var(--dark-card-bg)',
+                       borderColor: 'var(--dark-border-secondary)'
+                     }}>
               <div className="text-2xl sm:text-3xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">⚡</div>
-              <p id="feature-speed" className="text-sm sm:text-base font-medium text-gray-300 group-hover:text-white transition-colors duration-300">
+              <p id="feature-speed" className="text-sm sm:text-base font-medium transition-colors duration-300"
+              style={{ color: 'var(--dark-text-secondary)' }}>
                 Lightning Fast
               </p>
             </article>
-            <article className="group text-center p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
+            <article className="group text-center p-4 sm:p-6 rounded-2xl backdrop-blur-sm border transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl"
                      role="article"
-                     aria-labelledby="feature-security">
+                     aria-labelledby="feature-security"
+                     style={{
+                       background: 'var(--dark-card-bg)',
+                       borderColor: 'var(--dark-border-secondary)'
+                     }}>
               <div className="text-2xl sm:text-3xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">🔒</div>
-              <p id="feature-security" className="text-sm sm:text-base font-medium text-gray-300 group-hover:text-white transition-colors duration-300">
+              <p id="feature-security" className="text-sm sm:text-base font-medium transition-colors duration-300"
+              style={{ color: 'var(--dark-text-secondary)' }}>
                 Secure
               </p>
             </article>
