@@ -66,11 +66,14 @@ export default function App() {
   if (loading) {
     return (
       <div className="min-h-screen main-content flex items-center justify-center px-4">
-        <div className="flex flex-col items-center animate-fade-in-up text-center">
+        <div className="flex flex-col items-center animate-fade-in-up text-center loading-container">
           <div className="loading-spinner"></div>
-          <p className="mt-4 sm:mt-6 text-neutral-700 text-base sm:text-lg font-primary font-medium">
+          <p className="mt-4 sm:mt-6 text-neutral-700 text-base sm:text-lg font-primary font-medium loading-text">
             Loading your workspace...
           </p>
+          <div className="mt-2 text-xs sm:text-sm text-neutral-500 loading-subtext">
+            Preparing your AI-powered pitch creation environment
+          </div>
         </div>
       </div>
     );

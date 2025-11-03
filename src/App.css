@@ -87,6 +87,25 @@
   
   /* Theme transition duration */
   --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Dark Theme Loader System */
+  --dark-loader-primary: #60a5fa;
+  --dark-loader-secondary: #a78bfa;
+  --dark-loader-accent: #f472b6;
+  --dark-loader-bg: rgba(96, 165, 250, 0.1);
+  --dark-loader-border: rgba(96, 165, 250, 0.3);
+  --dark-loader-glow: rgba(96, 165, 250, 0.4);
+  --dark-loader-text: #e5e7eb;
+  --dark-loader-text-secondary: #9ca3af;
+  
+  /* Dark Theme Loader Gradients */
+  --dark-loader-gradient: linear-gradient(135deg, var(--dark-loader-primary) 0%, var(--dark-loader-secondary) 50%, var(--dark-loader-accent) 100%);
+  --dark-loader-gradient-subtle: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(167, 139, 250, 0.2) 50%, rgba(244, 114, 182, 0.2) 100%);
+  
+  /* Dark Theme Loader Animation Properties */
+  --dark-loader-spin-duration: 1.2s;
+  --dark-loader-pulse-duration: 2s;
+  --dark-loader-fade-duration: 0.8s;
 }
 
 /* 
@@ -367,7 +386,8 @@
   border: 4px solid var(--color-primary-200);
   border-top: 4px solid var(--color-primary-600);
   border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
+  animation: spin var(--dark-loader-spin-duration) linear infinite;
+  transition: var(--theme-transition);
 }
 
 .loading-spinner-sm {
@@ -376,7 +396,355 @@
   border: 2px solid var(--color-primary-200);
   border-top: 2px solid var(--color-primary-600);
   border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
+  animation: spin var(--dark-loader-spin-duration) linear infinite;
+  transition: var(--theme-transition);
+}
+
+/* Dark Theme Loading Spinner Variants */
+.dark-mode-root .loading-spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid var(--dark-loader-border);
+  border-top: 4px solid var(--dark-loader-primary);
+  border-right: 4px solid var(--dark-loader-secondary);
+  border-bottom: 4px solid var(--dark-loader-accent);
+  border-left: 4px solid transparent;
+  border-radius: var(--radius-full);
+  animation: 
+    spin var(--dark-loader-spin-duration) linear infinite,
+    pulse var(--dark-loader-pulse-duration) ease-in-out infinite;
+  box-shadow: 
+    0 0 20px var(--dark-loader-glow),
+    inset 0 0 20px rgba(96, 165, 250, 0.1);
+  position: relative;
+  background: var(--dark-loader-gradient-subtle);
+  backdrop-filter: blur(10px);
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .loading-spinner::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: var(--radius-full);
+  background: var(--dark-loader-gradient);
+  opacity: 0.3;
+  animation: spin calc(var(--dark-loader-spin-duration) * 0.8) linear infinite reverse;
+  z-index: -1;
+}
+
+.dark-mode-root .loading-spinner-sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid var(--dark-loader-border);
+  border-top: 3px solid var(--dark-loader-primary);
+  border-right: 3px solid var(--dark-loader-secondary);
+  border-radius: var(--radius-full);
+  animation: spin var(--dark-loader-spin-duration) linear infinite;
+  box-shadow: 0 0 10px var(--dark-loader-glow);
+  transition: var(--theme-transition);
+}
+
+/* Enhanced Loading Animation Keyframes */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Loading Container Dark Theme */
+.dark-mode-root .loading-container {
+  background: var(--dark-loader-gradient-subtle);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--dark-loader-border);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 0 40px var(--dark-loader-glow);
+  animation: fadeInUp var(--dark-loader-fade-duration) ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark Theme Loading Text Styles */
+.dark-mode-root .loading-text {
+  color: var(--dark-loader-text) !important;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: var(--theme-transition);
+}
+
+.dark-mode-root .loading-subtext {
+  color: var(--dark-loader-text-secondary) !important;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  transition: var(--theme-transition);
+  animation: fadeInUp calc(var(--dark-loader-fade-duration) * 1.5) ease-out 0.3s both;
+}
+
+/* Responsive Loading Text */
+@media (max-width: 640px) {
+  .dark-mode-root .loading-text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .dark-mode-root .loading-text {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-top: 0.75rem;
+  }
+}
+
+/* Loading Text Accessibility Enhancements */
+.dark-mode-root .loading-text,
+.dark-mode-root .loading-subtext {
+  /* Ensure minimum contrast ratio of 4.5:1 for WCAG AA compliance */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading Text Animation Stagger */
+.dark-mode-root .loading-text {
+  animation: fadeInUp var(--dark-loader-fade-duration) ease-out 0.2s both;
+}
+
+/* Theme Transition Enhancements for Loader */
+.loading-spinner,
+.loading-spinner-sm,
+.loading-container,
+.loading-text,
+.loading-subtext {
+  transition: 
+    all var(--theme-transition),
+    border-color var(--theme-transition),
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    box-shadow var(--theme-transition),
+    transform 0.2s ease-out;
+}
+
+/* Smooth Theme Switching Animation */
+@media (prefers-reduced-motion: no-preference) {
+  .dark-mode-root .loading-spinner {
+    transition: 
+      all var(--theme-transition),
+      border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark-mode-root .loading-container {
+    transition: 
+      all var(--theme-transition),
+      background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark-mode-root .loading-text,
+  .dark-mode-root .loading-subtext {
+    transition: 
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      text-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner,
+  .loading-spinner-sm {
+    animation: none;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    animation: none;
+    border: 4px solid var(--dark-loader-primary);
+  }
+  
+  .dark-mode-root .loading-spinner::before {
+    animation: none;
+  }
+  
+  .loading-text,
+  .loading-subtext,
+  .loading-container {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .dark-mode-root .loading-spinner {
+    border-color: #ffffff;
+    border-top-color: var(--dark-loader-primary);
+    box-shadow: none;
+  }
+  
+  .dark-mode-root .loading-text {
+    color: #ffffff !important;
+    text-shadow: none;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    color: #cccccc !important;
+  }
+}
+
+/* Comprehensive Breakpoint Testing for Dark Theme Loader */
+/* Extra Small Devices (phones, 320px and up) */
+@media (max-width: 479px) {
+  .dark-mode-root .loading-container {
+    padding: 1.5rem 1rem;
+    min-height: 200px;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+    margin-bottom: 1rem;
+  }
+  
+  .dark-mode-root .loading-text {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.75rem;
+  }
+}
+
+/* Small Devices (landscape phones, 480px and up) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .dark-mode-root .loading-container {
+    padding: 2rem 1.5rem;
+    min-height: 240px;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+    margin-bottom: 1.25rem;
+  }
+  
+  .dark-mode-root .loading-text {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dark-mode-root .loading-container {
+    padding: 2.5rem 2rem;
+    min-height: 280px;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dark-mode-root .loading-text {
+    font-size: 1.125rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.875rem;
+  }
+}
+
+/* Large Devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  .dark-mode-root .loading-container {
+    padding: 3rem 2.5rem;
+    min-height: 320px;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    width: 56px;
+    height: 56px;
+    border-width: 5px;
+    margin-bottom: 2rem;
+  }
+  
+  .dark-mode-root .loading-text {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Ultra-wide and 4K Display Support */
+@media (min-width: 1920px) {
+  .dark-mode-root .loading-container {
+    padding: 4rem 3rem;
+    min-height: 400px;
+  }
+  
+  .dark-mode-root .loading-spinner {
+    width: 64px;
+    height: 64px;
+    border-width: 6px;
+    margin-bottom: 2.5rem;
+  }
+  
+  .dark-mode-root .loading-text {
+    font-size: 1.375rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .dark-mode-root .loading-subtext {
+    font-size: 1rem;
+  }
 }
 
 /* Navigation enhancements */
