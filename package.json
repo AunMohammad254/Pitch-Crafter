@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:enhanced": "node scripts/dev-server.js",
+    "start": "npm run dev:enhanced",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.75.1",
@@ -26,6 +29,7 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.21",
+    "chalk": "^5.3.0",
     "esbuild": "^0.25.11",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",

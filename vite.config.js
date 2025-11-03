@@ -7,14 +7,19 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  // Static file serving configuration
+  publicDir: 'public',
+  assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.webp'],
   server: {
     host: 'localhost',
-    port: 5173,
-    open: false,
-    strictPort: false,
+    port: process.env.PORT || 3000,
+    open: true, // Automatically open browser
+    strictPort: false, // Allow fallback to next available port
     // Enhanced CORS configuration
     cors: {
       origin: [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'https://generativelanguage.googleapis.com'
@@ -23,10 +28,22 @@ export default defineConfig({
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'x-goog-api-key']
     },
-    // Network timeout and connection settings
+    // Enhanced HMR and automatic reloading settings
     hmr: {
       timeout: 60000,
-      overlay: true
+      overlay: true,
+      port: process.env.HMR_PORT || 24678
+    },
+    // Watch options for better file change detection
+    watch: {
+      usePolling: true,
+      interval: 100
+    },
+    // Middleware for better error handling and logging
+    middlewareMode: false,
+    fs: {
+      strict: true,
+      allow: ['..']
     }
   },
   build: {

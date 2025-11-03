@@ -82,6 +82,8 @@
   --dark-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --dark-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
   --dark-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+  --dark-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  --dark-shadow-focus: 0 0 0 3px rgba(99, 179, 237, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   
   /* Theme transition duration */
   --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -95,7 +97,7 @@
  * - Implements smooth theme transitions
  */
 .dark-mode-root {
-  background: var(--dark-gradient-primary) !important;
+  background: linear-gradient(135deg, var(--dark-bg-primary) 0%, var(--dark-bg-tertiary) 100%) !important;
   min-height: 100vh;
   color: var(--dark-text-primary);
   transition: var(--theme-transition);

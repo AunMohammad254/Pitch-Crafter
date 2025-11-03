@@ -109,7 +109,7 @@ export default function MyPitches({ user, onNavigate }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center py-12 sm:py-16">
             <div className="loading-spinner mx-auto mb-4 sm:mb-6"></div>
@@ -124,7 +124,7 @@ export default function MyPitches({ user, onNavigate }) {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <motion.div 

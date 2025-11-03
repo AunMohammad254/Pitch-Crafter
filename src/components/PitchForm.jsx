@@ -1361,7 +1361,7 @@ Return ONLY complete HTML code:`;
       className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
       style={{
         /* Main container background - black theme */
-        backgroundColor: '#000000',
+        backgroundColor: 'transparent',
         minHeight: '100vh',
         color: '#FFFFFF' /* Default text color for all children */
       }}

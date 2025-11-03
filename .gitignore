@@ -31,3 +31,4 @@ yarn-error.log*
 
 # logs
 *.log
+DEV_SERVER.md

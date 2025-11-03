@@ -5,7 +5,6 @@ import PitchForm from "./components/PitchForm";
 import MyPitches from "./components/MyPitches";
 import {
   NavButton,
-  MobileMenuButton,
   MobileNavItem,
 } from "./components/Button";
 import LogoIcon from "./assets/logo-icon.svg";
@@ -124,7 +123,7 @@ export default function App() {
                   onKeyDown={(e) =>
                     e.key === "Enter" && setCurrentView("generate")
                   }
-                  active={currentView === "generate"}
+                  isActive={currentView === "generate"}
                   aria-label="Generate new pitch"
                   aria-pressed={currentView === "generate"}
                 >
@@ -136,7 +135,7 @@ export default function App() {
                   onKeyDown={(e) =>
                     e.key === "Enter" && setCurrentView("my-pitches")
                   }
-                  active={currentView === "my-pitches"}
+                  isActive={currentView === "my-pitches"}
                   aria-label="View my pitches"
                   aria-pressed={currentView === "my-pitches"}
                 >
