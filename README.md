@@ -70,8 +70,8 @@
 | **Styling**    | Tailwind CSS 4.1.14     | Utility-first CSS framework                      |
 | **Animations** | Framer Motion 12.23.24  | Smooth, professional animations                  |
 | **Backend**    | Supabase                | Authentication, database, and real-time features |
-| **AI Engine**  | Google Gemini 2.0 Flash | Advanced language model for content generation   |
-| **Deployment** | Vercel/Netlify Ready    | Optimized for modern hosting platforms           |
+| **AI Engine**  | Google Gemini 2.5 Flash | Advanced language model for content generation   |
+| **Deployment** | Vercel Ready    | Optimized for modern hosting platforms           |
 
 ---
 
