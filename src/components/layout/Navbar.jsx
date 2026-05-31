@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import LogoIcon from "../assets/logo-icon.svg";
-import { NavButton, MobileNavItem, MobileMenuButton } from "./Button";
+import LogoIcon from "../../assets/logo-icon.svg";
+import { NavButton, MobileNavItem, MobileMenuButton } from "../ui/Button";
 
 export default function Navbar({
     _user,

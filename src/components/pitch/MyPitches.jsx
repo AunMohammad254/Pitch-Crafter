@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { supabase } from "../lib/supabaseClient"
+import { supabase } from "../../lib/supabaseClient"
 import { motion, AnimatePresence } from "framer-motion"
 import PitchCard from "./PitchCard"
 import PitchModal from "./PitchModal"

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GeminiAPIManager } from "../utils/geminiApi";
-import { generatePitchFeedback } from "../utils/prompts";
+import { GeminiAPIManager } from "../../utils/geminiApi";
+import { generatePitchFeedback } from "../../utils/prompts";
 
 export default function PitchPractice({ pitch, onExit }) {
     const [isRecording, setIsRecording] = useState(false);

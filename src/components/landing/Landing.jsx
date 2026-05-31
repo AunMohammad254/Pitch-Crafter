@@ -3,7 +3,7 @@ import LandingHero from "./LandingHero";
 import LandingFeatures from "./LandingFeatures";
 import LandingCTA from "./LandingCTA";
 import LandingFooter from "./LandingFooter";
-import LogoIcon from "../assets/logo-icon.svg";
+import LogoIcon from "../../assets/logo-icon.svg";
 
 export default function Landing({ onNavigate }) {
   useEffect(() => {

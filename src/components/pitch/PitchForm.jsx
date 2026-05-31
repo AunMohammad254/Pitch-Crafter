@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
-import { LinkButton } from "./Button";
-import GalaxyButton from "./GalaxyButton";
-import LogoIcon from "../assets/logo.svg";
-import { GeminiAPIManager } from "../utils/geminiApi";
+import { LinkButton } from "../ui/Button";
+import GalaxyButton from "../ui/GalaxyButton";
+import LogoIcon from "../../assets/logo.svg";
+import { GeminiAPIManager } from "../../utils/geminiApi";
 import CustomModelSelector from "./ModelSelector";
 import PitchDetails from "./PitchDetails";
 
 const CodePreview = lazy(() => import("./CodePreview"));
-import { generatePitchPrompt, generateWebsitePrompt } from "../utils/prompts";
+import { generatePitchPrompt, generateWebsitePrompt } from "../../utils/prompts";
 
 export default function PitchForm({ user, onNavigate }) {
   const [prompt, setPrompt] = useState("");
@@ -414,7 +414,7 @@ export default function PitchForm({ user, onNavigate }) {
             border: '1px solid var(--border-primary)',
             boxShadow: 'var(--shadow-2xl)',
           }}
-          className={`max-w-4xl mx-auto rounded-2xl sm:rounded-3xl p-1 bg-opacity-80 backdrop-blur-xl transition-all duration-500 ${result ? 'mb-8' : 'mb-20'}`}
+          className={`max-w-4xl mx-auto rounded-2xl sm:rounded-3xl p-1 backdrop-blur-xl transition-all duration-500 ${result ? 'mb-8' : 'mb-20'}`}
           animate={{
             scale: loading ? 0.98 : 1,
             opacity: 1

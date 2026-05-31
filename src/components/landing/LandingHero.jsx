@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import LogoIcon from "../assets/logo-icon.svg";
+import LogoIcon from "../../assets/logo-icon.svg";
 
 export default function LandingHero({ onGetStarted, onLearnMore }) {
   const [isVisible, setIsVisible] = useState(false);

@@ -1,4 +1,4 @@
-import LogoIcon from "../assets/logo-icon.svg";
+import LogoIcon from "../../assets/logo-icon.svg";
 
 const footerLinks = [
   {

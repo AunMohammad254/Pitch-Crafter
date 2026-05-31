@@ -47,7 +47,7 @@ const CodePreview = ({ code, onOpenPreview, onShowNotification }) => {
                 color: 'var(--text-primary)',
                 border: '1px solid var(--border-secondary)',
               }}
-              className="px-4 py-2 rounded-lg text-sm font-semibold hover:bg-opacity-80 transition-colors flex items-center"
+              className="px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-80 transition-opacity flex items-center"
             >
               <span className="mr-2">📋</span> Copy Code
             </button>

@@ -1,17 +1,17 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { supabase } from "./lib/supabaseClient";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 import LogoIcon from "./assets/logo-icon.svg";
 import "./App.css";
 
-const Auth = lazy(() => import("./components/Auth"));
-const Landing = lazy(() => import("./components/Landing"));
-const PitchForm = lazy(() => import("./components/PitchForm"));
-const MyPitches = lazy(() => import("./components/MyPitches"));
-const UpdatePassword = lazy(() => import("./components/UpdatePassword"));
-const InvestorChat = lazy(() => import("./components/InvestorChat"));
-const PitchPractice = lazy(() => import("./components/PitchPractice"));
-const AuroraBackground = lazy(() => import("./components/AuroraBackground"));
+const Auth = lazy(() => import("./components/auth/Auth"));
+const Landing = lazy(() => import("./components/landing/Landing"));
+const PitchForm = lazy(() => import("./components/pitch/PitchForm"));
+const MyPitches = lazy(() => import("./components/pitch/MyPitches"));
+const UpdatePassword = lazy(() => import("./components/auth/UpdatePassword"));
+const InvestorChat = lazy(() => import("./components/simulator/InvestorChat"));
+const PitchPractice = lazy(() => import("./components/simulator/PitchPractice"));
+const AuroraBackground = lazy(() => import("./components/ui/AuroraBackground"));
 
 export default function App() {
   const [user, setUser] = useState(null);

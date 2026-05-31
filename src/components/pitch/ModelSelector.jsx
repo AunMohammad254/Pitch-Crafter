@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MODELS } from "../utils/geminiApi";
+import { MODELS } from "../../utils/geminiApi";
 
 const CustomModelSelector = ({ selectedModel, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);

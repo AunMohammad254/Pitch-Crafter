@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
-import LogoIcon from "../assets/logo-icon.svg";
+import { supabase } from "../../lib/supabaseClient";
+import LogoIcon from "../../assets/logo-icon.svg";
 
 function validateEmail(email) {
   if (!email) return { valid: false, message: "" };

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import LogoIcon from "../assets/logo-icon.svg";
+import { supabase } from "../../lib/supabaseClient";
+import LogoIcon from "../../assets/logo-icon.svg";
 
 export default function UpdatePassword({ onFullfill }) {
     const [password, setPassword] = useState("");

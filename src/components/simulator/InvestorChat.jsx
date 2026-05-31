@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GeminiAPIManager } from "../utils/geminiApi";
-import { generateInvestorPrompt } from "../utils/prompts";
+import { GeminiAPIManager } from "../../utils/geminiApi";
+import { generateInvestorPrompt } from "../../utils/prompts";
 
 export default function InvestorChat({ pitch, onExit }) {
     const [messages, setMessages] = useState([]);

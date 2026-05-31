@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import PitchEditor from "./PitchEditor";
-import { exportToPDF, exportToPPTX } from "../utils/exportUtils";
+import { exportToPDF, exportToPPTX } from "../../utils/exportUtils";
 
 const PitchDetails = ({ data: propData, onUpdate }) => {
   const [displayData, setDisplayData] = useState(propData);
@@ -223,7 +223,7 @@ const PitchDetails = ({ data: propData, onUpdate }) => {
                   background: 'var(--bg-tertiary)',
                   border: '1px solid var(--border-secondary)',
                 }}
-                className="p-3 rounded-lg flex items-center space-x-3 hover:bg-opacity-80 transition-colors"
+                className="p-3 rounded-lg flex items-center space-x-3 hover:opacity-80 transition-opacity"
               >
                 <span
                   style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', borderColor: 'var(--border-primary)' }}
@@ -255,11 +255,11 @@ const PitchDetails = ({ data: propData, onUpdate }) => {
                   className="h-16 w-full rounded-lg shadow-md border border-(--border-secondary) transition-transform transform group-hover:scale-105 relative overflow-hidden"
                   style={{ backgroundColor: hex }}
                 >
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
                 </div>
                 <div className="flex justify-between items-center">
                   <span style={{ color: 'var(--text-secondary)' }} className="text-sm capitalize font-medium">{name}</span>
-                  <span style={{ color: 'var(--text-tertiary)' }} className="text-xs font-mono bg-opacity-10 px-2 py-1 rounded">
+                  <span style={{ color: 'var(--text-tertiary)' }} className="text-xs font-mono bg-neutral-500/10 px-2 py-1 rounded">
                     {hex}
                   </span>
                 </div>
