@@ -403,7 +403,7 @@ export default function Auth() {
                       e.target.style.color = 'var(--dark-text-secondary)';
                     }}
                   >
-                    {authMode === 'signin' ? "Don't have an account? Create one" : "Already have an account? Sign in"}
+                    {authMode === 'signin' ? "Create one" : "Sign in"}
                   </button>
                 </>
               ) : (

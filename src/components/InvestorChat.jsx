@@ -32,7 +32,7 @@ export default function InvestorChat({ pitch, onExit }) {
                 const response = await apiManager.current.makeRequest(
                     { contents: [{ parts: [{ text: prompt }] }] },
                     apiKey,
-                    "gemini-1.5-flash",
+                    "auto",
                     0,
                     setQueueStatus
                 );

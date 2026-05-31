@@ -2,11 +2,11 @@ import { checkNetworkStatus, logNetworkDiagnostics } from "./networkUtils";
 
 export const MODELS = {
   "auto": { id: "auto", name: "✨ Auto (Smart Select)" },
-  "gemini-3-flash": { id: "gemini-3-flash", name: "⚡ Gemini 3.0 Flash (Best)" },
-  "gemini-2.5-flash": { id: "gemini-2.5-flash", name: "🚀 Gemini 2.5 Flash" },
-  "gemini-2.5-flash-lite": { id: "gemini-2.5-flash-lite", name: "💨 Gemini 2.5 Flash Lite" },
-  "gemma-3-27b": { id: "gemma-3-27b", name: "🧠 Gemma 3 27B" },
-  "gemma-3-12b": { id: "gemma-3-12b", name: "🤖 Gemma 3 12B" },
+  "gemini-3.5-flash": { id: "gemini-3.5-flash", name: "⚡ Gemini 3.5 Flash" },
+  "gemini-3.1-flash-lite": { id: "gemini-3.1-flash-lite", name: "💨 Gemini 3.1 Flash Lite" },
+  "gemini-3-flash": { id: "gemini-3-flash", name: "🚀 Gemini 3.0 Flash" },
+  "gemini-2.5-pro": { id: "gemini-2.5-pro", name: "🧠 Gemini 2.5 Pro" },
+  "gemini-2.5-flash": { id: "gemini-2.5-flash", name: "🤖 Gemini 2.5 Flash" }
 };
 
 export class GeminiAPIManager {
@@ -15,26 +15,30 @@ export class GeminiAPIManager {
     this.isProcessing = false;
     this.maxRetries = 5;
     this.rateLimits = {
-      "gemini-3-flash": { rpm: 1, window: 60000 },
-      "gemini-2.5-flash": { rpm: 5, window: 60000 },
-      "default": { rpm: 2, window: 60000 }
+      "gemini-3.5-flash": { rpm: 4, window: 60000 },
+      "gemini-3.1-flash-lite": { rpm: 14, window: 60000 },
+      "gemini-3-flash": { rpm: 4, window: 60000 },
+      "gemini-2.5-pro": { rpm: 4, window: 60000 },
+      "gemini-2.5-flash": { rpm: 4, window: 60000 },
+      "default": { rpm: 4, window: 60000 }
     };
   }
 
-  // Get locally stored usage timestamp to enforce "1 user 1 minute" rule for high-end models
+  // Get locally stored usage timestamp to enforce rate limit interval
   canMakeLocalRequest(modelId) {
     if (modelId === 'auto') return true;
+
+    const limit = this.rateLimits[modelId] || this.rateLimits.default;
+    const interval = Math.ceil(limit.window / limit.rpm);
 
     const lastUsageKey = `pitchcraft_last_usage_${modelId}`;
     const lastUsage = localStorage.getItem(lastUsageKey);
     const now = Date.now();
 
-    // Specific rule: 1 user 1 min for gemini-3-flash
-    if (modelId === 'gemini-3-flash') {
-      if (lastUsage && (now - parseInt(lastUsage)) < 60000) {
-        const remaining = Math.ceil((60000 - (now - parseInt(lastUsage))) / 1000);
-        throw new Error(`Wait ${remaining}s before reusing ${MODELS[modelId].name}. Rate limit: 1/min.`);
-      }
+    if (lastUsage && (now - parseInt(lastUsage)) < interval) {
+      const remaining = Math.ceil((interval - (now - parseInt(lastUsage))) / 1000);
+      const modelName = MODELS[modelId]?.name || modelId;
+      throw new Error(`Wait ${remaining}s before reusing ${modelName}. Rate limit: ${limit.rpm} RPM.`);
     }
     return true;
   }
@@ -57,8 +61,8 @@ export class GeminiAPIManager {
     }
 
     // Basic format validation for Google API keys
-    if (!apiKey.startsWith('AIza') || apiKey.length < 35) {
-      throw new Error("Invalid Gemini API key format. Google API keys should start with 'AIza' and be at least 35 characters long.");
+    if (!(apiKey.startsWith('AIza') || apiKey.startsWith('AQ.')) || apiKey.length < 35) {
+      throw new Error("Invalid Gemini API key format. Google API keys should start with 'AIza' or 'AQ.' and be at least 35 characters long.");
     }
 
     // Check for common placeholder values
@@ -116,7 +120,7 @@ export class GeminiAPIManager {
     // Resolve Model ID
     let targetModel = modelId;
     if (modelId === 'auto') {
-      targetModel = 'gemini-2.5-flash';
+      targetModel = 'gemini-3.5-flash';
     }
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
