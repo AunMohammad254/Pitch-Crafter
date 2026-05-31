@@ -1,7 +1,3 @@
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import PptxGenJS from 'pptxgenjs';
-
 export const exportToPDF = async (elementId, fileName = 'pitch.pdf') => {
   const element = document.getElementById(elementId);
   if (!element) {
@@ -13,6 +9,9 @@ export const exportToPDF = async (elementId, fileName = 'pitch.pdf') => {
   // For now, we capture as is.
 
   try {
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
+
     const canvas = await html2canvas(element, {
       scale: 2, // Improve quality
       useCORS: true,
@@ -53,9 +52,10 @@ export const exportToPDF = async (elementId, fileName = 'pitch.pdf') => {
   }
 };
 
-export const exportToPPTX = (data) => {
+export const exportToPPTX = async (data) => {
   if (!data) return;
 
+  const PptxGenJS = (await import('pptxgenjs')).default;
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_16x9';
   

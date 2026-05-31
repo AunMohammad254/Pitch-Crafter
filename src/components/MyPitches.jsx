@@ -324,7 +324,7 @@ export default function MyPitches({ user, onNavigate }) {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.hash = "#generate"}
+                onClick={() => onNavigate && onNavigate('generate')}
                 className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4"
               >
                 <span className="mr-2 sm:mr-3 text-lg sm:text-xl">✨</span>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,7 +8,8 @@ import LogoIcon from "../assets/logo.svg";
 import { GeminiAPIManager } from "../utils/geminiApi";
 import CustomModelSelector from "./ModelSelector";
 import PitchDetails from "./PitchDetails";
-import CodePreview from "./CodePreview";
+
+const CodePreview = lazy(() => import("./CodePreview"));
 import { generatePitchPrompt, generateWebsitePrompt } from "../utils/prompts";
 
 export default function PitchForm({ user, onNavigate }) {
@@ -590,7 +591,14 @@ export default function PitchForm({ user, onNavigate }) {
                     onUpdate={setResult}
                   />
                 ) : (
-                  <CodePreview code={landingCode} onOpenPreview={openPreview} onShowNotification={showNotification} />
+                  <Suspense fallback={
+                    <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }} className="flex flex-col items-center justify-center p-12 rounded-xl text-center shadow-lg">
+                      <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Loading code preview component...</p>
+                    </div>
+                  }>
+                    <CodePreview code={landingCode} onOpenPreview={openPreview} onShowNotification={showNotification} />
+                  </Suspense>
                 )}
               </motion.div>
             </motion.div>

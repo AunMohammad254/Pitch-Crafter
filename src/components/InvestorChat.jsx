@@ -37,8 +37,8 @@ export default function InvestorChat({ pitch, onExit }) {
                     setQueueStatus
                 );
 
-                if (response && response.candidates && response.candidates[0].content) {
-                    const sharkMessage = response.candidates[0].content.parts[0].text;
+                if (response) {
+                    const sharkMessage = typeof response === "string" ? response : response.candidates?.[0]?.content?.parts?.[0]?.text || "";
                     setMessages([
                         {
                             id: 1,
