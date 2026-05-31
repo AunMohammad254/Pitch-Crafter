@@ -71,8 +71,6 @@ export default defineConfig(({ mode }) => ({
           'vendor-motion': ['framer-motion'],
           // Backend service
           'vendor-supabase': ['@supabase/supabase-js'],
-          // Styling utilities
-          'vendor-styled': ['styled-components'],
           // PDF generation
           'vendor-pdf': ['jspdf', 'html2canvas'],
           // PowerPoint generation
@@ -125,8 +123,7 @@ export default defineConfig(({ mode }) => ({
       'react',
       'react-dom',
       'framer-motion',
-      '@supabase/supabase-js',
-      'styled-components'
+      '@supabase/supabase-js'
     ],
     exclude: [],
     force: false

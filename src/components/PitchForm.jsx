@@ -113,9 +113,6 @@ export default function PitchForm({ user, onNavigate }) {
       // Validate API key before proceeding
       apiManager.validateApiKey(apiKey);
 
-      // Check API quota and availability
-      await apiManager.checkApiQuota(apiKey);
-
       // Step 1: Get Pitch Data
       console.log('📊 Step 1: Generating pitch data...');
 

@@ -36,6 +36,10 @@ export default function App() {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setCurrentView("update-password");
+      } else if (event === "SIGNED_IN") {
+        setCurrentView("generate");
+      } else if (event === "SIGNED_OUT") {
+        setCurrentView("landing");
       }
       setUser(session?.user ?? null);
       setLoading(false);
@@ -192,11 +196,7 @@ export default function App() {
                 <p className="mt-4 text-neutral-400 text-sm font-medium">Loading component view...</p>
               </div>
             }>
-              {currentView === "generate" ? (
-                <div key="generate" className="animate-fade-in-up w-full">
-                  <PitchForm user={user} onNavigate={setCurrentView} />
-                </div>
-              ) : currentView === "my-pitches" ? (
+              {currentView === "my-pitches" ? (
                 <div key="my-pitches" className="animate-fade-in-up w-full">
                   <MyPitches user={user} onNavigate={(view, pitch) => {
                     if (pitch) setActivePitch(pitch);
@@ -211,7 +211,7 @@ export default function App() {
                 <div key="pitch-practice" className="animate-fade-in-up w-full">
                   <PitchPractice pitch={activePitch} onExit={() => setCurrentView("my-pitches")} />
                 </div>
-              ) : (
+              ) : currentView === "update-password" ? (
                 <div key="update-password" className="animate-fade-in-up w-full">
                   <UpdatePassword onFullfill={() => {
                     setCurrentView("generate");
@@ -220,6 +220,10 @@ export default function App() {
                       setUser(session?.user ?? null);
                     });
                   }} />
+                </div>
+              ) : (
+                <div key="generate" className="animate-fade-in-up w-full">
+                  <PitchForm user={user} onNavigate={setCurrentView} />
                 </div>
               )}
             </Suspense>
