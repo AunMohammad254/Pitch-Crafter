@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
+import Landing from "./components/Landing";
 import PitchForm from "./components/PitchForm";
 import MyPitches from "./components/MyPitches";
 import UpdatePassword from "./components/UpdatePassword";
@@ -13,20 +14,22 @@ import AuroraBackground from "./components/AuroraBackground";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [currentView, setCurrentView] = useState("generate");
-  const [activePitch, setActivePitch] = useState(null); // Pitch for simulation/practice
+  const [currentView, setCurrentView] = useState("landing");
+  const [authInitialMode, setAuthInitialMode] = useState("signin");
+  const [activePitch, setActivePitch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        setCurrentView("generate");
+      }
       setLoading(false);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -39,6 +42,15 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleAuthNavigate = (view, initialMode) => {
+    setAuthInitialMode(initialMode || "signin");
+    setCurrentView(view);
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentView("landing");
+  };
 
   // Keyboard shortcuts for navigation
   useEffect(() => {
@@ -86,7 +98,10 @@ export default function App() {
   }
 
   if (!user && currentView !== "update-password") {
-    return <Auth />;
+    if (currentView === "auth") {
+      return <Auth initialMode={authInitialMode} onBackToHome={handleBackToLanding} />;
+    }
+    return <Landing onNavigate={handleAuthNavigate} />;
   }
 
   return (
