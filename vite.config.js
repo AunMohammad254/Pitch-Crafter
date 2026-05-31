@@ -72,7 +72,15 @@ export default defineConfig(({ mode }) => ({
           // Backend service
           'vendor-supabase': ['@supabase/supabase-js'],
           // Styling utilities
-          'vendor-styled': ['styled-components']
+          'vendor-styled': ['styled-components'],
+          // PDF generation
+          'vendor-pdf': ['jspdf', 'html2canvas'],
+          // PowerPoint generation
+          'vendor-pptx': ['pptxgenjs'],
+          // Syntax highlighting
+          'vendor-highlight': ['react-syntax-highlighter'],
+          // WebGL / Graphics
+          'vendor-ogl': ['ogl']
         },
         // Asset naming for better caching
         assetFileNames: (assetInfo) => {
@@ -92,7 +100,7 @@ export default defineConfig(({ mode }) => ({
     },
 
     // Chunk size warning
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 800,
 
     // Source maps only in development
     sourcemap: mode === 'development',
