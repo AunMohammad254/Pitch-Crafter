@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { LinkButton } from "./Button";
@@ -19,6 +20,7 @@ export default function PitchForm({ user, onNavigate }) {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("pitch");
   const [showPreview, setShowPreview] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [apiManager] = useState(() => new GeminiAPIManager());
 
@@ -47,6 +49,7 @@ export default function PitchForm({ user, onNavigate }) {
 
   const closePreview = () => {
     setShowPreview(false);
+    setIsFullscreen(false);
   };
 
   function showNotification(message, type) {
@@ -223,13 +226,12 @@ export default function PitchForm({ user, onNavigate }) {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-linear-to-r from-[${colors.primary
-      }] to-[${colors.secondary
-      }] rounded-lg flex items-center justify-center">
-                        <img src={LogoIcon} alt="Pitch Crafter" className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <div class="w-10 h-10 bg-gradient-to-r from-[${colors.primary}] to-[${colors.secondary}] rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                     </div>
-                    <span class="text-xl font-bold text-gray-900">${pitchData.name
-      }</span>
+                    <span class="text-xl font-bold text-gray-900">${pitchData.name}</span>
                 </div>
                 <button class="bg-[${colors.primary
       }] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[${colors.secondary
@@ -594,26 +596,75 @@ export default function PitchForm({ user, onNavigate }) {
             </motion.div>
           )}
         </AnimatePresence>
-        {showPreview && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
+        {showPreview && createPortal(
+          <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in ${isFullscreen ? '' : 'p-4'}`}>
             <div
-              style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }}
-              className="w-full h-[90vh] max-w-7xl rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-scale-in relative z-101"
+              style={{ background: 'var(--bg-elevated)', border: isFullscreen ? 'none' : '1px solid var(--border-primary)' }}
+              className={`overflow-hidden shadow-2xl flex flex-col animate-scale-in relative transition-all duration-300
+                ${isFullscreen ? 'w-screen h-screen rounded-none' : 'w-full h-[90vh] max-w-7xl rounded-2xl'}
+              `}
             >
               <div
                 style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-secondary)' }}
                 className="p-4 flex justify-between items-center"
               >
-                <h3 style={{ color: 'var(--text-primary)' }} className="font-bold text-lg flex items-center">
-                  <span className="mr-2">📱</span> Live Preview
+                <h3 style={{ color: 'var(--text-primary)' }} className="font-bold text-base sm:text-lg flex items-center truncate">
+                  <span className="mr-2">📱</span> Live Preview {result?.name ? `- ${result.name}` : ''}
                 </h3>
-                <button
-                  onClick={closePreview}
-                  className="p-2 rounded-full transition-colors hover:bg-white/10"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  ✕
-                </button>
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  {/* View in New Tab */}
+                  <button
+                    type="button"
+                    onClick={() => window.open(previewUrl, '_blank')}
+                    title="View in new tab"
+                    className="p-2 rounded-lg transition-colors hover:bg-white/10 flex items-center text-sm font-medium"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span className="hidden sm:inline">New Tab</span>
+                  </button>
+
+                  {/* Toggle Full Screen */}
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
+                    className="p-2 rounded-lg transition-colors hover:bg-white/10 flex items-center text-sm font-medium"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {isFullscreen ? (
+                      <>
+                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4" />
+                        </svg>
+                        <span className="hidden sm:inline">Exit Full</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4h4m12 4V4h-4M4 16v4h4m12-4v4h-4" />
+                        </svg>
+                        <span className="hidden sm:inline">Full Screen</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Close */}
+                  <button
+                    type="button"
+                    onClick={closePreview}
+                    title="Close"
+                    className="p-2 rounded-lg transition-colors hover:bg-red-500/20 hover:text-red-400 flex items-center text-sm font-semibold"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span className="hidden sm:inline">Close</span>
+                  </button>
+                </div>
               </div>
               <div className="flex-1 bg-gray-100 relative">
                 {previewUrl ? (
@@ -633,7 +684,8 @@ export default function PitchForm({ user, onNavigate }) {
                 )}
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 

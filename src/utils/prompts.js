@@ -47,9 +47,11 @@ Requirements:
 - Professional startup aesthetic
 - Include: Hero, Features, Testimonials, CTA, Footer
 - Add interactive elements
-- IMPORTANT: Do NOT use any external images (no Unsplash, no external URLs)
-- Use CSS gradients, emoji icons, and solid colors for visual elements
-- Use placeholder text for testimonials instead of external images
+- IMPORTANT: Do NOT use any <img> tags pointing to external URLs or local file paths (e.g. logo.png, logo.svg) as they will fail to load and show a broken image icon.
+- For logos, icons, and branding illustrations, use inline SVG code or emojis.
+- Do NOT use React-style JSX syntax (like className or src={...}) in the HTML code. Output only standard, pure static HTML with native attributes (class, src, style, etc.).
+- Use CSS gradients, inline SVG icons, and solid colors for visual elements.
+- Use text placeholders for testimonials instead of image avatars.
 
 Return ONLY complete HTML code:`;
 
