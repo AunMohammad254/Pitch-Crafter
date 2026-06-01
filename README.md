@@ -59,6 +59,7 @@ Step into the tank and pitch your idea to **Marcus**, a tough, skeptical venture
 
 ## 🛠️ Technology Stack
 
+<<<<<<< HEAD
 | Category       | Technology                 | Purpose                                          |
 | -------------- | -------------------------- | ------------------------------------------------ |
 | **Runtime**    | Bun                        | Package manager and JavaScript runtime           |
@@ -68,6 +69,17 @@ Step into the tank and pitch your idea to **Marcus**, a tough, skeptical venture
 | **Animations** | Framer Motion 12.23.24     | Micro-interactions and fluid screen transitions  |
 | **Backend**    | Supabase                   | User authentication, secure database, and API proxy|
 | **AI Engine**  | Google Gemini 2.5 Flash    | Advanced AI model for generation and evaluation |
+=======
+| Category       | Technology              | Purpose                                          |
+| -------------- | ----------------------- | ------------------------------------------------ |
+| **Frontend**   | React 19.1.1            | Modern UI framework with latest features         |
+| **Build Tool** | Vite 7.1.7              | Lightning-fast development and building          |
+| **Styling**    | Tailwind CSS 4.1.14     | Utility-first CSS framework                      |
+| **Animations** | Framer Motion 12.23.24  | Smooth, professional animations                  |
+| **Backend**    | Supabase                | Authentication, database, and real-time features |
+| **AI Engine**  | Google Gemini 2.5 Flash | Advanced language model for content generation   |
+| **Deployment** | Vercel Ready    | Optimized for modern hosting platforms           |
+>>>>>>> 7a70f3d19a10e26fb76bd1e100adf452e35b7960
 
 ---
 
