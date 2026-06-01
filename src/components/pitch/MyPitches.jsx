@@ -29,13 +29,13 @@ export default function MyPitches({ user, onNavigate }) {
   // 🔹 Delete pitch
   async function handleDelete(id) {
     if (!confirm("Are you sure you want to delete this pitch?")) return
-    const { error } = await supabase.from("pitches").delete().eq("id", id)
-    if (error) {
+    
+    try {
+      await deletePitchFromStore(id)
+      showNotification("✅ Pitch deleted successfully!", "success")
+    } catch (error) {
       console.error("❌ Delete Error:", error)
       showNotification("❌ Failed to delete pitch", "error")
-    } else {
-      deletePitchFromStore(id)
-      showNotification("✅ Pitch deleted successfully!", "success")
     }
   }
 

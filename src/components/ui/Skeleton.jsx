@@ -26,3 +26,39 @@ export const PitchCardSkeleton = () => {
     </div>
   );
 };
+
+export const PitchDetailsSkeleton = () => {
+  return (
+    <div className="space-y-8">
+      {/* Header Skeleton */}
+      <div className="p-6 rounded-xl border border-white/10 bg-white/5">
+        <div className="flex justify-between items-start mb-6">
+          <div className="space-y-3 w-1/2">
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-6 w-3/4 rounded-lg" />
+          </div>
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Skeleton className="h-20 rounded-lg" />
+          <Skeleton className="h-20 rounded-lg" />
+          <Skeleton className="h-20 rounded-lg" />
+        </div>
+        <Skeleton className="h-24 w-full rounded-lg" />
+      </div>
+
+      {/* Problem/Solution Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Skeleton className="h-48 rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
+      </div>
+
+      {/* Identity Skeleton */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-64 rounded-xl" />
+      </div>
+    </div>
+  );
+};

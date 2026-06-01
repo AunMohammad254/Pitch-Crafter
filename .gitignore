@@ -82,6 +82,10 @@ DOCUMENTS.md
 QUICK_REFERENCE.md
 PLANNING.md
 
+# Local AI
+.agents
+graphify-out/
+
 # Lock files (optional - remove if you want to commit them)
 # package-lock.json
 # yarn.lock

@@ -1,10 +1,7 @@
 import { checkNetworkStatus, logNetworkDiagnostics } from "./networkUtils";
+import { handleError } from "./errorHandler";
 
 export const MODELS = {
-  "nano-banana-pro": { id: "nano-banana-pro", name: "🍌 Nano Banana Pro (Gemini 3 Pro Image)" },
-  "nano-banana-2": { id: "nano-banana-2", name: "🍌 Nano Banana 2 (Gemini 3.1 Flash Image)" },
-  "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" },
-  "gemini-2.5-flash-tts": { id: "gemini-2.5-flash-tts", name: "🔊 Gemini 2.5 Flash TTS" },
   "auto": { id: "auto", name: "✨ Auto (Smart Select)" },
   "gemini-3.5-flash": { id: "gemini-3.5-flash", name: "⚡ Gemini 3.5 Flash" },
   "gemini-3.1-flash-lite": { id: "gemini-3.1-flash-lite", name: "💨 Gemini 3.1 Flash Lite" },
@@ -14,8 +11,10 @@ export const MODELS = {
 };
 
 export const IMAGE_MODELS = {
-  "gemini-2.5-flash-tts": { id: "gemini-2.5-flash-tts", name: "🔊 Gemini 2.5 Flash TTS" },
-  "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" }
+  "nano-banana-pro": { id: "nano-banana-pro", name: "🍌 Nano Banana Pro (Gemini 3 Pro Image)" },
+  "nano-banana-2": { id: "nano-banana-2", name: "🍌 Nano Banana 2 (Gemini 3.1 Flash Image)" },
+  "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" },
+  "gemini-2.5-flash-tts": { id: "gemini-2.5-flash-tts", name: "🔊 Gemini 2.5 Flash TTS" }
 };
 
 export class GeminiAPIManager {
@@ -197,7 +196,7 @@ export class GeminiAPIManager {
       return this.validateAndParseResponse(data);
 
     } catch (error) {
-      console.error(`❌ Request failed:`, error);
+      handleError(error, `Gemini API Request (${modelId})`);
       throw error;
     }
   }

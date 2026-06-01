@@ -28,7 +28,7 @@ export const PitchBrandIdentity = ({
             <span className="mr-2">🎨</span> Logo Concepts
           </h3>
           <div className="space-y-3">
-            {data.logo_ideas.map((idea, index) => (
+            {(data.logo_ideas || []).map((idea, index) => (
               <div
                 key={index}
                 style={{
@@ -71,7 +71,7 @@ export const PitchBrandIdentity = ({
           <span className="mr-2">🎭</span> Brand Colors
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          {Object.entries(data.colors).map(([name, hex]) => (
+          {Object.entries(data.colors || {}).map(([name, hex]) => (
             <div key={name} className="space-y-2 group cursor-pointer">
               <div
                 className="h-16 w-full rounded-lg shadow-md border border-(--border-secondary) transition-transform transform group-hover:scale-105 relative overflow-hidden"

@@ -2,14 +2,15 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LinkButton } from "../ui/Button";
 import LogoIcon from "../../assets/logo.svg";
-import PitchDetails from "./PitchDetails";
 import ErrorBoundary from "../ui/ErrorBoundary";
 import PitchInputForm from "./PitchInputForm";
 import LivePreview from "./LivePreview";
 import GenerationProgress from "./GenerationProgress";
+import { PitchDetailsSkeleton } from "../ui/Skeleton";
 import { usePitchGeneration } from "../../hooks/usePitchGeneration";
 
 const CodePreview = lazy(() => import("./CodePreview"));
+const PitchDetails = lazy(() => import("./PitchDetails"));
 
 export default function PitchForm({ user, onNavigate }) {
   const [prompt, setPrompt] = useState("");
@@ -232,7 +233,9 @@ export default function PitchForm({ user, onNavigate }) {
               >
                 <ErrorBoundary>
                   {activeTab === "pitch" ? (
-                    <PitchDetails data={result} onUpdate={updatePitchData} />
+                    <Suspense fallback={<PitchDetailsSkeleton />}>
+                      <PitchDetails data={result} onUpdate={updatePitchData} />
+                    </Suspense>
                   ) : (
                     <Suspense fallback={
                       <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }} className="flex flex-col items-center justify-center p-12 rounded-xl text-center shadow-lg">

@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabaseClient";
 import Navbar from "./components/layout/Navbar";
 import LogoIcon from "./assets/logo-icon.svg";
 import { KeyboardShortcutsModal } from "./components/ui/KeyboardShortcutsModal";
+import { motion } from "framer-motion";
 import "./App.css";
 
 const Auth = lazy(() => import("./components/auth/Auth"));
@@ -25,29 +26,58 @@ export default function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        setCurrentView("generate");
-      }
-      setLoading(false);
-    });
+    let subscription = null;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setCurrentView("update-password");
-      } else if (event === "SIGNED_IN") {
-        setCurrentView("generate");
-      } else if (event === "SIGNED_OUT") {
-        setCurrentView("landing");
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          setCurrentView("generate");
+        }
+      } catch (err) {
+        console.error("Supabase getSession failed, cleaning up local storage:", err);
+        // If local storage holds invalid/stale tokens, clear it
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith("sb-") || key.includes("supabase"))) {
+              localStorage.removeItem(key);
+            }
+          }
+        } catch (e) {
+          console.error("Could not clear localStorage:", e);
+        }
+      } finally {
+        setLoading(false);
       }
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
 
-    return () => subscription.unsubscribe();
+      try {
+        const { data } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            setCurrentView("update-password");
+          } else if (event === "SIGNED_IN") {
+            setCurrentView("generate");
+          } else if (event === "SIGNED_OUT") {
+            setCurrentView("landing");
+          }
+          setUser(session?.user ?? null);
+          setLoading(false);
+        });
+        subscription = data?.subscription;
+      } catch (err) {
+        console.error("Supabase onAuthStateChange failed:", err);
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const handleAuthNavigate = (view, initialMode) => {

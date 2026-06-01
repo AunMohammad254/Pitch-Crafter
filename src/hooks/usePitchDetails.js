@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { GeminiAPIManager } from "../utils/geminiApi";
+import { handleError } from "../utils/errorHandler";
 
 export function usePitchDetails(propData, onUpdate) {
-  const [displayData, setDisplayData] = useState(propData);
+  const [displayData, setDisplayData] = useState(propData || null);
   const [isEditing, setIsEditing] = useState(false);
-  const [logoSvg, setLogoSvg] = useState(propData.logo_svg || null);
+  const [logoSvg, setLogoSvg] = useState(propData?.logo_svg || null);
   const [generatingLogo, setGeneratingLogo] = useState(false);
   const [generatingConcept, setGeneratingConcept] = useState(null);
   const [imageModel, setImageModel] = useState("gemini-2.5-flash-tts");
@@ -15,8 +16,8 @@ export function usePitchDetails(propData, onUpdate) {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   useEffect(() => {
-    setDisplayData(propData);
-    if (propData.logo_svg) {
+    setDisplayData(propData || null);
+    if (propData?.logo_svg) {
       setLogoSvg(propData.logo_svg);
     } else {
       setLogoSvg(null);
@@ -42,23 +43,23 @@ export function usePitchDetails(propData, onUpdate) {
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 3000);
     } catch (err) {
-      console.error("Auto-save failed:", err);
+      handleError(err, "Auto-save Pitch Details");
       setSaveStatus("error");
     }
   };
 
   const handleGenerateLogo = async (concept) => {
-    if (!apiKey) return;
+    if (!apiKey || !displayData) return;
     setGeneratingLogo(true);
     setGeneratingConcept(concept);
     try {
       const prompt = `You are a professional brand designer. Generate a clean, modern, minimalist SVG logo based on this concept description: "${concept}".
-The startup name is "${displayData.name}" and the tagline is "${displayData.tagline}".
+The startup name is "${displayData.name || 'Startup'}" and the tagline is "${displayData.tagline || ''}".
 Strictly use these brand colors:
-- Primary: ${displayData.colors.primary}
-- Secondary: ${displayData.colors.secondary}
-- Accent: ${displayData.colors.accent}
-- Neutral: ${displayData.colors.neutral}
+- Primary: ${displayData.colors?.primary || '#3B82F6'}
+- Secondary: ${displayData.colors?.secondary || '#8B5CF6'}
+- Accent: ${displayData.colors?.accent || '#06B6D4'}
+- Neutral: ${displayData.colors?.neutral || '#6B7280'}
 
 Output specifications:
 1. Output ONLY valid, raw SVG XML code.
@@ -82,7 +83,7 @@ Output specifications:
         handleSave(updatedData);
       }
     } catch (err) {
-      console.error("Logo generation failed:", err);
+      handleError(err, "Generate Logo SVG");
     } finally {
       setGeneratingLogo(false);
       setGeneratingConcept(null);
