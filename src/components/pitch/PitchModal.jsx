@@ -1,7 +1,35 @@
 import { motion } from "framer-motion";
+import { supabase } from "../../lib/supabaseClient";
+import PitchDetails from "./PitchDetails";
 
-export default function PitchModal({ pitch, onClose, onDelete, onPreview, onSimulate, onPractice }) {
+export default function PitchModal({ pitch, onClose, onDelete, onPreview, onSimulate, onPractice, onUpdate }) {
     const d = pitch.generated_data;
+
+    const handleUpdate = async (newGeneratedData) => {
+        const updatedPitch = {
+            ...pitch,
+            generated_data: newGeneratedData,
+            title: newGeneratedData.name,
+            short_description: newGeneratedData.tagline,
+            industry: newGeneratedData.industry
+        };
+
+        const { error } = await supabase
+            .from("pitches")
+            .update({
+                generated_data: newGeneratedData,
+                title: newGeneratedData.name,
+                short_description: newGeneratedData.tagline,
+                industry: newGeneratedData.industry
+            })
+            .eq("id", pitch.id);
+
+        if (error) {
+            console.error("Failed to update pitch:", error);
+        } else {
+            if (onUpdate) onUpdate(updatedPitch);
+        }
+    };
 
     return (
         <motion.div
@@ -68,422 +96,12 @@ export default function PitchModal({ pitch, onClose, onDelete, onPreview, onSimu
                 {/* Modal Content */}
                 <div
                     style={{ background: "var(--bg-secondary)" }}
-                    className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10"
+                    className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"
                 >
-                    {/* Elevator Pitch */}
-                    <motion.section
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <h3
-                            style={{ color: "var(--text-primary)" }}
-                            className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                        >
-                            <span
-                                style={{ background: "var(--gradient-primary-bold)" }}
-                                className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                            >
-                                🎯
-                            </span>
-                            <span>Elevator Pitch</span>
-                        </h3>
-                        <div
-                            style={{
-                                background: "var(--bg-elevated)",
-                                border: "1px solid var(--border-primary)",
-                                boxShadow: "var(--shadow-card)",
-                                backdropFilter: "var(--glass-backdrop)",
-                            }}
-                            className="p-8 rounded-xl"
-                        >
-                            <p
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-lg leading-relaxed font-medium"
-                            >
-                                {d?.elevator_pitch || "No elevator pitch available"}
-                            </p>
-                        </div>
-                    </motion.section>
-
-                    {/* Problem & Solution */}
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        <motion.section
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <h3
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                            >
-                                <span
-                                    style={{ background: "var(--gradient-danger-bold)" }}
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                >
-                                    🧩
-                                </span>
-                                <span>Problem</span>
-                            </h3>
-                            <div
-                                style={{
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-danger)",
-                                    boxShadow: "var(--shadow-card)",
-                                    backdropFilter: "var(--glass-backdrop)",
-                                }}
-                                className="rounded-xl p-8"
-                            >
-                                <p
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="leading-relaxed font-medium"
-                                >
-                                    {d?.problem || "No problem description available"}
-                                </p>
-                            </div>
-                        </motion.section>
-
-                        <motion.section
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 }}
-                        >
-                            <h3
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                            >
-                                <span
-                                    style={{ background: "var(--gradient-success-bold)" }}
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                >
-                                    💡
-                                </span>
-                                <span>Solution</span>
-                            </h3>
-                            <div
-                                style={{
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-success)",
-                                    boxShadow: "var(--shadow-card)",
-                                    backdropFilter: "var(--glass-backdrop)",
-                                }}
-                                className="rounded-xl p-8"
-                            >
-                                <p
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="leading-relaxed font-medium"
-                                >
-                                    {d?.solution || "No solution description available"}
-                                </p>
-                            </div>
-                        </motion.section>
-                    </div>
-
-                    {/* Unique Value Proposition */}
-                    {d?.unique_value_proposition && (
-                        <motion.section
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <h3
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                            >
-                                <span
-                                    style={{ background: "var(--gradient-warning-bold)" }}
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                >
-                                    💎
-                                </span>
-                                <span>Value Proposition</span>
-                            </h3>
-                            <div
-                                style={{
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-warning)",
-                                    boxShadow: "var(--shadow-card)",
-                                    backdropFilter: "var(--glass-backdrop)",
-                                }}
-                                className="rounded-xl p-8"
-                            >
-                                <p
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="text-xl font-bold leading-relaxed"
-                                >
-                                    {d.unique_value_proposition}
-                                </p>
-                            </div>
-                        </motion.section>
-                    )}
-
-                    {/* Target Audience */}
-                    {d?.target_audience && (
-                        <motion.section
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <h3
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                            >
-                                <span
-                                    style={{ background: "var(--gradient-accent-bold)" }}
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                >
-                                    🎯
-                                </span>
-                                <span>Target Market</span>
-                            </h3>
-                            <div
-                                style={{
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-accent)",
-                                    boxShadow: "var(--shadow-card)",
-                                    backdropFilter: "var(--glass-backdrop)",
-                                }}
-                                className="rounded-xl p-8"
-                            >
-                                <p
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="mb-6 text-lg font-medium leading-relaxed"
-                                >
-                                    {d.target_audience.description}
-                                </p>
-                                {Array.isArray(d.target_audience.segments) && (
-                                    <div className="flex flex-wrap gap-3">
-                                        {d.target_audience.segments.map((seg, i) => (
-                                            <motion.span
-                                                key={i}
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                transition={{ delay: 0.6 + i * 0.1 }}
-                                                style={{
-                                                    background: "var(--gradient-accent-subtle)",
-                                                    color: "var(--text-accent)",
-                                                    border: "1px solid var(--border-accent)",
-                                                }}
-                                                className="px-4 py-2 font-medium rounded-full"
-                                            >
-                                                {seg}
-                                            </motion.span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </motion.section>
-                    )}
-
-                    {/* Branding Section */}
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        {/* Colors */}
-                        {d?.colors && (
-                            <motion.section
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.6 }}
-                            >
-                                <h3
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                                >
-                                    <span
-                                        style={{ background: "var(--gradient-error-bold)" }}
-                                        className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                    >
-                                        🎨
-                                    </span>
-                                    <span>Color Palette</span>
-                                </h3>
-                                <div
-                                    style={{
-                                        background: "var(--bg-elevated)",
-                                        border: "1px solid var(--border-error)",
-                                        boxShadow: "var(--shadow-card)",
-                                        backdropFilter: "var(--glass-backdrop)",
-                                    }}
-                                    className="p-8 rounded-xl"
-                                >
-                                    <div className="grid grid-cols-2 gap-6">
-                                        {Object.entries(d.colors).map(([name, color], i) => (
-                                            <motion.div
-                                                key={name}
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                transition={{ delay: 0.7 + i * 0.1 }}
-                                                className="text-center"
-                                            >
-                                                <div
-                                                    className="w-24 h-24 rounded-2xl shadow-xl mx-auto mb-3 hover:scale-110 transition-transform"
-                                                    style={{
-                                                        backgroundColor: color,
-                                                        border: "4px solid var(--bg-primary)",
-                                                    }}
-                                                />
-                                                <p
-                                                    style={{ color: "var(--text-primary)" }}
-                                                    className="text-sm font-primary font-bold capitalize mb-1"
-                                                >
-                                                    {name}
-                                                </p>
-                                                <p
-                                                    style={{
-                                                        color: "var(--text-secondary)",
-                                                        background: "var(--bg-secondary)"
-                                                    }}
-                                                    className="text-xs font-mono px-2 py-1 rounded"
-                                                >
-                                                    {color}
-                                                </p>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </motion.section>
-                        )}
-
-                        {/* Logo Ideas */}
-                        {d?.logo_ideas && (
-                            <motion.section
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.7 }}
-                            >
-                                <h3
-                                    style={{ color: "var(--text-primary)" }}
-                                    className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                                >
-                                    <span
-                                        style={{ background: "var(--gradient-info-bold)" }}
-                                        className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                    >
-                                        🚀
-                                    </span>
-                                    <span>Logo Concepts</span>
-                                </h3>
-                                <div
-                                    style={{
-                                        background: "var(--bg-elevated)",
-                                        border: "1px solid var(--border-info)",
-                                        boxShadow: "var(--shadow-card)",
-                                        backdropFilter: "var(--glass-backdrop)",
-                                    }}
-                                    className="p-8 rounded-xl"
-                                >
-                                    <ul className="space-y-4">
-                                        {d.logo_ideas.map((idea, i) => (
-                                            <motion.li
-                                                key={i}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.8 + i * 0.1 }}
-                                                style={{
-                                                    background: "var(--gradient-info-subtle)",
-                                                    border: "1px solid var(--border-info)",
-                                                }}
-                                                className="flex items-center space-x-4 p-4 rounded-xl hover:shadow-md transition-shadow"
-                                            >
-                                                <span
-                                                    style={{ background: "var(--gradient-info-bold)" }}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm"
-                                                >
-                                                    ✦
-                                                </span>
-                                                <span
-                                                    style={{ color: "var(--text-primary)" }}
-                                                    className="font-medium"
-                                                >
-                                                    {idea}
-                                                </span>
-                                            </motion.li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </motion.section>
-                        )}
-                    </div>
-
-                    {/* Landing Copy */}
-                    {d?.landing_copy && (
-                        <motion.section
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8 }}
-                        >
-                            <h3
-                                style={{ color: "var(--text-primary)" }}
-                                className="text-3xl font-primary font-bold mb-6 flex items-center space-x-4"
-                            >
-                                <span
-                                    style={{ background: "var(--gradient-secondary-bold)" }}
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
-                                >
-                                    🌐
-                                </span>
-                                <span>Landing Page Copy</span>
-                            </h3>
-                            <div
-                                style={{
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-secondary)",
-                                    boxShadow: "var(--shadow-card)",
-                                    backdropFilter: "var(--glass-backdrop)",
-                                }}
-                                className="rounded-xl p-8 space-y-6"
-                            >
-                                <div>
-                                    <p
-                                        style={{ color: "var(--text-secondary)" }}
-                                        className="text-sm font-primary font-bold mb-3 flex items-center"
-                                    >
-                                        <span className="mr-2">📢</span>
-                                        Headline
-                                    </p>
-                                    <p
-                                        style={{ color: "var(--text-primary)" }}
-                                        className="text-2xl font-primary font-bold leading-tight"
-                                    >
-                                        {d.landing_copy.headline}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p
-                                        style={{ color: "var(--text-secondary)" }}
-                                        className="text-sm font-primary font-bold mb-3 flex items-center"
-                                    >
-                                        <span className="mr-2">📝</span>
-                                        Subheadline
-                                    </p>
-                                    <p
-                                        style={{ color: "var(--text-primary)" }}
-                                        className="text-lg font-medium leading-relaxed"
-                                    >
-                                        {d.landing_copy.subheadline}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p
-                                        style={{ color: "var(--text-secondary)" }}
-                                        className="text-sm font-primary font-bold mb-3 flex items-center"
-                                    >
-                                        <span className="mr-2">🎯</span>
-                                        Call to Action
-                                    </p>
-                                    <p
-                                        style={{
-                                            color: "var(--text-primary)",
-                                            background: "var(--gradient-primary-subtle)",
-                                            border: "1px solid var(--border-primary)"
-                                        }}
-                                        className="text-xl font-bold px-4 py-2 rounded-lg inline-block"
-                                    >
-                                        {d.landing_copy.call_to_action}
-                                    </p>
-                                </div>
-                            </div>
-                        </motion.section>
-                    )}
+                    <PitchDetails
+                        data={d}
+                        onUpdate={handleUpdate}
+                    />
                 </div>
 
                 {/* Modal Footer */}

@@ -8,6 +8,7 @@ import LogoIcon from "../../assets/logo.svg";
 import { GeminiAPIManager } from "../../utils/geminiApi";
 import CustomModelSelector from "./ModelSelector";
 import PitchDetails from "./PitchDetails";
+import ErrorBoundary from "../ui/ErrorBoundary";
 
 const CodePreview = lazy(() => import("./CodePreview"));
 import { generatePitchPrompt, generateWebsitePrompt } from "../../utils/prompts";
@@ -17,6 +18,7 @@ export default function PitchForm({ user, onNavigate }) {
   const [selectedModel, setSelectedModel] = useState("auto");
   const [queueStatus, setQueueStatus] = useState(null);
   const [result, setResult] = useState(null);
+  const [pitchId, setPitchId] = useState(null);
   const [landingCode, setLandingCode] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("pitch");
@@ -25,26 +27,28 @@ export default function PitchForm({ user, onNavigate }) {
   const [previewUrl, setPreviewUrl] = useState("");
   const [apiManager] = useState(() => new GeminiAPIManager());
 
-  const generatePreview = useCallback(() => {
-    if (!landingCode) return;
+  // Handle preview URL with proper cleanup to prevent memory leaks
+  useEffect(() => {
+    let url = "";
+    if (landingCode) {
+      try {
+        const blob = new Blob([landingCode], { type: "text/html" });
+        url = URL.createObjectURL(blob);
+        setPreviewUrl(url);
+      } catch (error) {
+        console.error("Error creating preview URL:", error);
+      }
+    }
 
-    // Create blob from HTML code
-    const blob = new Blob([landingCode], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    setPreviewUrl(url);
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+        setPreviewUrl("");
+      }
+    };
   }, [landingCode]);
 
-  // Generate preview URL when landing code changes
-  useEffect(() => {
-    if (landingCode && !previewUrl) {
-      generatePreview();
-    }
-  }, [landingCode, previewUrl, generatePreview]);
-
   const openPreview = () => {
-    if (!previewUrl) {
-      generatePreview();
-    }
     setShowPreview(true);
   };
 
@@ -114,8 +118,6 @@ export default function PitchForm({ user, onNavigate }) {
       apiManager.validateApiKey(apiKey);
 
       // Step 1: Get Pitch Data
-      console.log('📊 Step 1: Generating pitch data...');
-
       const pitchPrompt = generatePitchPrompt(prompt);
 
       const requestBody = {
@@ -146,7 +148,7 @@ export default function PitchForm({ user, onNavigate }) {
 
       // Step 3: Save to Supabase
       console.log('💾 Step 3: Saving to database...');
-      const { error } = await supabase.from("pitches").insert({
+      const { data: insertedData, error } = await supabase.from("pitches").insert({
         user_id: user.id,
         title: parsed.name,
         short_description: parsed.tagline,
@@ -155,11 +157,15 @@ export default function PitchForm({ user, onNavigate }) {
         language: "auto",
         generated_data: parsed,
         landing_code: generatedCode,
-      });
+      }).select();
 
       if (error) {
         console.error('❌ Database save error:', error);
         throw new Error(`Failed to save pitch: ${error.message}`);
+      }
+
+      if (insertedData && insertedData.length > 0) {
+        setPitchId(insertedData[0].id);
       }
 
       console.log('🎉 Pitch generation completed successfully!');
@@ -582,21 +588,42 @@ export default function PitchForm({ user, onNavigate }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                {activeTab === "pitch" ? (
-                  <PitchDetails
-                    data={result}
-                    onUpdate={setResult}
-                  />
-                ) : (
-                  <Suspense fallback={
-                    <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }} className="flex flex-col items-center justify-center p-12 rounded-xl text-center shadow-lg">
-                      <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Loading code preview component...</p>
-                    </div>
-                  }>
-                    <CodePreview code={landingCode} onOpenPreview={openPreview} onShowNotification={showNotification} />
-                  </Suspense>
-                )}
+                <ErrorBoundary>
+                  {activeTab === "pitch" ? (
+                    <PitchDetails
+                      data={result}
+                      onUpdate={async (newData) => {
+                        setResult(newData);
+                        if (pitchId) {
+                          console.log('💾 Auto-saving pitch updates to database:', pitchId);
+                          const { error } = await supabase
+                            .from("pitches")
+                            .update({
+                              generated_data: newData,
+                              title: newData.name,
+                              short_description: newData.tagline,
+                              industry: newData.industry,
+                            })
+                            .eq("id", pitchId);
+                          if (error) {
+                            console.error('❌ Database update error:', error);
+                          } else {
+                            console.log('✅ Database update successful!');
+                          }
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Suspense fallback={
+                      <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }} className="flex flex-col items-center justify-center p-12 rounded-xl text-center shadow-lg">
+                        <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Loading code preview component...</p>
+                      </div>
+                    }>
+                      <CodePreview code={landingCode} onOpenPreview={openPreview} onShowNotification={showNotification} />
+                    </Suspense>
+                  )}
+                </ErrorBoundary>
               </motion.div>
             </motion.div>
           )}

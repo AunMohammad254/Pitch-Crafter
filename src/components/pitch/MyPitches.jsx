@@ -1,38 +1,30 @@
 import { useEffect, useState } from "react"
-import { supabase } from "../../lib/supabaseClient"
 import { motion, AnimatePresence } from "framer-motion"
+import { supabase } from "../../lib/supabaseClient"
+import { usePitchStore } from "../../stores/pitchStore"
+import { PitchCardSkeleton } from "../ui/Skeleton"
 import PitchCard from "./PitchCard"
 import PitchModal from "./PitchModal"
 
 export default function MyPitches({ user, onNavigate }) {
-  const [pitches, setPitches] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [selectedPitch, setSelectedPitch] = useState(null)
+  const {
+    pitches,
+    isLoading,
+    fetchPitches,
+    selectedPitch,
+    setSelectedPitch,
+    deletePitchFromStore,
+    updatePitchInStore
+  } = usePitchStore();
+
   const [searchTerm, setSearchTerm] = useState("")
   const [filterIndustry, setFilterIndustry] = useState("all")
   const [sortBy, setSortBy] = useState("newest")
 
-  // 🔹 Fetch user pitches from Supabase
+  // 🔹 Fetch user pitches from store
   useEffect(() => {
-    async function fetchPitches() {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from("pitches")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-
-      if (error) {
-        console.error("❌ Error fetching pitches:", error)
-        showNotification("❌ Failed to load pitches", "error")
-      } else {
-        setPitches(data)
-      }
-      setLoading(false)
-    }
-
-    fetchPitches()
-  }, [user.id])
+    fetchPitches();
+  }, [fetchPitches])
 
   // 🔹 Delete pitch
   async function handleDelete(id) {
@@ -42,9 +34,8 @@ export default function MyPitches({ user, onNavigate }) {
       console.error("❌ Delete Error:", error)
       showNotification("❌ Failed to delete pitch", "error")
     } else {
-      setPitches(pitches.filter((p) => p.id !== id))
+      deletePitchFromStore(id)
       showNotification("✅ Pitch deleted successfully!", "success")
-      setSelectedPitch(null)
     }
   }
 
@@ -108,16 +99,27 @@ export default function MyPitches({ user, onNavigate }) {
     window.open(url, '_blank')
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center py-12 sm:py-16">
-            <div className="loading-spinner mx-auto mb-4 sm:mb-6"></div>
-            {/* DARK THEME: Changed text from neutral-700 to white for better contrast on black background */}
-            <h2 className="text-xl sm:text-2xl font-primary font-bold text-white mb-2">Loading Your Pitches</h2>
-            {/* DARK THEME: Changed text from neutral-600 to white for better contrast */}
-            <p className="text-sm sm:text-base text-white font-medium">Gathering your startup portfolio...</p>
+        <div className="w-full">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 sm:mb-12">
+            <div className="flex items-center space-x-6">
+              <Skeleton className="w-16 h-16 rounded-2xl" />
+              <div>
+                <Skeleton className="w-48 h-10 mb-2" />
+                <Skeleton className="w-64 h-6" />
+              </div>
+            </div>
+            <div className="flex space-x-4 mt-6 lg:mt-0">
+              <Skeleton className="w-40 h-12 rounded-xl" />
+              <Skeleton className="w-40 h-12 rounded-xl" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <PitchCardSkeleton key={i} />
+            ))}
           </div>
         </div>
       </div>
@@ -368,9 +370,11 @@ export default function MyPitches({ user, onNavigate }) {
                   onNavigate("pitch-practice", selectedPitch);
                 }
               }}
+              onUpdate={(updatedPitch) => {
+                updatePitchInStore(updatedPitch);
+              }}
             />
           )}
-
         </AnimatePresence>
       </div>
     </div>

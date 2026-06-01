@@ -1,6 +1,10 @@
 import { checkNetworkStatus, logNetworkDiagnostics } from "./networkUtils";
 
 export const MODELS = {
+  "nano-banana-pro": { id: "nano-banana-pro", name: "🍌 Nano Banana Pro (Gemini 3 Pro Image)" },
+  "nano-banana-2": { id: "nano-banana-2", name: "🍌 Nano Banana 2 (Gemini 3.1 Flash Image)" },
+  "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" },
+  "gemini-2.5-flash-tts": { id: "gemini-2.5-flash-tts", name: "🔊 Gemini 2.5 Flash TTS" },
   "auto": { id: "auto", name: "✨ Auto (Smart Select)" },
   "gemini-3.5-flash": { id: "gemini-3.5-flash", name: "⚡ Gemini 3.5 Flash" },
   "gemini-3.1-flash-lite": { id: "gemini-3.1-flash-lite", name: "💨 Gemini 3.1 Flash Lite" },
@@ -9,12 +13,21 @@ export const MODELS = {
   "gemini-2.5-flash": { id: "gemini-2.5-flash", name: "🤖 Gemini 2.5 Flash" }
 };
 
+export const IMAGE_MODELS = {
+  "gemini-2.5-flash-tts": { id: "gemini-2.5-flash-tts", name: "🔊 Gemini 2.5 Flash TTS" },
+  "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" }
+};
+
 export class GeminiAPIManager {
   constructor() {
     this.queue = [];
     this.isProcessing = false;
     this.maxRetries = 5;
     this.rateLimits = {
+      "nano-banana-pro": { rpm: 4, window: 60000 },
+      "nano-banana-2": { rpm: 15, window: 60000 },
+      "gemini-3.1-flash-tts": { rpm: 2, window: 60000 },
+      "gemini-2.5-flash-tts": { rpm: 2, window: 60000 },
       "gemini-3.5-flash": { rpm: 4, window: 60000 },
       "gemini-3.1-flash-lite": { rpm: 14, window: 60000 },
       "gemini-3-flash": { rpm: 4, window: 60000 },
@@ -120,7 +133,26 @@ export class GeminiAPIManager {
     // Resolve Model ID
     let targetModel = modelId;
     if (modelId === 'auto') {
-      targetModel = 'gemini-3.5-flash';
+      targetModel = 'gemini-2.5-flash';
+    }
+
+    // Map custom/experimental models to standard available endpoints
+    const modelMapping = {
+      "nano-banana-pro": "gemini-2.5-pro",
+      "nano-banana-2": "gemini-2.5-flash",
+      "gemini-3.1-flash-tts": "gemini-2.5-flash",
+      "gemini-2.5-flash-tts": "gemini-2.5-flash",
+      "gemini-3.5-flash": "gemini-2.5-flash",
+      "gemini-3.1-flash-lite": "gemini-2.5-flash",
+      "gemini-3-flash": "gemini-2.5-flash",
+      "gemini-2.5-pro": "gemini-2.5-pro",
+      "gemini-2.5-flash": "gemini-2.5-flash",
+      "imagen-3": "gemini-2.5-flash",
+      "gemini-svg": "gemini-2.5-pro"
+    };
+
+    if (modelMapping[targetModel]) {
+      targetModel = modelMapping[targetModel];
     }
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;

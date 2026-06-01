@@ -75,6 +75,13 @@ temp
 # Build artifacts
 *.map
 
+# Documentation
+PROJECT_ANALYSIS_REPORT.md
+GEMINI.md
+DOCUMENTS.md
+QUICK_REFERENCE.md
+PLANNING.md
+
 # Lock files (optional - remove if you want to commit them)
 # package-lock.json
 # yarn.lock

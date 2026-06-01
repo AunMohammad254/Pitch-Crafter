@@ -44,7 +44,10 @@ export class NetworkMonitor {
 
   // Check if network is available
   isNetworkAvailable() {
-    return this.isOnline;
+    if (!this.isOnline) {
+      console.warn("⚠️ navigator.onLine is false, but proceeding with request anyway.");
+    }
+    return true;
   }
 
   // Log network diagnostics

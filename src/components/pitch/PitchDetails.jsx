@@ -2,18 +2,104 @@ import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import PitchEditor from "./PitchEditor";
 import { exportToPDF, exportToPPTX } from "../../utils/exportUtils";
+import { GeminiAPIManager } from "../../utils/geminiApi";
+import { CustomImageModelSelector } from "./ModelSelector";
 
 const PitchDetails = ({ data: propData, onUpdate }) => {
   const [displayData, setDisplayData] = useState(propData);
   const [isEditing, setIsEditing] = useState(false);
+  const [logoSvg, setLogoSvg] = useState(propData.logo_svg || null);
+  const [generatingLogo, setGeneratingLogo] = useState(false);
+  const [generatingConcept, setGeneratingConcept] = useState(null);
+  const [imageModel, setImageModel] = useState("gemini-2.5-flash-tts");
+  const [copied, setCopied] = useState(false);
+
+  const apiManager = React.useRef(new GeminiAPIManager());
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   useEffect(() => {
     setDisplayData(propData);
+    if (propData.logo_svg) {
+      setLogoSvg(propData.logo_svg);
+    } else {
+      setLogoSvg(null);
+    }
   }, [propData]);
 
   const handleSave = (newData) => {
     setDisplayData(newData);
     if (onUpdate) onUpdate(newData);
+  };
+
+  const extractSvg = (text) => {
+    if (!text) return null;
+    const match = text.match(/```(?:xml|html|svg)?([\s\S]*?)```/) || text.match(/(<svg[\s\S]*?<\/svg>)/);
+    if (match) {
+      return match[1].trim();
+    }
+    return text.trim();
+  };
+
+  const handleGenerateLogo = async (concept) => {
+    if (!apiKey) return;
+    setGeneratingLogo(true);
+    setGeneratingConcept(concept);
+    try {
+      const prompt = `You are a professional brand designer. Generate a clean, modern, minimalist SVG logo based on this concept description: "${concept}".
+The startup name is "${data.name}" and the tagline is "${data.tagline}".
+Strictly use these brand colors:
+- Primary: ${data.colors.primary}
+- Secondary: ${data.colors.secondary}
+- Accent: ${data.colors.accent}
+- Neutral: ${data.colors.neutral}
+
+Output specifications:
+1. Output ONLY valid, raw SVG XML code.
+2. Wrap the code in an \`\`\`xml or \`\`\`svg markdown block. Do not write any explanations, preamble, or notes.
+3. Make the SVG responsive using a viewBox attribute (e.g. viewBox="0 0 200 200"). Do not use hardcoded width/height outside viewBox.
+4. Ensure the background of the SVG is transparent (no solid filled background rectangle).
+5. Style all text elements cleanly (e.g. using standard sans-serif system fonts).`;
+
+      const requestBody = {
+        contents: [{ parts: [{ text: prompt }] }],
+      };
+
+      const responseText = await apiManager.current.makeRequest(requestBody, apiKey, imageModel);
+      const extracted = extractSvg(responseText);
+      if (extracted) {
+        setLogoSvg(extracted);
+        const updatedData = {
+          ...data,
+          logo_svg: extracted
+        };
+        handleSave(updatedData);
+      }
+    } catch (err) {
+      console.error("Logo generation failed:", err);
+    } finally {
+      setGeneratingLogo(false);
+      setGeneratingConcept(null);
+    }
+  };
+
+  const handleDownloadSvg = () => {
+    if (!logoSvg) return;
+    const blob = new Blob([logoSvg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${data.name || 'startup'}_logo.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCopySvg = () => {
+    if (!logoSvg) return;
+    navigator.clipboard.writeText(logoSvg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const data = displayData;
@@ -203,37 +289,48 @@ const PitchDetails = ({ data: propData, onUpdate }) => {
       </motion.div>
 
       {/* Brand Identity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Logo Concepts */}
         <motion.div
           style={{
             background: 'var(--bg-elevated)',
             border: '1px solid var(--border-primary)',
           }}
-          className="p-4 sm:p-6 rounded-xl"
+          className="p-4 sm:p-6 rounded-xl flex flex-col justify-between"
         >
-          <h3 style={{ color: 'var(--text-primary)' }} className="text-xl font-bold mb-4 flex items-center">
-            <span className="mr-2">🎨</span> Logo Concepts
-          </h3>
-          <div className="space-y-3">
-            {data.logo_ideas.map((idea, index) => (
-              <div
-                key={index}
-                style={{
-                  background: 'var(--bg-tertiary)',
-                  border: '1px solid var(--border-secondary)',
-                }}
-                className="p-3 rounded-lg flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <span
-                  style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', borderColor: 'var(--border-primary)' }}
-                  className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold border"
+          <div>
+            <h3 style={{ color: 'var(--text-primary)' }} className="text-xl font-bold mb-4 flex items-center">
+              <span className="mr-2">🎨</span> Logo Concepts
+            </h3>
+            <div className="space-y-3">
+              {data.logo_ideas.map((idea, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-secondary)',
+                  }}
+                  className="p-3 rounded-lg flex items-center justify-between gap-3 hover:opacity-95 transition-opacity"
                 >
-                  {index + 1}
-                </span>
-                <p style={{ color: 'var(--text-primary)' }}>{idea}</p>
-              </div>
-            ))}
+                  <div className="flex items-center space-x-3">
+                    <span
+                      style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', borderColor: 'var(--border-primary)' }}
+                      className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold border shrink-0"
+                    >
+                      {index + 1}
+                    </span>
+                    <p style={{ color: 'var(--text-primary)' }} className="text-xs leading-relaxed">{idea}</p>
+                  </div>
+                  <button
+                    onClick={() => handleGenerateLogo(idea)}
+                    disabled={generatingLogo}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-[10px] font-semibold shrink-0 transition-colors disabled:opacity-50 flex items-center gap-1 shadow-md shadow-indigo-500/10 cursor-pointer"
+                  >
+                    {generatingConcept === idea ? "⏳ Drawing..." : "🎨 Draw"}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -265,6 +362,73 @@ const PitchDetails = ({ data: propData, onUpdate }) => {
                 </div>
               </div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* Brand Logo Card */}
+        <motion.div
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-primary)',
+          }}
+          className="p-4 sm:p-6 rounded-xl flex flex-col justify-between"
+        >
+          <div>
+            <h3 style={{ color: 'var(--text-primary)' }} className="text-xl font-bold mb-4 flex items-center">
+              <span className="mr-2">📐</span> Brand Logo
+            </h3>
+            
+            {/* Logo Preview Area */}
+            <div 
+              style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-secondary)' }}
+              className="h-44 rounded-lg flex items-center justify-center relative overflow-hidden mb-4 p-4 shadow-inner"
+            >
+              {generatingLogo ? (
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="loading-spinner-sm"></div>
+                  <span style={{ color: 'var(--text-secondary)' }} className="text-xs font-medium animate-pulse">
+                    Generating brand SVG...
+                  </span>
+                </div>
+              ) : logoSvg ? (
+                <div 
+                  className="w-full h-full flex items-center justify-center logo-preview-container [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto [&>svg]:block"
+                  dangerouslySetInnerHTML={{ __html: logoSvg }}
+                />
+              ) : (
+                <div className="text-center p-4">
+                  <span className="text-3xl mb-2 block filter grayscale">🎨</span>
+                  <p style={{ color: 'var(--text-tertiary)' }} className="text-xs leading-relaxed max-w-[200px] mx-auto">
+                    Select a concept on the left and click "Draw" to design your brand asset.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <CustomImageModelSelector 
+              selectedModel={imageModel} 
+              onSelect={setImageModel} 
+              className="mb-0!"
+            />
+
+            {logoSvg && !generatingLogo && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDownloadSvg}
+                  className="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1 shadow-md shadow-indigo-500/10 cursor-pointer"
+                >
+                  📥 Download SVG
+                </button>
+                <button
+                  onClick={handleCopySvg}
+                  className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1 border border-gray-600 cursor-pointer"
+                >
+                  {copied ? "✅ Copied!" : "📋 Copy Code"}
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

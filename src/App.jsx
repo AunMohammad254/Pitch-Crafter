@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { supabase } from "./lib/supabaseClient";
 import Navbar from "./components/layout/Navbar";
 import LogoIcon from "./assets/logo-icon.svg";
+import { KeyboardShortcutsModal } from "./components/ui/KeyboardShortcutsModal";
 import "./App.css";
 
 const Auth = lazy(() => import("./components/auth/Auth"));
@@ -21,6 +22,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -61,9 +63,37 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Only handle shortcuts when not typing in inputs
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)
         return;
 
+      // Global toggle for help modal
+      if (e.key === "?" || (e.ctrlKey && e.key === "/")) {
+        e.preventDefault();
+        setShowShortcuts(prev => !prev);
+        return;
+      }
+
+      // Close modal on escape
+      if (e.key === "Escape") {
+        setShowShortcuts(false);
+        return;
+      }
+
+      // Navigation shortcuts
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case "g":
+            e.preventDefault();
+            setCurrentView("generate");
+            break;
+          case "h":
+            e.preventDefault();
+            setCurrentView("my-pitches");
+            break;
+        }
+      }
+
+      // Legacy Alt shortcuts
       if (e.altKey) {
         switch (e.key) {
           case "1":
@@ -144,6 +174,9 @@ export default function App() {
         setAnimationsEnabled={setAnimationsEnabled}
         onSignOut={() => supabase.auth.signOut()}
       />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
       {/* Main Content */}
       <main
@@ -232,37 +265,16 @@ export default function App() {
       </main>
 
       {/* Keyboard Shortcuts Hint */}
-      < div className="fixed bottom-4 left-4 z-50 hidden lg:block" >
-        <div className="card bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-xl p-3 shadow-lg max-w-xs">
-          <div className="text-xs text-neutral-600 space-y-1">
-            <div className="font-semibold mb-2">Keyboard Shortcuts:</div>
-            <div className="flex items-center space-x-2 flex-wrap">
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">
-                Alt
-              </kbd>
-              <span>+</span>
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">1</kbd>
-              <span className="text-neutral-500 text-xs">Generate Pitch</span>
-            </div>
-            <div className="flex items-center space-x-2 flex-wrap">
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">
-                Alt
-              </kbd>
-              <span>+</span>
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">2</kbd>
-              <span className="text-neutral-500 text-xs">My Pitches</span>
-            </div>
-            <div className="flex items-center space-x-2 flex-wrap">
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">
-                Alt
-              </kbd>
-              <span>+</span>
-              <kbd className="px-2 py-1 bg-neutral-100 rounded text-xs">M</kbd>
-              <span className="text-neutral-500 text-xs">Toggle Menu</span>
-            </div>
-          </div>
-        </div>
-      </div >
+      <div className="fixed bottom-6 left-6 z-50 hidden lg:block">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center space-x-2 px-3 py-2 bg-white/5 border border-white/10 backdrop-blur-md rounded-lg shadow-xl"
+        >
+          <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded text-[10px] font-mono text-white/80">?</kbd>
+          <span className="text-[10px] font-medium text-white/60 tracking-wider uppercase">Press for help</span>
+        </motion.div>
+      </div>
 
       {/* Footer */}
       < footer className="footer-glass glass-footer mt-12 sm:mt-16 lg:mt-20 w-full" >

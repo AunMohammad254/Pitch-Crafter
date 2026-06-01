@@ -1,7 +1,8 @@
-import { StrictMode, Suspense, Component } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -14,46 +15,6 @@ const LoadingFallback = () => (
     </div>
   </div>
 );
-
-// Error boundary for production
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Application Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#121212' }}>
-          <div className="text-center max-w-md px-6">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h1 className="text-xl font-bold text-white mb-2">Something went wrong</h1>
-            <p className="text-white/60 text-sm mb-4">
-              We&apos;re sorry, but something unexpected happened. Please refresh the page to try again.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 const root = createRoot(document.getElementById('root'));
 
