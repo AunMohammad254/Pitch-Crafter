@@ -1,18 +1,24 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LinkButton } from "../ui/Button";
-import LogoIcon from "../../assets/logo.svg";
+import FormHeader from "./FormHeader";
 import ErrorBoundary from "../ui/ErrorBoundary";
 import PitchInputForm from "./PitchInputForm";
 import LivePreview from "./LivePreview";
 import GenerationProgress from "./GenerationProgress";
 import { PitchDetailsSkeleton } from "../ui/Skeleton";
 import { usePitchGeneration } from "../../hooks/usePitchGeneration";
+import { useNotification } from "../../hooks/useNotification";
+import { useAuthStore } from "../../stores/authStore";
+import { useUIStore } from "../../stores/uiStore";
 
 const CodePreview = lazy(() => import("./CodePreview"));
 const PitchDetails = lazy(() => import("./PitchDetails"));
 
-export default function PitchForm({ user, onNavigate }) {
+export default function PitchForm() {
+  const { user } = useAuthStore();
+  const { activePitch } = useUIStore();
+  const { showNotification } = useNotification();
+  
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState("auto");
   const [activeTab, setActiveTab] = useState("pitch");
@@ -28,7 +34,27 @@ export default function PitchForm({ user, onNavigate }) {
     landingCode,
     generatePitch,
     updatePitchData,
+    setResult,
+    setLandingCode,
+    setPitchId
   } = usePitchGeneration(user, showNotification);
+
+  // Handle restoring pitch from activePitch prop
+  useEffect(() => {
+    if (activePitch) {
+      if (activePitch.generated_data) {
+        setResult(activePitch.generated_data);
+      }
+      if (activePitch.landing_code) {
+        setLandingCode(activePitch.landing_code);
+      }
+      if (activePitch.id) {
+        setPitchId(activePitch.id);
+      }
+      // If it's a "restored" pitch, we show the result immediately
+      setActiveTab("pitch");
+    }
+  }, [activePitch, setResult, setLandingCode, setPitchId]);
 
   // Handle preview URL with proper cleanup to prevent memory leaks
   useEffect(() => {
@@ -51,34 +77,6 @@ export default function PitchForm({ user, onNavigate }) {
     };
   }, [landingCode]);
 
-  function showNotification(message, type) {
-    const el = document.createElement("div");
-    let statusClass, icon;
-    switch (type) {
-      case "success": statusClass = "status-success"; icon = "✅"; break;
-      case "warning": statusClass = "bg-yellow-100 text-yellow-800 border-yellow-300"; icon = "⚠️"; break;
-      case "error": default: statusClass = "status-error"; icon = "❌"; break;
-    }
-
-    el.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 font-semibold backdrop-blur-sm border animate-fade-in-right ${statusClass}`;
-    el.innerHTML = `
-      <div class="flex items-center">
-        <span class="mr-3 text-lg">${icon}</span>
-        <span>${message}</span>
-        <button class="ml-4 text-lg opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.parentElement.remove()">×</button>
-      </div>
-    `;
-    document.body.appendChild(el);
-    const delay = type === "error" || type === "warning" ? 6000 : 4000;
-    setTimeout(() => {
-      if (el.parentNode) {
-        el.style.opacity = "0";
-        el.style.transform = "translateX(100%)";
-        setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
-      }
-    }, delay);
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowPreview(false);
@@ -89,44 +87,7 @@ export default function PitchForm({ user, onNavigate }) {
     <div className="relative text-(--text-primary) font-sans selection:bg-(--accent-primary) selection:text-white overflow-x-hidden">
       <div className="relative z-10 w-full">
         {/* Header */}
-        <header className="flex justify-between items-center mb-8 sm:mb-12 animate-fade-in-down">
-          <div className="flex items-center space-x-3 sm:space-x-4 group cursor-pointer" onClick={() => onNavigate('home')}>
-            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-              <div className="absolute inset-0 bg-(--gradient-primary) rounded-xl blur-lg opacity-70 group-hover:opacity-100 transition-opacity"></div>
-              <div
-                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }}
-                className="relative w-full h-full rounded-xl flex items-center justify-center shadow-xl"
-              >
-                <img src={LogoIcon} alt="PitchCraft" className="w-6 h-6 sm:w-8 sm:h-8 transform group-hover:scale-110 transition-transform duration-300" />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-2xl sm:text-3xl font-bold font-primary tracking-tight">
-                <span style={{
-                  background: 'var(--gradient-primary-bold)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  color: 'transparent'
-                }}>Pitch</span>
-                <span style={{ color: 'var(--text-primary)' }}>Craft</span>
-              </h1>
-              <span className="text-xs sm:text-sm font-medium tracking-wide" style={{ color: 'var(--text-tertiary)' }}>AI-Powered Startup Builder</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <LinkButton onClick={() => onNavigate('history')} className="hidden sm:flex text-sm font-medium hover:text-(--accent-primary) transition-colors">
-              <span className="mr-2">📂</span> History
-            </LinkButton>
-            <div className="h-8 w-px bg-(--border-primary) hidden sm:block"></div>
-            <div className="flex items-center space-x-3 bg-(--bg-secondary) px-3 py-1.5 rounded-full border border-(--border-secondary)">
-              <div className="w-8 h-8 rounded-full bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-inner">
-                {user.email[0].toUpperCase()}
-              </div>
-              <span className="text-sm font-medium hidden sm:block pr-1" style={{ color: 'var(--text-secondary)' }}>{user.email.split('@')[0]}</span>
-            </div>
-          </div>
-        </header>
+        <FormHeader />
 
         {/* Step Indicator */}
         {!result && (
@@ -234,7 +195,7 @@ export default function PitchForm({ user, onNavigate }) {
                 <ErrorBoundary>
                   {activeTab === "pitch" ? (
                     <Suspense fallback={<PitchDetailsSkeleton />}>
-                      <PitchDetails data={result} onUpdate={updatePitchData} />
+                      <PitchDetails data={result} onUpdate={updatePitchData} pitchId={pitchId} />
                     </Suspense>
                   ) : (
                     <Suspense fallback={

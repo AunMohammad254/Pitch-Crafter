@@ -1,9 +1,10 @@
-import { useState, useEffect, lazy, Suspense } from "react";
-import { supabase } from "./lib/supabaseClient";
+import { useEffect, lazy, Suspense } from "react";
 import Navbar from "./components/layout/Navbar";
 import LogoIcon from "./assets/logo-icon.svg";
 import { KeyboardShortcutsModal } from "./components/ui/KeyboardShortcutsModal";
 import { motion } from "framer-motion";
+import { useAuthStore } from "./stores/authStore";
+import { useUIStore } from "./stores/uiStore";
 import "./App.css";
 
 const Auth = lazy(() => import("./components/auth/Auth"));
@@ -16,100 +17,40 @@ const PitchPractice = lazy(() => import("./components/simulator/PitchPractice"))
 const AuroraBackground = lazy(() => import("./components/ui/AuroraBackground"));
 
 export default function App() {
-  const [user, setUser] = useState(null);
-  const [currentView, setCurrentView] = useState("landing");
-  const [authInitialMode, setAuthInitialMode] = useState("signin");
-  const [activePitch, setActivePitch] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [showShortcuts, setShowShortcuts] = useState(false);
+  const { user, loading: authLoading, initAuth, signOut } = useAuthStore();
+  const { 
+    currentView, setCurrentView, 
+    activePitch, setActivePitch,
+    authInitialMode, navigateToAuth,
+    mobileMenuOpen, setMobileMenuOpen,
+    animationsEnabled, setAnimationsEnabled,
+    showShortcuts, setShowShortcuts
+  } = useUIStore();
 
   useEffect(() => {
-    let subscription = null;
-
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setCurrentView("generate");
-        }
-      } catch (err) {
-        console.error("Supabase getSession failed, cleaning up local storage:", err);
-        // If local storage holds invalid/stale tokens, clear it
-        try {
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.startsWith("sb-") || key.includes("supabase"))) {
-              localStorage.removeItem(key);
-            }
-          }
-        } catch (e) {
-          console.error("Could not clear localStorage:", e);
-        }
-      } finally {
-        setLoading(false);
-      }
-
-      try {
-        const { data } = supabase.auth.onAuthStateChange((event, session) => {
-          if (event === "PASSWORD_RECOVERY") {
-            setCurrentView("update-password");
-          } else if (event === "SIGNED_IN") {
-            setCurrentView("generate");
-          } else if (event === "SIGNED_OUT") {
-            setCurrentView("landing");
-          }
-          setUser(session?.user ?? null);
-          setLoading(false);
-        });
-        subscription = data?.subscription;
-      } catch (err) {
-        console.error("Supabase onAuthStateChange failed:", err);
-        setLoading(false);
-      }
-    };
-
-    initAuth();
-
+    const unsubscribe = initAuth();
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      unsubscribe.then(unsub => unsub && unsub());
     };
-  }, []);
-
-  const handleAuthNavigate = (view, initialMode) => {
-    setAuthInitialMode(initialMode || "signin");
-    setCurrentView(view);
-  };
-
-  const handleBackToLanding = () => {
-    setCurrentView("landing");
-  };
+  }, [initAuth]);
 
   // Keyboard shortcuts for navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Only handle shortcuts when not typing in inputs
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)
         return;
 
-      // Global toggle for help modal
       if (e.key === "?" || (e.ctrlKey && e.key === "/")) {
         e.preventDefault();
-        setShowShortcuts(prev => !prev);
+        setShowShortcuts(!showShortcuts);
         return;
       }
 
-      // Close modal on escape
       if (e.key === "Escape") {
         setShowShortcuts(false);
         return;
       }
 
-      // Navigation shortcuts
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {
           case "g":
@@ -123,7 +64,6 @@ export default function App() {
         }
       }
 
-      // Legacy Alt shortcuts
       if (e.altKey) {
         switch (e.key) {
           case "1":
@@ -144,9 +84,9 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, showShortcuts, setCurrentView, setShowShortcuts, setMobileMenuOpen]);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen main-content flex items-center justify-center px-4">
         <div className="flex flex-col items-center animate-fade-in-up text-center loading-container">
@@ -165,22 +105,14 @@ export default function App() {
   if (!user && currentView !== "update-password") {
     if (currentView === "auth") {
       return (
-        <Suspense fallback={
-          <div className="min-h-screen main-content flex items-center justify-center px-4">
-            <div className="loading-spinner"></div>
-          </div>
-        }>
-          <Auth initialMode={authInitialMode} onBackToHome={handleBackToLanding} />
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="loading-spinner"></div></div>}>
+          <Auth initialMode={authInitialMode} onBackToHome={() => setCurrentView("landing")} />
         </Suspense>
       );
     }
     return (
-      <Suspense fallback={
-        <div className="min-h-screen main-content flex items-center justify-center px-4">
-          <div className="loading-spinner"></div>
-        </div>
-      }>
-        <Landing onNavigate={handleAuthNavigate} />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="loading-spinner"></div></div>}>
+        <Landing onNavigate={navigateToAuth} />
       </Suspense>
     );
   }
@@ -193,7 +125,6 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      {/* Navigation */}
       <Navbar
         user={user}
         currentView={currentView}
@@ -202,19 +133,12 @@ export default function App() {
         setMobileMenuOpen={setMobileMenuOpen}
         animationsEnabled={animationsEnabled}
         setAnimationsEnabled={setAnimationsEnabled}
-        onSignOut={() => supabase.auth.signOut()}
+        onSignOut={signOut}
       />
 
-      {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
-      {/* Main Content */}
-      <main
-        className="flex-1 relative overflow-hidden"
-        style={{
-          background: "transparent",
-        }}
-      >
+      <main className="flex-1 relative overflow-hidden">
         <Suspense fallback={null}>
           <AuroraBackground
             speed={0.5}
@@ -232,14 +156,8 @@ export default function App() {
           {/* Breadcrumb Navigation */}
           <div className="mb-6 sm:mb-8 animate-fade-in-up w-full">
             <nav className="flex items-center space-x-2 text-sm text-neutral-600 w-full">
-              <img
-                src={LogoIcon}
-                alt="PitchCrafter"
-                className="w-6 h-6 sm:w-8 sm:h-8 shrink-0"
-              />
-              <span className="text-primary-600 font-medium">
-                Pitch Crafter
-              </span>
+              <img src={LogoIcon} alt="PitchCrafter" className="w-6 h-6 sm:w-8 sm:h-8 shrink-0" />
+              <span className="text-primary-600 font-medium">Pitch Crafter</span>
               <span>/</span>
               <span className="font-medium text-neutral-800 truncate">
                 {currentView === "generate" ? "Generate Pitch"
@@ -251,7 +169,6 @@ export default function App() {
             </nav>
           </div>
 
-          {/* Content with smooth transitions */}
           <div className="animate-fade-in-up transition-all duration-500 ease-in-out w-full">
             <Suspense fallback={
               <div className="flex flex-col items-center justify-center py-20 px-4">
@@ -260,41 +177,24 @@ export default function App() {
               </div>
             }>
               {currentView === "my-pitches" ? (
-                <div key="my-pitches" className="animate-fade-in-up w-full">
-                  <MyPitches user={user} onNavigate={(view, pitch) => {
-                    if (pitch) setActivePitch(pitch);
-                    setCurrentView(view);
-                  }} />
-                </div>
+                <MyPitches user={user} onNavigate={(view, pitch) => {
+                  if (pitch) setActivePitch(pitch);
+                  setCurrentView(view);
+                }} />
               ) : currentView === "investor-chat" && activePitch ? (
-                <div key="investor-chat" className="animate-fade-in-up w-full">
-                  <InvestorChat pitch={activePitch} onExit={() => setCurrentView("my-pitches")} />
-                </div>
+                <InvestorChat pitch={activePitch} onExit={() => setCurrentView("my-pitches")} />
               ) : currentView === "pitch-practice" && activePitch ? (
-                <div key="pitch-practice" className="animate-fade-in-up w-full">
-                  <PitchPractice pitch={activePitch} onExit={() => setCurrentView("my-pitches")} />
-                </div>
+                <PitchPractice pitch={activePitch} onExit={() => setCurrentView("my-pitches")} />
               ) : currentView === "update-password" ? (
-                <div key="update-password" className="animate-fade-in-up w-full">
-                  <UpdatePassword onFullfill={() => {
-                    setCurrentView("generate");
-                    // Ensure user is set if session exists
-                    supabase.auth.getSession().then(({ data: { session } }) => {
-                      setUser(session?.user ?? null);
-                    });
-                  }} />
-                </div>
+                <UpdatePassword onFullfill={() => setCurrentView("generate")} />
               ) : (
-                <div key="generate" className="animate-fade-in-up w-full">
-                  <PitchForm user={user} onNavigate={setCurrentView} />
-                </div>
+                <PitchForm user={user} onNavigate={setCurrentView} activePitch={activePitch} />
               )}
             </Suspense>
           </div>
         </div>
       </main>
 
-      {/* Keyboard Shortcuts Hint */}
       <div className="fixed bottom-6 left-6 z-50 hidden lg:block">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -306,46 +206,20 @@ export default function App() {
         </motion.div>
       </div>
 
-      {/* Footer */}
-      < footer className="footer-glass glass-footer mt-12 sm:mt-16 lg:mt-20 w-full" >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 w-full">
-          <div className="text-center w-full">
+      <footer className="footer-glass glass-footer mt-12 sm:mt-16 lg:mt-20 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 w-full text-center">
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <img
-                src={LogoIcon}
-                alt="Pitch Crafter"
-                className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 shrink-0"
-              />
-              <span className="font-primary font-bold text-lg sm:text-xl gradient-text">
-                Pitch Crafter
-              </span>
+              <img src={LogoIcon} alt="Pitch Crafter" className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 shrink-0" />
+              <span className="font-primary font-bold text-lg sm:text-xl gradient-text">Pitch Crafter</span>
             </div>
             <p className="text-neutral-600 font-medium mb-2 text-sm sm:text-base">
-              Built with ❤️ by{" "}
-              <span className="font-semibold text-primary-600">Aun Abbas</span>{" "}
-              using React + Supabase + Gemini
+              Built with ❤️ by <span className="font-semibold text-primary-600">Aun Abbas</span> using React + Supabase + Gemini
             </p>
             <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto px-4">
-              Transform your innovative ideas into compelling startup pitches
-              with the power of artificial intelligence
+              Transform your innovative ideas into compelling startup pitches with the power of artificial intelligence
             </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center mt-4 sm:mt-6 space-y-2 sm:space-y-0 sm:space-x-6 text-xs sm:text-sm text-neutral-400 flex-wrap">
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-accent-500 rounded-full mr-2 animate-pulse shrink-0"></span>
-                AI-Powered
-              </span>
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-primary-500 rounded-full mr-2 animate-pulse shrink-0"></span>
-                Real-time
-              </span>
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-secondary-500 rounded-full mr-2 animate-pulse shrink-0"></span>
-                Secure
-              </span>
-            </div>
-          </div>
         </div>
-      </footer >
-    </div >
+      </footer>
+    </div>
   );
 }

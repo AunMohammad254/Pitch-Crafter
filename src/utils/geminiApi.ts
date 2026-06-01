@@ -1,16 +1,14 @@
 import { checkNetworkStatus, logNetworkDiagnostics } from "./networkUtils";
 import { handleError } from "./errorHandler";
+import { supabase } from "../lib/supabaseClient";
 
-export const MODELS = {
+export const MODELS: Record<string, { id: string; name: string }> = {
   "auto": { id: "auto", name: "✨ Auto (Smart Select)" },
-  "gemini-3.5-flash": { id: "gemini-3.5-flash", name: "⚡ Gemini 3.5 Flash" },
-  "gemini-3.1-flash-lite": { id: "gemini-3.1-flash-lite", name: "💨 Gemini 3.1 Flash Lite" },
-  "gemini-3-flash": { id: "gemini-3-flash", name: "🚀 Gemini 3.0 Flash" },
   "gemini-2.5-pro": { id: "gemini-2.5-pro", name: "🧠 Gemini 2.5 Pro" },
   "gemini-2.5-flash": { id: "gemini-2.5-flash", name: "🤖 Gemini 2.5 Flash" }
 };
 
-export const IMAGE_MODELS = {
+export const IMAGE_MODELS: Record<string, { id: string; name: string }> = {
   "nano-banana-pro": { id: "nano-banana-pro", name: "🍌 Nano Banana Pro (Gemini 3 Pro Image)" },
   "nano-banana-2": { id: "nano-banana-2", name: "🍌 Nano Banana 2 (Gemini 3.1 Flash Image)" },
   "gemini-3.1-flash-tts": { id: "gemini-3.1-flash-tts", name: "🔊 Gemini 3.1 Flash TTS" },
@@ -18,6 +16,12 @@ export const IMAGE_MODELS = {
 };
 
 export class GeminiAPIManager {
+  queue: any[];
+  isProcessing: boolean;
+  maxRetries: number;
+  rateLimits: Record<string, { rpm: number; window: number }>;
+  baseDelay: number = 1000;
+
   constructor() {
     this.queue = [];
     this.isProcessing = false;
@@ -37,7 +41,7 @@ export class GeminiAPIManager {
   }
 
   // Get locally stored usage timestamp to enforce rate limit interval
-  canMakeLocalRequest(modelId) {
+  canMakeLocalRequest(modelId: string): boolean {
     if (modelId === 'auto') return true;
 
     const limit = this.rateLimits[modelId] || this.rateLimits.default;
@@ -55,73 +59,20 @@ export class GeminiAPIManager {
     return true;
   }
 
-  recordUsage(modelId) {
+  recordUsage(modelId: string) {
     if (modelId !== 'auto') {
       localStorage.setItem(`pitchcraft_last_usage_${modelId}`, Date.now().toString());
     }
   }
 
-  // Validate API key format and availability
-  validateApiKey(apiKey) {
-    if (!apiKey) {
-      throw new Error("Gemini API key is missing. Please check your .env file and ensure VITE_GEMINI_API_KEY is set.");
-    }
-
-    // Handle undefined environment variable (shows as string "undefined")
-    if (apiKey === 'undefined' || apiKey === '${import.meta.env.VITE_GEMINI_API_KEY}') {
-      throw new Error("Environment variable VITE_GEMINI_API_KEY is not set. Please create a .env file with your Gemini API key.");
-    }
-
-    // Basic format validation for Google API keys
-    if (!(apiKey.startsWith('AIza') || apiKey.startsWith('AQ.')) || apiKey.length < 35) {
-      throw new Error("Invalid Gemini API key format. Google API keys should start with 'AIza' or 'AQ.' and be at least 35 characters long.");
-    }
-
-    // Check for common placeholder values
-    const placeholders = ['your_gemini_api_key_here', 'AIzaSyAcFSJm_B0GVn0VpQDijlQxMpLzfPeiqq8'];
-    if (placeholders.includes(apiKey)) {
-      throw new Error("Please replace the placeholder API key with your actual Gemini API key.");
-    }
-
-    return true;
-  }
-
-  // Check API quota and availability
-  async checkApiQuota(apiKey) {
-    try {
-      console.log('🔍 Checking API quota and availability...');
-
-      // Make a minimal test request to check quota
-      const testRequest = {
-        contents: [{ parts: [{ text: "Test" }] }],
-      };
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(testRequest),
-        }
-      );
-
-      if (response.status === 403) {
-        throw new Error("API key is invalid or has insufficient permissions. Please verify your Gemini API key and ensure it has the necessary permissions.");
-      } else if (response.status === 429) {
-        throw new Error("API quota exceeded. Please wait a few minutes before trying again or consider upgrading your API plan.");
-      }
-
-      console.log('✅ API quota check passed');
-      return true;
-    } catch (error) {
-      console.error('❌ API quota check failed:', error);
-      throw error;
-    }
-  }
-
   // Main Entry Point for Request
-  async makeRequest(requestBody, apiKey, modelId = 'auto', retryCount = 0, onQueueUpdate = null) {
-    this.validateApiKey(apiKey);
+  async makeRequest(
+    requestBody: any, 
+    modelId: string = 'auto', 
+    retryCount: number = 0, 
+    onQueueUpdate: ((status: string | null) => void) | null = null, 
+    signal: AbortSignal | null = null
+  ): Promise<string> {
     this.canMakeLocalRequest(modelId);
 
     if (!checkNetworkStatus()) {
@@ -136,7 +87,7 @@ export class GeminiAPIManager {
     }
 
     // Map custom/experimental models to standard available endpoints
-    const modelMapping = {
+    const modelMapping: Record<string, string> = {
       "nano-banana-pro": "gemini-2.5-pro",
       "nano-banana-2": "gemini-2.5-flash",
       "gemini-3.1-flash-tts": "gemini-2.5-flash",
@@ -154,24 +105,37 @@ export class GeminiAPIManager {
       targetModel = modelMapping[targetModel];
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
-    return this._executeRequestWithRetry(url, requestBody, targetModel, retryCount, onQueueUpdate);
+    return this._executeRequestWithRetry(requestBody, targetModel, retryCount, onQueueUpdate, signal);
   }
 
-  async _executeRequestWithRetry(url, requestBody, modelId, retryCount, onQueueUpdate) {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    };
-
+  async _executeRequestWithRetry(
+    requestBody: any, 
+    modelId: string, 
+    retryCount: number, 
+    onQueueUpdate: ((status: string | null) => void) | null, 
+    signal: AbortSignal | null
+  ): Promise<string> {
     try {
-      console.log(`🚀 Sending request to ${modelId} (Attempt ${retryCount + 1})`);
+      console.log(`🚀 Sending request to ${modelId} via Edge Function (Attempt ${retryCount + 1})`);
 
-      const response = await fetch(url, requestOptions);
+      const { data, error } = await supabase.functions.invoke('gemini-proxy', {
+        body: { requestBody, modelId },
+        headers: {}, 
+        // @ts-ignore
+        signal: signal
+      });
 
-      if (!response.ok) {
-        if (response.status === 429) {
+      if (error) {
+        if (error.name === 'AbortError') {
+          console.log('🛑 Request cancelled by user');
+          throw error;
+        }
+        throw error;
+      }
+
+      // Handle application-level errors from the Edge Function/Gemini API
+      if (data && data.error) {
+        if (data.error.code === 429 || data.status === 429) {
           console.warn(`⏳ Rate limit hit for ${modelId}. Entering waiting list...`);
 
           if (retryCount >= this.maxRetries) {
@@ -185,24 +149,56 @@ export class GeminiAPIManager {
           }
 
           await new Promise(resolve => setTimeout(resolve, waitTime));
-          return this._executeRequestWithRetry(url, requestBody, modelId, retryCount + 1, onQueueUpdate);
+          return this._executeRequestWithRetry(requestBody, modelId, retryCount + 1, onQueueUpdate, signal);
         }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || response.statusText);
+        throw new Error(data.error.message || "Gemini API Error via Proxy");
       }
 
       this.recordUsage(modelId);
-      const data = await response.json();
       return this.validateAndParseResponse(data);
 
-    } catch (error) {
-      handleError(error, `Gemini API Request (${modelId})`);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        throw error;
+      }
+
+      const localKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+      if (localKey) {
+        console.warn(`⚠️ Supabase Edge Function failed (${error.message || error}). Falling back to direct client-side API call...`);
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${localKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+            signal: signal as any
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `HTTP error ${response.status}`);
+          }
+
+          const data = await response.json();
+          this.recordUsage(modelId);
+          return this.validateAndParseResponse(data);
+        } catch (fallbackError: any) {
+          console.error("❌ Direct client-side fallback failed:", fallbackError);
+          handleError(fallbackError, `Gemini API Proxy Fallback (${modelId})`);
+          throw fallbackError;
+        }
+      }
+
+      handleError(error, `Gemini API Proxy (${modelId})`);
       throw error;
     }
   }
 
+
   // Validate and parse API response
-  validateAndParseResponse(data) {
+  validateAndParseResponse(data: any): string {
     // Check for API error in response
     if (data.error) {
       console.error('🚨 API returned error:', data.error);
@@ -232,17 +228,17 @@ export class GeminiAPIManager {
   }
 
   // Calculate exponential backoff delay
-  calculateBackoffDelay(retryCount) {
+  calculateBackoffDelay(retryCount: number): number {
     return Math.min(this.baseDelay * Math.pow(2, retryCount) + Math.random() * 1000, 30000);
   }
 
   // Sleep utility
-  sleep(ms) {
+  sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   // JSON parsing - simpler version since we expect application/json response
-  extractAndParseJSON(text) {
+  extractAndParseJSON(text: string): any {
     console.log('🔍 Attempting to parse JSON from response...');
     
     // Clean up if the model still returns markdown code blocks despite config
@@ -258,15 +254,28 @@ export class GeminiAPIManager {
       const parsed = JSON.parse(jsonString);
       console.log('✅ Successfully parsed JSON');
       return this.validateParsedData(parsed);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ JSON parsing failed:', error);
       throw new Error(`Failed to parse AI response as JSON: ${error.message}.`);
     }
   }
 
   // Validate parsed data structure
-  validateParsedData(data) {
+  validateParsedData(data: any): any {
     console.log('🔍 Validating parsed data structure...');
+
+    // If this looks like pitch feedback (has score, pacing, clarity, positive_feedback, or improvements)
+    if (data && (data.score !== undefined || data.pacing !== undefined || data.clarity !== undefined || data.positive_feedback !== undefined)) {
+      console.log('✅ Pitch feedback data detected, bypassing startup pitch validation');
+      return {
+        score: typeof data.score === 'number' ? data.score : parseInt(data.score) || 70,
+        pacing: data.pacing || 'Good',
+        clarity: data.clarity || 'Clear',
+        positive_feedback: data.positive_feedback || 'Good delivery.',
+        improvements: Array.isArray(data.improvements) ? data.improvements : [],
+        missing_points: Array.isArray(data.missing_points) ? data.missing_points : []
+      };
+    }
 
     // Ensure required fields exist with fallbacks
     const validated = {

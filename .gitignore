@@ -5,8 +5,6 @@ node_modules
 
 # Testing
 coverage
-*.test.js
-*.spec.js
 
 # Production
 build
@@ -76,7 +74,7 @@ temp
 *.map
 
 # Documentation
-PROJECT_ANALYSIS_REPORT.md
+#PROJECT_ANALYSIS_REPORT.md
 GEMINI.md
 DOCUMENTS.md
 QUICK_REFERENCE.md
@@ -85,6 +83,10 @@ PLANNING.md
 # Local AI
 .agents
 graphify-out/
+supabase
+.gemini
+.github
+
 
 # Lock files (optional - remove if you want to commit them)
 # package-lock.json

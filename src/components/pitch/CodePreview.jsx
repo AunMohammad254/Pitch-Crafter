@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import html from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+// Register specific languages for smaller bundle size
+SyntaxHighlighter.registerLanguage('html', html);
 
 const CodePreview = ({ code, onOpenPreview, onShowNotification }) => {
   if (!code) return null;

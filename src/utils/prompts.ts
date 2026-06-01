@@ -1,5 +1,30 @@
+export interface PitchData {
+  name: string;
+  tagline: string;
+  elevator_pitch: string;
+  problem: string;
+  solution: string;
+  target_audience?: {
+    description: string;
+    segments: string[];
+  };
+  unique_value_proposition: string;
+  landing_copy?: {
+    headline: string;
+    subheadline: string;
+    call_to_action: string;
+  };
+  industry: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    neutral: string;
+  };
+  logo_ideas: string[];
+}
 
-export const generatePitchPrompt = (prompt) => `
+export const generatePitchPrompt = (prompt: string): string => `
 ACT AS A PROFESSIONAL STARTUP CONSULTANT. Generate a comprehensive startup pitch package from this idea: "${prompt}"
 
 Return ONLY valid JSON with this exact structure:
@@ -30,7 +55,7 @@ Return ONLY valid JSON with this exact structure:
 }
 `;
 
-export const generateWebsitePrompt = (pitchData) => `Create a stunning, modern landing page HTML for: ${pitchData.name} - ${pitchData.tagline}
+export const generateWebsitePrompt = (pitchData: PitchData): string => `Create a stunning, modern landing page HTML for: ${pitchData.name} - ${pitchData.tagline}
 
 Details:
 - Problem: ${pitchData.problem}
@@ -55,7 +80,7 @@ Requirements:
 
 Return ONLY complete HTML code:`;
 
-export const generateInvestorPrompt = (pitchData) => `
+export const generateInvestorPrompt = (pitchData: PitchData): string => `
 ACT AS A TOUGH, SKEPTICAL VENTURE CAPITALIST(SHARK TANK STYLE).
 You are evaluating a startup pitch for: "${pitchData.name}".
   Tagline: "${pitchData.tagline}"
@@ -73,7 +98,7 @@ Your Goal: Grill the founder.Find holes in their logic.Be direct, slightly intim
 Start by introducing yourself as "Marcus" (or another shark name) and ask the first hard question based on their pitch.
 `;
 
-export const generatePitchFeedback = (pitchData, transcript) => `
+export const generatePitchFeedback = (pitchData: PitchData, transcript: string): string => `
 ACT AS A PUBLIC SPEAKING COACH AND STARTUP EXPERT.
 Analyze this spoken pitch transcript against the original elevator pitch.
 

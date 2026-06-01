@@ -8,7 +8,6 @@ export default function SignInForm({ onSwitchMode, onForgotPassword, onShowMessa
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
 
   const emailValidation = validateEmail(email);
 
@@ -84,7 +83,6 @@ export default function SignInForm({ onSwitchMode, onForgotPassword, onShowMessa
           <input
             id="password" name="password" type={showPassword ? "text" : "password"} value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onBlur={() => setPasswordTouched(true)} onFocus={() => setPasswordTouched(true)}
             required minLength={6}
             className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 ease-out pr-10 text-sm sm:text-base"
             placeholder="Enter your password"

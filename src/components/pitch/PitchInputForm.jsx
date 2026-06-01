@@ -45,6 +45,7 @@ export default function PitchInputForm({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 maxLength={5000}
+                aria-label="Describe your startup vision"
                 placeholder="I want to build an AI-powered fitness app that creates personalized workout plans with real-time form correction using computer vision, targeting busy professionals..."
                 className="w-full h-32 sm:h-36 bg-(--bg-secondary) text-(--text-primary) border border-(--border-primary) rounded-xl px-4 py-4 sm:px-5 sm:py-4 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none resize-none transition-all placeholder:text-(--text-disabled)"
                 disabled={loading}
@@ -53,17 +54,17 @@ export default function PitchInputForm({
           </div>
 
           {/* Character Counter Row */}
-          <div className="flex justify-between items-center text-sm">
+          <div className="flex justify-between items-center text-sm" aria-live="polite">
             <span style={{ color: 'var(--text-tertiary)' }}>
               {prompt.length} / 5000 Characters
             </span>
             <span style={{ color: 'var(--text-tertiary)' }} className="flex items-center">
-              <span className="mr-1">💭</span> Be detailed for better results
+              <span className="mr-1" aria-hidden="true">💭</span> Be detailed for better results
             </span>
           </div>
 
           {/* Quick Suggestion Tags */}
-          <div className="flex flex-wrap gap-2 pt-2">
+          <div className="flex flex-wrap gap-2 pt-2" role="group" aria-label="Quick startup suggestions">
             {[
               { icon: '💳', label: 'FinTech App' },
               { icon: '🤖', label: 'AI Startup' },
@@ -75,6 +76,7 @@ export default function PitchInputForm({
               <button
                 key={tag.label}
                 type="button"
+                aria-label={`Select suggestion: ${tag.label}`}
                 onClick={() => setPrompt(prev => prev ? `${prev} ${tag.icon} ${tag.label}` : `I want to build a ${tag.label.toLowerCase()} that...`)}
                 className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105"
                 style={{
@@ -83,7 +85,7 @@ export default function PitchInputForm({
                   border: '1px solid var(--border-secondary)',
                 }}
               >
-                <span>{tag.icon}</span>
+                <span aria-hidden="true">{tag.icon}</span>
                 <span>{tag.label}</span>
               </button>
             ))}
@@ -93,6 +95,7 @@ export default function PitchInputForm({
           <GalaxyButton
             type="submit"
             disabled={loading || !prompt.trim()}
+            aria-label={loading ? "Generating your pitch" : "Generate complete startup package"}
             className={`${!loading && prompt.trim() ? 'generate-btn-pulse' : ''}`}
           >
             <AnimatePresence mode="wait">

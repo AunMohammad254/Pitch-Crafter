@@ -1,4 +1,6 @@
-export const exportToPDF = async (elementId, fileName = 'pitch.pdf') => {
+import { PitchData } from '../types';
+
+export const exportToPDF = async (elementId: string, fileName = 'pitch.pdf') => {
   const element = document.getElementById(elementId);
   if (!element) {
     console.error('Element not found');
@@ -52,7 +54,7 @@ export const exportToPDF = async (elementId, fileName = 'pitch.pdf') => {
   }
 };
 
-export const exportToPPTX = async (data) => {
+export const exportToPPTX = async (data: PitchData) => {
   if (!data) return;
 
   const PptxGenJS = (await import('pptxgenjs')).default;
@@ -91,7 +93,7 @@ export const exportToPPTX = async (data) => {
   slide2.background = slideBg;
   slide2.addText('Elevator Pitch', { x: 0.5, y: 0.5, fontSize: 32, color: 'F472B6', bold: true });
   
-  slide2.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: 'F472B6' }); // Underline
+  slide2.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: 'F472B6' } }); // Underline
   
   slide2.addText(`"${data.elevator_pitch || ''}"`, {
     x: 1, y: 2, w: '80%',
@@ -102,7 +104,7 @@ export const exportToPPTX = async (data) => {
   const slide3 = pptx.addSlide();
   slide3.background = slideBg;
   slide3.addText('The Problem', { x: 0.5, y: 0.5, fontSize: 32, color: 'EF4444', bold: true });
-  slide3.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: 'EF4444' });
+  slide3.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: 'EF4444' } });
 
   slide3.addText(data.problem || 'No problem description provided.', {
     x: 0.5, y: 2, w: '90%',
@@ -113,7 +115,7 @@ export const exportToPPTX = async (data) => {
   const slide4 = pptx.addSlide();
   slide4.background = slideBg;
   slide4.addText('The Solution', { x: 0.5, y: 0.5, fontSize: 32, color: '10B981', bold: true });
-  slide4.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: '10B981' });
+  slide4.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: '10B981' } });
 
   slide4.addText(data.solution || 'No solution description provided.', {
     x: 0.5, y: 2, w: '90%',
@@ -124,7 +126,7 @@ export const exportToPPTX = async (data) => {
   const slide5 = pptx.addSlide();
   slide5.background = slideBg;
   slide5.addText('Unique Value Proposition', { x: 0.5, y: 0.5, fontSize: 32, color: 'F59E0B', bold: true });
-  slide5.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: 'F59E0B' });
+  slide5.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: 'F59E0B' } });
 
   slide5.addText(data.unique_value_proposition || '', {
     x: 0.5, y: 2.5, w: '90%',
@@ -135,7 +137,7 @@ export const exportToPPTX = async (data) => {
   const slide6 = pptx.addSlide();
   slide6.background = slideBg;
   slide6.addText('Target Audience', { x: 0.5, y: 0.5, fontSize: 32, color: '3B82F6', bold: true });
-  slide6.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: '3B82F6' });
+  slide6.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: '3B82F6' } });
 
   slide6.addText(data.target_audience?.description || '', {
     x: 0.5, y: 2, w: '90%', h: 1.5,
@@ -156,7 +158,7 @@ export const exportToPPTX = async (data) => {
   const slide7 = pptx.addSlide();
   slide7.background = slideBg;
   slide7.addText('Market & Business Model', { x: 0.5, y: 0.5, fontSize: 32, color: '8B5CF6', bold: true });
-  slide7.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: '8B5CF6' });
+  slide7.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: 12.33, h: 0.1, fill: { color: '8B5CF6' } });
 
   slide7.addText('Industry:', { x: 0.5, y: 2.5, w: 3, fontSize: 18, color: '9CA3AF', bold: true });
   slide7.addText(data.industry || 'N/A', { x: 3.5, y: 2.5, w: 8, fontSize: 18, color: bodyColor });
@@ -165,4 +167,122 @@ export const exportToPPTX = async (data) => {
   slide7.addText('B2B SaaS (Example)', { x: 3.5, y: 3.5, w: 8, fontSize: 18, color: bodyColor }); // Assuming generic or extracting if available
 
   pptx.writeFile({ fileName: `${(data.name || 'pitch').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_presentation.pptx` });
+};
+
+export const exportToMarkdown = (data: PitchData) => {
+  if (!data) return;
+  const content = `# ${data.name || 'Startup'}
+> ${data.tagline || ''}
+
+## Elevator Pitch
+${data.elevator_pitch || ''}
+
+## The Problem
+${data.problem || ''}
+
+## The Solution
+${data.solution || ''}
+
+## Unique Value Proposition
+${data.unique_value_proposition || ''}
+
+## Target Audience
+${data.target_audience?.description || ''}
+
+**Segments:**
+${(data.target_audience?.segments || []).map((s: string) => `- ${s}`).join('\n')}
+
+## Industry
+${data.industry || ''}
+`;
+
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${(data.name || 'pitch').replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+export const exportToWord = async (data: PitchData) => {
+  if (!data) return;
+  
+  try {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import('docx');
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: [
+          new Paragraph({
+            text: data.name || 'Startup Pitch',
+            heading: HeadingLevel.HEADING_1,
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: data.tagline || '',
+                italics: true,
+              }),
+            ],
+          }),
+          new Paragraph({ text: "" }), // Empty line
+          new Paragraph({
+            text: "Elevator Pitch",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.elevator_pitch || '' }),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            text: "The Problem",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.problem || '' }),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            text: "The Solution",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.solution || '' }),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            text: "Unique Value Proposition",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.unique_value_proposition || '' }),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            text: "Target Audience",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.target_audience?.description || '' }),
+          ...(data.target_audience?.segments || []).map(segment => new Paragraph({
+            text: segment,
+            bullet: { level: 0 }
+          })),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            text: "Industry",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          new Paragraph({ text: data.industry || '' }),
+        ],
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${(data.name || 'pitch').replace(/[^a-z0-9]/gi, '_').toLowerCase()}.docx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error exporting Word doc:', error);
+  }
 };

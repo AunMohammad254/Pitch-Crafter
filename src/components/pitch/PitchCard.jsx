@@ -1,6 +1,10 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
+import { usePitchStore } from "../../stores/pitchStore";
 
-export default function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
+const PitchCard = memo(function PitchCard({ pitch, index, onView, onDelete, onPreview }) {
+    const { syncingIds } = usePitchStore();
+    const isSyncing = syncingIds.has(pitch.id);
     const data = pitch.generated_data;
     const createdDate = new Date(pitch.created_at).toLocaleDateString("en-US", {
         year: "numeric",
@@ -13,16 +17,24 @@ export default function PitchCard({ pitch, index, onView, onDelete, onPreview })
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            whileHover={{ y: -8 }}
+            whileHover={!isSyncing ? { y: -8 } : {}}
             style={{
                 background: "var(--bg-elevated)",
                 border: "1px solid var(--border-primary)",
                 boxShadow: "var(--shadow-card)",
                 backdropFilter: "var(--glass-backdrop)",
             }}
-            className="rounded-2xl p-4 sm:p-6 hover:shadow-2xl transition-all duration-300 group cursor-pointer"
-            onClick={onView}
+            className={`rounded-2xl p-4 sm:p-6 hover:shadow-2xl transition-all duration-300 group cursor-pointer relative overflow-hidden ${isSyncing ? 'opacity-70 grayscale-[0.5]' : ''}`}
+            onClick={!isSyncing ? onView : undefined}
         >
+            {isSyncing && (
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] flex items-center justify-center z-20">
+                    <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-[10px] font-bold text-white mt-3 uppercase tracking-widest drop-shadow-md">Syncing...</span>
+                    </div>
+                </div>
+            )}
             {/* Card Header */}
             <div className="flex items-start justify-between mb-4 sm:mb-6">
                 <div className="flex-1 min-w-0">
@@ -137,4 +149,6 @@ export default function PitchCard({ pitch, index, onView, onDelete, onPreview })
             </div>
         </motion.div>
     );
-}
+});
+
+export default PitchCard;

@@ -14,7 +14,7 @@ export const PitchBrandIdentity = ({
   copied
 }) => {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
       {/* Logo Concepts */}
       <motion.div
         style={{
@@ -79,9 +79,9 @@ export const PitchBrandIdentity = ({
               >
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
               </div>
-              <div className="flex justify-between items-center">
-                <span style={{ color: 'var(--text-secondary)' }} className="text-sm capitalize font-medium">{name}</span>
-                <span style={{ color: 'var(--text-tertiary)' }} className="text-xs font-mono bg-neutral-500/10 px-2 py-1 rounded">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                <span style={{ color: 'var(--text-secondary)' }} className="text-xs sm:text-sm capitalize font-medium truncate">{name}</span>
+                <span style={{ color: 'var(--text-tertiary)' }} className="text-[10px] sm:text-xs font-mono bg-neutral-500/10 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded self-start sm:self-auto">
                   {hex}
                 </span>
               </div>
@@ -96,7 +96,7 @@ export const PitchBrandIdentity = ({
           background: 'var(--bg-elevated)',
           border: '1px solid var(--border-primary)',
         }}
-        className="p-4 sm:p-6 rounded-xl flex flex-col justify-between"
+        className="p-4 sm:p-6 rounded-xl flex flex-col justify-between md:col-span-2 xl:col-span-1"
       >
         <div>
           <h3 style={{ color: 'var(--text-primary)' }} className="text-xl font-bold mb-4 flex items-center">

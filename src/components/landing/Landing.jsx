@@ -4,18 +4,21 @@ import LandingFeatures from "./LandingFeatures";
 import LandingCTA from "./LandingCTA";
 import LandingFooter from "./LandingFooter";
 import LogoIcon from "../../assets/logo-icon.svg";
+import { useUIStore } from "../../stores/uiStore";
 
-export default function Landing({ onNavigate }) {
+export default function Landing() {
+  const { navigateToAuth } = useUIStore();
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   const handleGetStarted = () => {
-    onNavigate("auth", "signup");
+    navigateToAuth("signup");
   };
 
   const handleSignIn = () => {
-    onNavigate("auth", "signin");
+    navigateToAuth("signin");
   };
 
   const handleLearnMore = () => {

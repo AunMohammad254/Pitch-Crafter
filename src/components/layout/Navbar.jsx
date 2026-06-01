@@ -1,17 +1,20 @@
 import { useRef, useEffect } from "react";
 import LogoIcon from "../../assets/logo-icon.svg";
 import { NavButton, MobileNavItem, MobileMenuButton } from "../ui/Button";
+import { useAuthStore } from "../../stores/authStore";
+import { useUIStore } from "../../stores/uiStore";
+import { usePitchStore } from "../../stores/pitchStore";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Navbar({
-    _user,
-    currentView,
-    setCurrentView,
-    mobileMenuOpen,
-    setMobileMenuOpen,
-    animationsEnabled,
-    setAnimationsEnabled,
-    onSignOut,
-}) {
+export default function Navbar() {
+    const { signOut } = useAuthStore();
+    const { 
+        currentView, setCurrentView,
+        mobileMenuOpen, setMobileMenuOpen,
+        animationsEnabled, setAnimationsEnabled
+    } = useUIStore();
+    const { isSyncing } = usePitchStore();
+    
     const navRef = useRef(null);
 
     // Close mobile menu when clicking outside
@@ -57,7 +60,22 @@ export default function Navbar({
                             <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 group-hover:to-pink-300 transition-all duration-300">
                                 Pitch Crafter
                             </h1>
-                            <span className="text-[10px] sm:text-xs font-medium text-neutral-400 tracking-wider">AI STARTUP ASSISTANT</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] sm:text-xs font-medium text-neutral-400 tracking-wider uppercase">AI STARTUP ASSISTANT</span>
+                                <AnimatePresence>
+                                    {isSyncing && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, x: -5 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0 }}
+                                            className="flex items-center gap-1"
+                                        >
+                                            <span className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></span>
+                                            <span className="text-[8px] font-bold text-green-400 uppercase tracking-tighter">Syncing</span>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
 
@@ -99,7 +117,7 @@ export default function Navbar({
                         </button>
 
                         <NavButton
-                            onClick={onSignOut}
+                            onClick={signOut}
                             variant="danger"
                             className="px-4!"
                             aria-label="Sign out"
@@ -185,7 +203,7 @@ export default function Navbar({
                         <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 px-2 mb-2">Account</p>
                         <MobileNavItem
                             onClick={() => {
-                                onSignOut();
+                                signOut();
                                 setMobileMenuOpen(false);
                             }}
                             className="hover:bg-red-500/10 group"

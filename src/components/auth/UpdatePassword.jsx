@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import LogoIcon from "../../assets/logo-icon.svg";
+import { useUIStore } from "../../stores/uiStore";
 
-export default function UpdatePassword({ onFullfill }) {
+export default function UpdatePassword() {
+    const { setCurrentView } = useUIStore();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ export default function UpdatePassword({ onFullfill }) {
             if (error) throw error;
             setMessage("Password updated successfully!");
             setTimeout(() => {
-                onFullfill(); // Navigate back to main app or generate view
+                setCurrentView("generate"); // Navigate back to main app or generate view
             }, 1500);
         } catch (error) {
             setMessage(error.message);

@@ -1,11 +1,14 @@
-import { motion } from "framer-motion";
-import { exportToPDF, exportToPPTX } from "../../../utils/exportUtils";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { exportToPDF, exportToPPTX, exportToMarkdown, exportToWord } from "../../../utils/exportUtils";
 
 export const PitchActionButtons = ({ onEdit, data, saveStatus }) => {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3 mb-6">
+    <div className="flex flex-row items-center gap-2.5 relative w-full sm:w-auto justify-end">
       {/* Auto-save Status */}
-      <div className="mr-auto flex items-center">
+      <div className="absolute -top-6 right-0 sm:relative sm:top-0 sm:mr-auto flex items-center">
         {saveStatus === "saving" && (
           <motion.div 
             initial={{ opacity: 0 }} 
@@ -13,7 +16,7 @@ export const PitchActionButtons = ({ onEdit, data, saveStatus }) => {
             className="flex items-center text-xs font-medium text-white/50"
           >
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-2" />
-            Saving changes...
+            Saving...
           </motion.div>
         )}
         {saveStatus === "saved" && (
@@ -22,30 +25,68 @@ export const PitchActionButtons = ({ onEdit, data, saveStatus }) => {
             animate={{ opacity: 1 }} 
             className="flex items-center text-xs font-medium text-emerald-500"
           >
-            <span className="mr-2 text-sm">✅</span>
-            All changes saved
+            <span className="mr-1 text-xs">✅</span>
+            Saved
           </motion.div>
         )}
       </div>
 
       <button
         onClick={onEdit}
-        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center border border-gray-600"
+        aria-label="Edit pitch details"
+        className="flex-1 sm:flex-none px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-neutral-700 cursor-pointer"
       >
-        <span className="mr-2">✏️</span> Edit Pitch
+        <span className="mr-2" aria-hidden="true">✏️</span> Edit Pitch
       </button>
-      <button
-        onClick={() => exportToPDF('pitch-content', `${data.name || 'pitch'}.pdf`)}
-        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center shadow-lg shadow-indigo-500/20"
-      >
-        <span className="mr-2">📄</span> Export PDF
-      </button>
-      <button
-        onClick={() => exportToPPTX(data)}
-        className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center shadow-lg shadow-orange-500/20"
-      >
-        <span className="mr-2">📊</span> Export PPT
-      </button>
+
+      {/* Export Dropdown */}
+      <div className="relative flex-1 sm:flex-none flex">
+        <button
+          onClick={() => setShowExportMenu(!showExportMenu)}
+          aria-label="Export options"
+          className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-lg shadow-indigo-500/20 cursor-pointer"
+        >
+          <span className="mr-2" aria-hidden="true">📤</span> Export
+        </button>
+
+        <AnimatePresence>
+          {showExportMenu && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+            >
+              <div className="py-1">
+                <button
+                  onClick={() => { exportToPDF('pitch-content', `${data.name || 'pitch'}.pdf`); setShowExportMenu(false); }}
+                  className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-colors flex items-center"
+                >
+                  <span className="mr-2">📄</span> PDF Document
+                </button>
+                <button
+                  onClick={() => { exportToPPTX(data); setShowExportMenu(false); }}
+                  className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-colors flex items-center"
+                >
+                  <span className="mr-2">📊</span> PowerPoint
+                </button>
+                <button
+                  onClick={() => { exportToWord(data); setShowExportMenu(false); }}
+                  className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-colors flex items-center"
+                >
+                  <span className="mr-2">📝</span> Word Doc
+                </button>
+                <button
+                  onClick={() => { exportToMarkdown(data); setShowExportMenu(false); }}
+                  className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-colors flex items-center"
+                >
+                  <span className="mr-2">Ⓜ️</span> Markdown
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
