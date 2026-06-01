@@ -1,11 +1,22 @@
-export function validateEmail(email) {
+export interface ValidationResult {
+  valid: boolean;
+  message: string;
+}
+
+export function validateEmail(email: string): ValidationResult {
   if (!email) return { valid: false, message: "" };
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!re.test(email)) return { valid: false, message: "Enter a valid email address" };
   return { valid: true, message: "Valid email" };
 }
 
-export function getPasswordStrength(password) {
+export interface PasswordStrength {
+  score: number;
+  label: string;
+  color: string;
+}
+
+export function getPasswordStrength(password: string): PasswordStrength {
   if (!password) return { score: 0, label: "", color: "transparent" };
   let score = 0;
   if (password.length >= 6) score++;
@@ -13,7 +24,8 @@ export function getPasswordStrength(password) {
   if (/[A-Z]/.test(password)) score++;
   if (/[0-9]/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
-  const levels = [
+  
+  const levels: PasswordStrength[] = [
     { score: 0, label: "Weak", color: "#ef4444" },
     { score: 1, label: "Weak", color: "#ef4444" },
     { score: 2, label: "Fair", color: "#f59e0b" },
@@ -21,5 +33,6 @@ export function getPasswordStrength(password) {
     { score: 4, label: "Strong", color: "#10b981" },
     { score: 5, label: "Very Strong", color: "#10b981" },
   ];
+  
   return levels[Math.min(score, 5)];
 }

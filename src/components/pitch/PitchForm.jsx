@@ -1,31 +1,33 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from "react";
-import { createPortal } from "react-dom";
-import { supabase } from "../../lib/supabaseClient";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LinkButton } from "../ui/Button";
-import GalaxyButton from "../ui/GalaxyButton";
 import LogoIcon from "../../assets/logo.svg";
-import { GeminiAPIManager } from "../../utils/geminiApi";
-import CustomModelSelector from "./ModelSelector";
 import PitchDetails from "./PitchDetails";
 import ErrorBoundary from "../ui/ErrorBoundary";
+import PitchInputForm from "./PitchInputForm";
+import LivePreview from "./LivePreview";
+import GenerationProgress from "./GenerationProgress";
+import { usePitchGeneration } from "../../hooks/usePitchGeneration";
 
 const CodePreview = lazy(() => import("./CodePreview"));
-import { generatePitchPrompt, generateWebsitePrompt } from "../../utils/prompts";
 
 export default function PitchForm({ user, onNavigate }) {
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState("auto");
-  const [queueStatus, setQueueStatus] = useState(null);
-  const [result, setResult] = useState(null);
-  const [pitchId, setPitchId] = useState(null);
-  const [landingCode, setLandingCode] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("pitch");
   const [showPreview, setShowPreview] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [apiManager] = useState(() => new GeminiAPIManager());
+
+  const {
+    loading,
+    queueStatus,
+    result,
+    pitchId,
+    landingCode,
+    generatePitch,
+    updatePitchData,
+  } = usePitchGeneration(user, showNotification);
 
   // Handle preview URL with proper cleanup to prevent memory leaks
   useEffect(() => {
@@ -48,34 +50,13 @@ export default function PitchForm({ user, onNavigate }) {
     };
   }, [landingCode]);
 
-  const openPreview = () => {
-    setShowPreview(true);
-  };
-
-  const closePreview = () => {
-    setShowPreview(false);
-    setIsFullscreen(false);
-  };
-
   function showNotification(message, type) {
     const el = document.createElement("div");
-
-    // Enhanced notification styling with support for warning type
     let statusClass, icon;
     switch (type) {
-      case "success":
-        statusClass = "status-success";
-        icon = "✅";
-        break;
-      case "warning":
-        statusClass = "bg-yellow-100 text-yellow-800 border-yellow-300";
-        icon = "⚠️";
-        break;
-      case "error":
-      default:
-        statusClass = "status-error";
-        icon = "❌";
-        break;
+      case "success": statusClass = "status-success"; icon = "✅"; break;
+      case "warning": statusClass = "bg-yellow-100 text-yellow-800 border-yellow-300"; icon = "⚠️"; break;
+      case "error": default: statusClass = "status-error"; icon = "❌"; break;
     }
 
     el.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 font-semibold backdrop-blur-sm border animate-fade-in-right ${statusClass}`;
@@ -87,240 +68,21 @@ export default function PitchForm({ user, onNavigate }) {
       </div>
     `;
     document.body.appendChild(el);
-
-    // Auto-remove after delay (longer for errors and warnings)
     const delay = type === "error" || type === "warning" ? 6000 : 4000;
     setTimeout(() => {
       if (el.parentNode) {
         el.style.opacity = "0";
         el.style.transform = "translateX(100%)";
-        setTimeout(() => {
-          if (el.parentNode) el.remove();
-        }, 300);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
       }
     }, delay);
   }
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setResult(null);
-    setLandingCode(null);
-    setPreviewUrl("");
     setShowPreview(false);
-    setQueueStatus(null);
-
-    try {
-      console.log('🚀 Starting pitch generation process...');
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-      // Validate API key before proceeding
-      apiManager.validateApiKey(apiKey);
-
-      // Step 1: Get Pitch Data
-      const pitchPrompt = generatePitchPrompt(prompt);
-
-      const requestBody = {
-        contents: [
-          {
-            parts: [
-              {
-                text: pitchPrompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
-      };
-
-      const responseText = await apiManager.makeRequest(requestBody, apiKey, selectedModel, 0, setQueueStatus);
-      const parsed = apiManager.extractAndParseJSON(responseText);
-
-      console.log('✅ Pitch data generated successfully');
-      setResult(parsed);
-
-      // Step 2: Generate landing page code
-      console.log('🌐 Step 2: Generating landing page code...');
-      const generatedCode = await generateLandingPageCode(parsed);
-      setLandingCode(generatedCode);
-
-      // Step 3: Save to Supabase
-      console.log('💾 Step 3: Saving to database...');
-      const { data: insertedData, error } = await supabase.from("pitches").insert({
-        user_id: user.id,
-        title: parsed.name,
-        short_description: parsed.tagline,
-        industry: parsed.industry,
-        tone: "auto",
-        language: "auto",
-        generated_data: parsed,
-        landing_code: generatedCode,
-      }).select();
-
-      if (error) {
-        console.error('❌ Database save error:', error);
-        throw new Error(`Failed to save pitch: ${error.message}`);
-      }
-
-      if (insertedData && insertedData.length > 0) {
-        setPitchId(insertedData[0].id);
-      }
-
-      console.log('🎉 Pitch generation completed successfully!');
-      showNotification("✅ Pitch + Website Code Generated!", "success");
-
-    } catch (err) {
-      console.error('❌ Pitch generation failed:', err);
-      const errorMessage = err.message || "Something went wrong. Please try again.";
-      showNotification(`❌ ${errorMessage}`, "error");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function generateLandingPageCode(pitchData) {
-    try {
-      console.log('🌐 Generating landing page code...');
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-      const websitePrompt = generateWebsitePrompt(pitchData);
-
-      const requestBody = {
-        contents: [{ parts: [{ text: websitePrompt }] }],
-      };
-
-      const responseText = await apiManager.makeRequest(requestBody, apiKey, selectedModel, 0, setQueueStatus);
-      console.log('✅ Landing page code generated successfully');
-      return responseText;
-
-    } catch (error) {
-      console.error('⚠️ Landing page generation failed, using fallback:', error);
-      showNotification("⚠️ Using fallback template for landing page", "warning");
-      return generateFallbackTemplate(pitchData);
-    }
-  }
-
-  function generateFallbackTemplate(pitchData) {
-    const colors = pitchData.colors || {
-      primary: "#3B82F6",
-      secondary: "#8B5CF6",
-      accent: "#06B6D4",
-    };
-
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${pitchData.name} - ${pitchData.tagline}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .gradient-bg { background: linear-gradient(135deg, ${colors.primary
-      }20, ${colors.secondary}20); }
-        .hero-gradient { background: linear-gradient(135deg, ${colors.primary
-      }, ${colors.secondary}); }
-    </style>
-</head>
-<body class="bg-white">
-    <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-lg shadow-lg sticky top-0 z-50 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-[${colors.primary}] to-[${colors.secondary}] rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">${pitchData.name}</span>
-                </div>
-                <button class="bg-[${colors.primary
-      }] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[${colors.secondary
-      }] transition-colors">
-                    Get Started
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-gradient text-white py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-5xl font-bold mb-6">${pitchData.landing_copy?.headline || pitchData.name
-      }</h1>
-            <p class="text-xl opacity-90 mb-8 max-w-3xl mx-auto">${pitchData.landing_copy?.subheadline || pitchData.tagline
-      }</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="bg-white text-[${colors.primary
-      }] px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-colors shadow-lg">
-                    ${pitchData.landing_copy?.call_to_action ||
-      "Get Started Free"
-      }
-                </button>
-                <button class="border border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors">
-                    Learn More
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Problem Section -->
-    <section class="py-20 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">The Problem We Solve</h2>
-            <p class="text-lg text-gray-600 leading-relaxed">${pitchData.problem
-      }</p>
-        </div>
-    </section>
-
-    <!-- Solution Section -->
-    <section class="py-20 gradient-bg">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Innovative Solution</h2>
-            <p class="text-lg text-gray-600 leading-relaxed">${pitchData.solution
-      }</p>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 bg-gray-900 text-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold mb-6">Ready to Get Started?</h2>
-            <p class="text-gray-300 mb-8 text-lg">Join the future with ${pitchData.name
-      }</p>
-            <button class="bg-[${colors.accent
-      }] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[${colors.primary
-      }] transition-colors">
-                Start Your Journey
-            </button>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p>&copy; 2024 ${pitchData.name}. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth scroll for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    </script>
-</body>
-</html>`;
-  }
+    await generatePitch(prompt, selectedModel);
+  };
 
   return (
     <div className="relative text-(--text-primary) font-sans selection:bg-(--accent-primary) selection:text-white overflow-x-hidden">
@@ -390,14 +152,11 @@ export default function PitchForm({ user, onNavigate }) {
         {/* Hero Section */}
         {!result && !loading && (
           <div className="text-center mb-10 sm:mb-12">
-            {/* Purple Icon */}
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                 <span className="text-3xl sm:text-4xl">✨</span>
               </div>
             </div>
-
-            {/* Heading */}
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-primary mb-4 leading-tight animate-fade-in-up">
               <span style={{
                 background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%)',
@@ -405,8 +164,6 @@ export default function PitchForm({ user, onNavigate }) {
                 WebkitTextFillColor: 'transparent'
               }}>Craft Your Perfect Pitch</span>
             </h2>
-
-            {/* Subtitle */}
             <p style={{ color: 'var(--text-secondary)' }} className="text-base sm:text-lg max-w-xl mx-auto leading-relaxed animate-fade-in-up animation-delay-100">
               Transform your startup idea into a complete business package with AI-powered pitch generation, branding, and production-ready website code.
             </p>
@@ -414,136 +171,21 @@ export default function PitchForm({ user, onNavigate }) {
         )}
 
         {/* Input Form */}
-        <motion.div
-          style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
-            boxShadow: 'var(--shadow-2xl)',
-          }}
-          className={`max-w-4xl mx-auto rounded-2xl sm:rounded-3xl p-1 backdrop-blur-xl transition-all duration-500 ${result ? 'mb-8' : 'mb-20'}`}
-          animate={{
-            scale: loading ? 0.98 : 1,
-            opacity: 1
-          }}
-        >
-          <div className="bg-(--bg-primary) rounded-[1.2rem] sm:rounded-[1.4rem] p-4 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <CustomModelSelector selectedModel={selectedModel} onSelect={setSelectedModel} />
-
-              {/* Form Label */}
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-xl">💡</span>
-                <label className="text-base sm:text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  Describe Your Startup Vision
-                </label>
-              </div>
-
-              {/* Textarea */}
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-linear-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative">
-                  <textarea
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    maxLength={5000}
-                    placeholder="I want to build an AI-powered fitness app that creates personalized workout plans with real-time form correction using computer vision, targeting busy professionals..."
-                    className="w-full h-32 sm:h-36 bg-(--bg-secondary) text-(--text-primary) border border-(--border-primary) rounded-xl px-4 py-4 sm:px-5 sm:py-4 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none resize-none transition-all placeholder:text-(--text-disabled)"
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-
-              {/* Character Counter Row */}
-              <div className="flex justify-between items-center text-sm">
-                <span style={{ color: 'var(--text-tertiary)' }}>
-                  {prompt.length} / 5000 Characters
-                </span>
-                <span style={{ color: 'var(--text-tertiary)' }} className="flex items-center">
-                  <span className="mr-1">💭</span> Be detailed for better results
-                </span>
-              </div>
-
-              {/* Quick Suggestion Tags */}
-              <div className="flex flex-wrap gap-2 pt-2">
-                {[
-                  { icon: '💳', label: 'FinTech App' },
-                  { icon: '🤖', label: 'AI Startup' },
-                  { icon: '☁️', label: 'SaaS Platform' },
-                  { icon: '🛒', label: 'E-commerce' },
-                  { icon: '🏥', label: 'HealthTech' },
-                  { icon: '📚', label: 'EdTech' },
-                ].map((tag) => (
-                  <button
-                    key={tag.label}
-                    type="button"
-                    onClick={() => setPrompt(prev => prev ? `${prev} ${tag.icon} ${tag.label}` : `I want to build a ${tag.label.toLowerCase()} that...`)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105"
-                    style={{
-                      background: 'var(--bg-tertiary)',
-                      color: 'var(--text-secondary)',
-                      border: '1px solid var(--border-secondary)',
-                    }}
-                  >
-                    <span>{tag.icon}</span>
-                    <span>{tag.label}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Generate Button */}
-              <GalaxyButton
-                type="submit"
-                disabled={loading || !prompt.trim()}
-                className={`${!loading && prompt.trim() ? 'generate-btn-pulse' : ''}`}
-              >
-                <AnimatePresence mode="wait">
-                  {loading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center justify-center space-x-3"
-                    >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                        className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-                      />
-                      <span>AI is crafting your startup...</span>
-                    </motion.div>
-                  ) : queueStatus ? (
-                    <motion.div
-                      key="queue"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center justify-center space-x-2 text-yellow-500 font-medium"
-                    >
-                      <span className="animate-pulse">⏳</span>
-                      <span>{queueStatus}</span>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="idle"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center justify-center space-x-3"
-                    >
-                      <span className="text-xl">✨</span>
-                      <span>Generate Complete Startup Package</span>
-                      <span className="text-xl">🚀</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </GalaxyButton>
-            </form>
-          </div>
-        </motion.div>
+        {!result && (
+          <>
+            {loading && <GenerationProgress queueStatus={queueStatus} />}
+            <PitchInputForm
+              prompt={prompt}
+              setPrompt={setPrompt}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              loading={loading}
+              queueStatus={queueStatus}
+              handleSubmit={handleSubmit}
+              result={result}
+            />
+          </>
+        )}
 
         {/* Results Section */}
         <AnimatePresence>
@@ -590,29 +232,7 @@ export default function PitchForm({ user, onNavigate }) {
               >
                 <ErrorBoundary>
                   {activeTab === "pitch" ? (
-                    <PitchDetails
-                      data={result}
-                      onUpdate={async (newData) => {
-                        setResult(newData);
-                        if (pitchId) {
-                          console.log('💾 Auto-saving pitch updates to database:', pitchId);
-                          const { error } = await supabase
-                            .from("pitches")
-                            .update({
-                              generated_data: newData,
-                              title: newData.name,
-                              short_description: newData.tagline,
-                              industry: newData.industry,
-                            })
-                            .eq("id", pitchId);
-                          if (error) {
-                            console.error('❌ Database update error:', error);
-                          } else {
-                            console.log('✅ Database update successful!');
-                          }
-                        }
-                      }}
-                    />
+                    <PitchDetails data={result} onUpdate={updatePitchData} />
                   ) : (
                     <Suspense fallback={
                       <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)' }} className="flex flex-col items-center justify-center p-12 rounded-xl text-center shadow-lg">
@@ -620,7 +240,7 @@ export default function PitchForm({ user, onNavigate }) {
                         <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Loading code preview component...</p>
                       </div>
                     }>
-                      <CodePreview code={landingCode} onOpenPreview={openPreview} onShowNotification={showNotification} />
+                      <CodePreview code={landingCode} onOpenPreview={() => setShowPreview(true)} onShowNotification={showNotification} />
                     </Suspense>
                   )}
                 </ErrorBoundary>
@@ -628,141 +248,25 @@ export default function PitchForm({ user, onNavigate }) {
             </motion.div>
           )}
         </AnimatePresence>
-        {showPreview && createPortal(
-          <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in ${isFullscreen ? '' : 'p-4'}`}>
-            <div
-              style={{ background: 'var(--bg-elevated)', border: isFullscreen ? 'none' : '1px solid var(--border-primary)' }}
-              className={`overflow-hidden shadow-2xl flex flex-col animate-scale-in relative transition-all duration-300
-                ${isFullscreen ? 'w-screen h-screen rounded-none' : 'w-full h-[90vh] max-w-7xl rounded-2xl'}
-              `}
-            >
-              <div
-                style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-secondary)' }}
-                className="p-4 flex justify-between items-center"
-              >
-                <h3 style={{ color: 'var(--text-primary)' }} className="font-bold text-base sm:text-lg flex items-center truncate">
-                  <span className="mr-2">📱</span> Live Preview {result?.name ? `- ${result.name}` : ''}
-                </h3>
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  {/* View in New Tab */}
-                  <button
-                    type="button"
-                    onClick={() => window.open(previewUrl, '_blank')}
-                    title="View in new tab"
-                    className="p-2 rounded-lg transition-colors hover:bg-white/10 flex items-center text-sm font-medium"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    <span className="hidden sm:inline">New Tab</span>
-                  </button>
 
-                  {/* Toggle Full Screen */}
-                  <button
-                    type="button"
-                    onClick={() => setIsFullscreen(!isFullscreen)}
-                    title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
-                    className="p-2 rounded-lg transition-colors hover:bg-white/10 flex items-center text-sm font-medium"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    {isFullscreen ? (
-                      <>
-                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4" />
-                        </svg>
-                        <span className="hidden sm:inline">Exit Full</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4h4m12 4V4h-4M4 16v4h4m12-4v4h-4" />
-                        </svg>
-                        <span className="hidden sm:inline">Full Screen</span>
-                      </>
-                    )}
-                  </button>
-
-                  {/* Close */}
-                  <button
-                    type="button"
-                    onClick={closePreview}
-                    title="Close"
-                    className="p-2 rounded-lg transition-colors hover:bg-red-500/20 hover:text-red-400 flex items-center text-sm font-semibold"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    <span className="hidden sm:inline">Close</span>
-                  </button>
-                </div>
-              </div>
-              <div className="flex-1 bg-gray-100 relative">
-                {previewUrl ? (
-                  <iframe
-                    src={previewUrl}
-                    className="w-full h-full border-0"
-                    title="Website Preview"
-                    sandbox="allow-scripts allow-same-origin"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                    <div className="flex flex-col items-center">
-                      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                      <p>Loading preview...</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+        <LivePreview
+          isOpen={showPreview}
+          onClose={() => { setShowPreview(false); setIsFullscreen(false); }}
+          previewUrl={previewUrl}
+          isFullscreen={isFullscreen}
+          setIsFullscreen={setIsFullscreen}
+          resultName={result?.name}
+        />
       </div>
 
-      {/* Global CSS for Animations */}
       <style>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        .animate-fade-in-down {
-          animation: fadeInDown 0.8s ease-out forwards;
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInDown {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .font-primary {
-          font-family: 'Outfit', sans-serif;
-        }
-        /* Pulse animation for the button */
-        @keyframes pulse-custom {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-          50% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-        }
-        .generate-btn-pulse {
-          animation: pulse-custom 2s infinite;
-        }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-fade-in-down { animation: fadeInDown 0.8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .font-primary { font-family: 'Outfit', sans-serif; }
+        @keyframes pulse-custom { 0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); } }
+        .generate-btn-pulse { animation: pulse-custom 2s infinite; }
       `}</style>
     </div>
   );
